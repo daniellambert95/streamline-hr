@@ -111,6 +111,14 @@ module.exports = {
 }
 EOL
 
+# Update the global CSS in index.css
+cat > src/index.css << EOL
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+EOL
+
 cd ..
 
 # Create Dockerfile.client
