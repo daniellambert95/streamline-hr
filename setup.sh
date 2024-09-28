@@ -1,15 +1,39 @@
 #!/bin/bash
 
 # Create project directory
-# mkdir streamline-hr && cd streamline-hr
+mkdir streamline-hr && cd streamline-hr
 
 # Set up server
 mkdir server && cd server
-npm init -y
-npm install express typescript ts-node @types/express @types/node
-npx tsc --init
+cat > package.json << EOL
+{
+  "name": "streamline-hr-server",
+  "version": "1.0.0",
+  "description": "Server for Streamline HR app",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/node": "^16.11.12",
+    "ts-node-dev": "^1.1.8"
+  }
+}
+EOL
 
-# Create server tsconfig.json
+# Create tsconfig.json
 cat > tsconfig.json << EOL
 {
   "compilerOptions": {
@@ -27,12 +51,26 @@ cat > tsconfig.json << EOL
 }
 EOL
 
-# Create server directory structure
-mkdir -p src/routes src/models src/controllers
-touch src/index.ts
+# Create src/index.ts
+mkdir src
+cat > src/index.ts << EOL
+import express from 'express';
+
+const app = express();
+const port = 3000;
+
+app.get('/', (req, res) => {
+  res.send('Hello from Streamline HR Server!');
+});
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(\`Server is running on port \${port}\`);
+});
+EOL
+
+cd ..
 
 # Set up client
-cd ..
 npm create vite@latest client -- --template react-ts
 cd client
 npm install
@@ -47,8 +85,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '0.0.0.0',
+    port: 5173,
     proxy: {
-      '/api': 'http://localhost:3000'
+      '/api': {
+        target: 'http://server:3000',
+        changeOrigin: true,
+      }
     }
   }
 })
@@ -68,16 +111,11 @@ module.exports = {
 }
 EOL
 
-# Create client directory structure
-mkdir -p src/components src/pages
-touch src/App.tsx src/main.tsx src/index.css
-
-# Go back to project root
 cd ..
 
 # Create Dockerfile.client
 cat > Dockerfile.client << EOL
-FROM node:14
+FROM node:16
 
 WORKDIR /app
 
@@ -87,8 +125,6 @@ RUN npm install
 
 COPY client/ .
 
-RUN npm run build
-
 EXPOSE 5173
 
 CMD ["npm", "run", "dev"]
@@ -96,7 +132,7 @@ EOL
 
 # Create Dockerfile.server
 cat > Dockerfile.server << EOL
-FROM node:14
+FROM node:16
 
 WORKDIR /app
 
@@ -104,9 +140,7 @@ COPY server/package*.json ./
 
 RUN npm install
 
-COPY server/ .
-
-RUN npm run build
+COPY server .
 
 EXPOSE 3000
 
@@ -128,6 +162,8 @@ services:
       - /app/node_modules
     depends_on:
       - server
+    environment:
+      - VITE_API_URL=http://server:3000
 
   server:
     build:
@@ -138,6 +174,8 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
+    environment:
+      - NODE_ENV=development
 EOL
 
 # Create .gitignore

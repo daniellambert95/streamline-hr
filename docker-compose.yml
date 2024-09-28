@@ -11,6 +11,8 @@ services:
       - /app/node_modules
     depends_on:
       - server
+    environment:
+      - VITE_API_URL=http://server:3000
 
   server:
     build:
@@ -21,3 +23,5 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
+    environment:
+      - NODE_ENV=development
