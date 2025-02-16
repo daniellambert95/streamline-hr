@@ -1,0 +1,17 @@
+import { Pool } from 'pg';
+
+// Use the DATABASE_URL from environment variables
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+pool.on('connect', () => {
+  console.log('✅ Connected to the PostgreSQL database');
+});
+
+pool.on('error', (err) => {
+  console.error('❌ Error with PostgreSQL database connection', err);
+  process.exit(-1);
+});
+
+export default pool;

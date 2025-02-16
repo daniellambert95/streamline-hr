@@ -6,6 +6,9 @@ COPY server/package*.json ./
 
 RUN npm install
 
+# Install pg and @types/pg (if not already installed)
+RUN npm install pg @node-rs/bcrypt && npm install --save-dev @types/pg
+
 COPY server .
 
 EXPOSE 3000

@@ -22,17 +22,11 @@ function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-4 items-center">
-            <Link to="/about" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              About
-            </Link>
-            <Link to="/services" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              Services
+            <Link to="/reviews" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+              Reviews
             </Link>
             <Link to="/pricing" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               Pricing
-            </Link>
-            <Link to="/profile" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
-              Profile
             </Link>
             <Link to="/login" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               Login
@@ -40,6 +34,7 @@ function Navbar() {
             <Link to="/signup" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
               Signup
             </Link>
+            
           </div>
 
           {/* Mobile Menu Button */}
@@ -61,17 +56,11 @@ function Navbar() {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            <Link to="/about" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
-              About
-            </Link>
-            <Link to="/services" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
-              Services
+            <Link to="/reviews" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
+              Reviews
             </Link>
             <Link to="/pricing" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
               Pricing
-            </Link>
-            <Link to="/profile" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
-              Profile
             </Link>
             <Link to="/login" className="text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium">
               Login

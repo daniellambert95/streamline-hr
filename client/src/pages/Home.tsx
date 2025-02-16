@@ -6,7 +6,8 @@ const Home = () => {
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-20 flex flex-col items-center justify-center h-[400px] text-center">
           <h1 className="text-4xl font-bold mb-4">Streamline HR</h1>
-          <p className="text-lg mb-6">Using AI to help you find the perfect candidate faster.</p>
+          <h2 className="text-2xl mb-1">The Leading Employee Managment and Applicant Tracking System.</h2>
+          <p className="text-base mb-6">Using AI to help you find the perfect candidate faster.</p>
           <button className="bg-white text-indigo-600 px-6 py-3 rounded-lg shadow-lg hover:bg-gray-100 transition">
             Get Started
           </button>

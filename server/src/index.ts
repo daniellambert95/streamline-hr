@@ -1,13 +1,21 @@
 import express from 'express';
 import cors from 'cors';
 import uploadRoutes from './routes/uploadRoute';
+import jobsRoutes from './routes/jobsRoute';
+import signupRoute from './routes/signupRoute';
+import profileRoute from './routes/profileRoute';
+import userProfileRoute from './routes/userProfileRoute';
+import loginRoute from './routes/loginRoute';
 import path from 'path';
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // Initialize Express app
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: 'http://localhost:5173',
 }));
 const port = 3000;
 
@@ -21,8 +29,13 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Use the upload routes
-app.use('/', uploadRoutes);
+// Routes
+app.use('/api/uploads', uploadRoutes);
+app.use('/api/jobs', jobsRoutes);
+app.use('/api/users', signupRoute);
+app.use('/api/users', profileRoute);
+app.use('/api/users', userProfileRoute);
+app.use('/api/users', loginRoute)
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -31,5 +44,5 @@ app.get('/', (req, res) => {
 
 // Start the server
 app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`✅ Server is running on port ${port}`);
 });
