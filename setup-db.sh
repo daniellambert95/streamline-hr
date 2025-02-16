@@ -115,6 +115,8 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     resume_path VARCHAR(255),
     cover_letter_path VARCHAR(255),
     linkedin_url VARCHAR(255),
+    status VARCHAR(50) CHECK (status IN ('pending', 'under_review', 'interviewing', 'rejected', 'accepted')),
+    applied_date TIMESTAMP DEFAULT NOW(),
     created_at TIMESTAMP DEFAULT NOW()
   );
 
