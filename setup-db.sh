@@ -36,10 +36,10 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
   -- Companies Table
   CREATE TABLE IF NOT EXISTS companies (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    company_name VARCHAR(255) UNIQUE NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
     industry VARCHAR(100),
-    address VARCHAR(255),
+    address TEXT,
+    user_id INTEGER REFERENCES users(id),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   );
@@ -47,7 +47,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
   -- Teams Table
   CREATE TABLE IF NOT EXISTS teams (
     id SERIAL PRIMARY KEY,
-    company_id INTEGER REFERENCES companies(id) ON DELETE CASCADE,
+    company_id INTEGER REFERENCES companies(id),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
@@ -56,18 +56,18 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
 
   -- Employees Table
   CREATE TABLE IF NOT EXISTS employees (
-    id SERIAL PRIMARY KEY,
-    company_id INTEGER REFERENCES companies(id) ON DELETE CASCADE,
-    team_id INTEGER REFERENCES teams(id) ON DELETE SET NULL,
+    id INTEGER PRIMARY KEY REFERENCES users(id),
+    company_id INTEGER REFERENCES companies(id),
+    team_id INTEGER REFERENCES teams(id),
     manager_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     job_title VARCHAR(255),
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     email VARCHAR(255) UNIQUE NOT NULL,
-    starting_date TIMESTAMP,
+    starting_date DATE,
     mobile_number VARCHAR(20),
     job_level VARCHAR(50),
-    holiday_time INTEGER DEFAULT 0,
+    holiday_time INTEGER DEFAULT 25,
     salary VARCHAR(50),
     bank_details TEXT,
     id_document VARCHAR(255),

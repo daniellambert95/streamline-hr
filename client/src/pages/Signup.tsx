@@ -7,6 +7,8 @@ const Signup = () => {
     password: "",
     company_name: "", // Required Company Name field
     subscription: "basic",
+    first_name: "",
+    last_name: "",
   });
 
   const navigate = useNavigate();

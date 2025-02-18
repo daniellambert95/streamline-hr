@@ -35,7 +35,7 @@ app.use('/api/jobs', jobsRoutes);
 app.use('/api/users', signupRoute);
 app.use('/api/users', profileRoute);
 app.use('/api/users', userProfileRoute);
-app.use('/api/users', loginRoute)
+app.use('/api/users', loginRoute);
 
 // Root endpoint
 app.get('/', (req, res) => {

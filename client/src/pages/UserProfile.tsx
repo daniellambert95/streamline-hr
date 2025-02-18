@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import danielImage from "../assets/daniel.png";
+import EditProfileModal from "../components/EditProfileModal";
 
 const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("personal"); // Manage tabs
   const [user, setUser] = useState<any>(null);
   const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -16,19 +18,34 @@ const UserProfile: React.FC = () => {
       setIsAuthenticated(false);
       navigate("/login");
     } else {
-      fetch("http://localhost:3000/api/users/profile", {
+      fetch("http://localhost:3000/api/users/user-profile", {
         method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
       })
-        .then((res) => res.json())
-        .then((data) => setUser(data))
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return res.json();
+        })
+        .then((data) => {
+          console.log('Received profile data:', data);
+          setUser(data);
+        })
         .catch((error) => {
-          console.error(error);
+          console.error('Error fetching profile:', error);
           setIsAuthenticated(false);
           navigate("/login");
         });
     }
   }, [navigate, setIsAuthenticated]);
+
+  const handleProfileUpdate = (updatedData: any) => {
+    setUser(updatedData);
+  };
 
   if (!user) {
     return (
@@ -51,10 +68,8 @@ const UserProfile: React.FC = () => {
           <h1 className="text-2xl font-bold">
             {user.first_name} {user.last_name}
           </h1>
-          <p className="text-gray-600">Founder at Streamline HR</p>
-          {/* <p className="text-gray-600">{user.job_title} at {user.company_name}</p> */}
-          {/* <p className="text-gray-500">{user.email}</p> */}
-          <p className="text-gray-500">danjlambert95@gmail.com</p>
+          <p className="text-gray-600">{user.job_title} at {user.company_name}</p>
+          <p className="text-gray-500">{user.email}</p>
         </div>
       </div>
 
@@ -91,32 +106,48 @@ const UserProfile: React.FC = () => {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === "personal" && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-gray-500">Gender</p>
-                <p className="font-medium">{user.gender || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Date of Birth</p>
-                <p className="font-medium">{user.date_of_birth || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Nationality</p>
-                <p className="font-medium">{user.nationality || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Job Level</p>
-                <p className="font-medium">{user.job_level || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Salary</p>
-                <p className="font-medium">${user.salary || "N/A"}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">Holiday Time</p>
-                <p className="font-medium">{user.holiday_time || "N/A"} days</p>
-              </div>
+          <div className="mt-6 grid grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-gray-600">Job Title</h3>
+              <p className="font-medium">{user.job_title || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Job Level</h3>
+              <p className="font-medium">{user.job_level || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Team</h3>
+              <p className="font-medium">{user.team_name || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Manager</h3>
+              <p className="font-medium">{user.manager_name || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Company</h3>
+              <p className="font-medium">{user.company_name || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Industry</h3>
+              <p className="font-medium">{user.industry || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Salary</h3>
+              <p className="font-medium">{user.salary ? `$${user.salary}` : 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Holiday Time</h3>
+              <p className="font-medium">{user.holiday_time ? `${user.holiday_time} days` : 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Mobile Number</h3>
+              <p className="font-medium">{user.mobile_number || 'N/A'}</p>
+            </div>
+            <div>
+              <h3 className="text-gray-600">Starting Date</h3>
+              <p className="font-medium">
+                {user.starting_date ? new Date(user.starting_date).toLocaleDateString() : 'N/A'}
+              </p>
             </div>
           </div>
         )}
@@ -153,10 +184,20 @@ const UserProfile: React.FC = () => {
 
       {/* Edit Profile Button */}
       <div className="mt-6 text-right">
-        <button className="px-4 py-2 text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700">
+        <button 
+          onClick={() => setIsEditModalOpen(true)}
+          className="px-4 py-2 text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700"
+        >
           Edit Profile
         </button>
       </div>
+
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        userData={user}
+        onUpdate={handleProfileUpdate}
+      />
     </div>
   );
 };

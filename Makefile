@@ -1,4 +1,4 @@
-.PHONY: help setup build up down logs ps clean init db-setup env db-populate
+.PHONY: help setup build up down logs ps clean init db-setup env db-populate populate-db.sh
 
 # Default target when just running 'make'
 help:
@@ -67,3 +67,8 @@ clean:
 db-setup:
 	chmod +x setup-db.sh
 	./setup-db.sh 
+
+# Populate the database with sample data
+populate-db.sh:
+	chmod +x populate-db.sh
+	./populate-db.sh 
