@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import danielImage from "../../assets/daniel.png";
 import VacancyTrends from "../../components/analytics/VacancyTrends";
 import CalanderWidget from "../../components/profile/CalanderWidget";
+import { getGreeting } from '../../utils/greetingUtils';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -28,7 +29,7 @@ const Dashboard: React.FC = () => {
       {/* Header Section */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">
-          Good morning, <span className="text-indigo-600">{user.first_name}</span> 👋
+          {getGreeting()}, <span className="text-indigo-600">{user.first_name}</span> 👋
         </h1>
   
         {/* User Profile Link */}
