@@ -37,8 +37,8 @@ env:
 	fi
 
 # Build all containers
-build:
-	docker-compose build
+build up:
+	docker-compose up --build
 
 # Start all containers in detached mode
 up:
