@@ -30,11 +30,11 @@ const AuthSidebar: React.FC = () => {
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaUsers className="mr-3" />
-            <Link to="/employees">Talent Insights</Link>
+            <Link to="/employees">Employees</Link>
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaBriefcase className="mr-3" />
-            <Link to="/listings">Jobs</Link>
+            <Link to="/talent-insights">Talent Insights</Link>
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaBell className="mr-3" />

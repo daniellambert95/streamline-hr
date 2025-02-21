@@ -17,18 +17,18 @@ import {
   };
   
   const vacancyTrendsData = [
-    { month: "Jan", vacancies: 15, candidates: 10 },
-    { month: "Feb", vacancies: 30, candidates: 20 },
-    { month: "Mar", vacancies: 20, candidates: 15 },
-    { month: "Apr", vacancies: 25, candidates: 12 },
-    { month: "May", vacancies: 35, candidates: 18 },
-    { month: "Jun", vacancies: 45, candidates: 22 },
-    { month: "Jul", vacancies: 40, candidates: 25 },
-    { month: "Aug", vacancies: 50, candidates: 30 },
-    { month: "Sep", vacancies: 55, candidates: 28 },
-    { month: "Oct", vacancies: 60, candidates: 35 },
-    { month: "Nov", vacancies: 62, candidates: 30 },
-    { month: "Dec", vacancies: 65, candidates: 25 },
+    { month: "Jan", vacancies: 10, candidates: 15 },
+    { month: "Feb", vacancies: 20, candidates: 30 },
+    { month: "Mar", vacancies: 15, candidates: 20 },
+    { month: "Apr", vacancies: 12, candidates: 25 },
+    { month: "May", vacancies: 18, candidates: 35 },
+    { month: "Jun", vacancies: 22, candidates: 45 },
+    { month: "Jul", vacancies: 25, candidates: 40 },
+    { month: "Aug", vacancies: 30, candidates: 50 },
+    { month: "Sep", vacancies: 28, candidates: 55 },
+    { month: "Oct", vacancies: 35, candidates: 60 },
+    { month: "Nov", vacancies: 30, candidates: 62 },
+    { month: "Dec", vacancies: 25, candidates: 65 },
   ];
   
   const VacancyTrends = () => {
@@ -42,24 +42,24 @@ import {
                 <linearGradient id="colorVacancies" x1="0" y1="0" x2="0" y2="1">
                   <stop
                     offset="5%"
-                    stopColor={tailwindColors.turquoise}
+                    stopColor={tailwindColors.indigo}
                     stopOpacity={0.8}
                   />
                   <stop
                     offset="95%"
-                    stopColor={tailwindColors.turquoise}
+                    stopColor={tailwindColors.indigo}
                     stopOpacity={0}
                   />
                 </linearGradient>
                 <linearGradient id="colorCandidates" x1="0" y1="0" x2="0" y2="1">
                   <stop
                     offset="5%"
-                    stopColor={tailwindColors.indigo}
+                    stopColor={tailwindColors.turquoise}
                     stopOpacity={0.8}
                   />
                   <stop
                     offset="95%"
-                    stopColor={tailwindColors.indigo}
+                    stopColor={tailwindColors.turquoise}
                     stopOpacity={0}
                   />
                 </linearGradient>
@@ -75,14 +75,14 @@ import {
               <Area
                 type="monotone"
                 dataKey="vacancies"
-                stroke={tailwindColors.turquoise}
+                stroke={tailwindColors.indigo}
                 fillOpacity={1}
                 fill="url(#colorVacancies)"
               />
               <Area
                 type="monotone"
                 dataKey="candidates"
-                stroke={tailwindColors.indigo}
+                stroke={tailwindColors.turquoise}
                 fillOpacity={1}
                 fill="url(#colorCandidates)"
               />

@@ -48,6 +48,10 @@ up:
 down:
 	docker-compose down
 
+# Stop and remove containers and volumes
+down v:
+	docker-compose down -v
+
 # View container logs
 logs:
 	docker-compose logs -f
@@ -60,8 +64,8 @@ ps:
 clean:
 	docker-compose down -v
 	docker system prune -f
-	rm -rf server/node_modules
-	rm -rf client/node_modules
+# rm -rf server/node_modules
+# rm -rf client/node_modules
 
 # Database setup
 db-setup:

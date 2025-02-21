@@ -1,91 +1,60 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AddEmployeeModal from '../components/AddEmployeeModal';
+import { toast } from "react-hot-toast";
+
+interface Employee {
+  id: number;
+  email: string;
+  first_name: string;
+  last_name: string;
+  job_title?: string;
+  team_name?: string;
+  manager_name?: string;
+  starting_date: string;
+}
 
 const Employees: React.FC = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [employees, setEmployees] = useState<Employee[]>([]);
 
-  
-
-  // Dummy data for testing
-  const [employees, setEmployees] = useState([
-    {
-      id: 1,
-      first_name: "John",
-      last_name: "Doe",
-      email: "johndoe@example.com",
-      job_title: "Software Engineer",
-      team_name: "Development",
-      manager_name: "Sarah Williams",
-      starting_date: "2023-05-15",
-    },
-    {
-      id: 2,
-      first_name: "Jane",
-      last_name: "Smith",
-      email: "janesmith@example.com",
-      job_title: "Product Manager",
-      team_name: "Product",
-      manager_name: "Mark Johnson",
-      starting_date: "2022-08-22",
-    },
-    {
-      id: 3,
-      first_name: "Emily",
-      last_name: "Johnson",
-      email: "emilyjohnson@example.com",
-      job_title: "HR Specialist",
-      team_name: "Human Resources",
-      manager_name: "Lisa Brown",
-      starting_date: "2021-10-05",
-    },
-    {
-      id: 4,
-      first_name: "Michael",
-      last_name: "Brown",
-      email: "michaelbrown@example.com",
-      job_title: "Sales Executive",
-      team_name: "Sales",
-      manager_name: "David Lee",
-      starting_date: "2020-06-18",
-    },
-  ]);
-
-  /*
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
+  const fetchEmployees = async () => {
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch('http://localhost:3000/api/employees', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
+      });
 
-        const response = await fetch("http://localhost:3000/api/employees", {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch employees");
-        }
-
-        const data = await response.json();
-        setEmployees(data);
-      } catch (error) {
-        console.error("Error fetching employees:", error);
+      if (!response.ok) {
+        throw new Error('Failed to fetch employees');
       }
-    };
 
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setEmployees(data);
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch employees';
+      console.error('Error fetching employees:', error);
+      toast.error(errorMessage);
+    }
+  };
+
+  useEffect(() => {
     fetchEmployees();
-  }, [navigate]);
-  */
+  }, []);
 
-  // Function to handle adding a new employee (dummy implementation)
-  const handleAddEmployee = (newEmployee: any) => {
-    setEmployees([...employees, { id: employees.length + 1, ...newEmployee }]);
+  const handleAddEmployee = async () => {
+    await fetchEmployees(); // Refresh the list after adding
     setIsModalOpen(false);
+    toast.success('Employee added successfully');
   };
 
   return (
@@ -129,9 +98,9 @@ const Employees: React.FC = () => {
                       {employee.first_name} {employee.last_name}
                     </td>
                     <td className="py-3 px-4">{employee.email}</td>
-                    <td className="py-3 px-4">{employee.job_title || "N/A"}</td>
-                    <td className="py-3 px-4">{employee.team_name || "N/A"}</td>
-                    <td className="py-3 px-4">{employee.manager_name || "N/A"}</td>
+                    <td className="py-3 px-4">{employee.job_title || ""}</td>
+                    <td className="py-3 px-4">{employee.team_name || ""}</td>
+                    <td className="py-3 px-4">{employee.manager_name || ""}</td>
                     <td className="py-3 px-4">
                       {new Date(employee.starting_date).toLocaleDateString()}
                     </td>
@@ -153,7 +122,11 @@ const Employees: React.FC = () => {
 
     
       {/* Add Employee Modal */}
-      <AddEmployeeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAdd={handleAddEmployee} />
+      <AddEmployeeModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSuccess={handleAddEmployee} 
+      />
     </div>
   );
 };

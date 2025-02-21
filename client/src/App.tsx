@@ -6,13 +6,14 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import UserProfile from './pages/UserProfile';
-import Listings from './pages/Listings';
+import Listings from './pages/TalentInsights';
 import Pricing from './pages/Pricing';
 import Applicants from './pages/Applicants';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Employees from './pages/Employees';
 import AnalyticsPage from './pages/Analytics';
+import { Toaster } from 'react-hot-toast';
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
@@ -39,7 +40,7 @@ const AppContent = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/user-profile" element={<UserProfile />} />
-            <Route path="/listings" element={<Listings />} />
+            <Route path="/talent-insights" element={<Listings />} />
             <Route path="/applicants/:jobId" element={<Applicants />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/employees" element={<Employees />} />
@@ -53,11 +54,14 @@ const AppContent = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppContent />
-      </Router>
-    </AuthProvider>
+    <>
+      <Toaster position="top-right" />
+      <AuthProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </AuthProvider>
+    </>
   );
 }
 

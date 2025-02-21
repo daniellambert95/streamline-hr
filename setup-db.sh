@@ -18,6 +18,39 @@ echo "Setting up the database schema..."
 
 docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <<-EOSQL
 
+  -- Drop all tables in the correct order to handle dependencies
+  DROP TABLE IF EXISTS 
+    audit_logs,
+    time_off_requests,
+    notifications,
+    applicant_activity,
+    applicant_notes,
+    applicants,
+    job_interviewers,
+    job_listings,
+    manager_permissions,
+    employees,
+    managers,
+    departments,
+    teams,
+    companies,
+    users
+  CASCADE;
+
+  -- Drop the trigger function if it exists
+  DROP FUNCTION IF EXISTS update_applicant_last_modified CASCADE;
+
+  -- Create trigger function for last_modified first
+  CREATE OR REPLACE FUNCTION update_applicant_last_modified()
+  RETURNS TRIGGER AS \$\$
+  BEGIN
+    NEW.last_modified = NOW();
+    RETURN NEW;
+  END;
+  \$\$ LANGUAGE plpgsql;
+
+  -- Now proceed with table creation
+
   -- Users Table
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -26,14 +59,14 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'recruiter', 'employee')),
-    manager BOOLEAN DEFAULT FALSE,
+    status VARCHAR(50) DEFAULT 'active',
     subscription VARCHAR(50) NOT NULL DEFAULT 'basic',
     user_image_path VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- Companies Table
+  -- 2. Companies Table (Depends on users)
   CREATE TABLE IF NOT EXISTS companies (
     id SERIAL PRIMARY KEY,
     company_name VARCHAR(255) NOT NULL,
@@ -44,7 +77,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- Teams Table
+  -- 3. Teams Table (Depends on companies)
   CREATE TABLE IF NOT EXISTS teams (
     id SERIAL PRIMARY KEY,
     company_id INTEGER REFERENCES companies(id),
@@ -54,16 +87,13 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- Employees Table
+  -- 4. Employees Table (Depends on users, companies, teams)
   CREATE TABLE IF NOT EXISTS employees (
     id INTEGER PRIMARY KEY REFERENCES users(id),
     company_id INTEGER REFERENCES companies(id),
     team_id INTEGER REFERENCES teams(id),
     manager_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
     job_title VARCHAR(255),
-    first_name VARCHAR(100),
-    last_name VARCHAR(100),
-    email VARCHAR(255) UNIQUE NOT NULL,
     starting_date DATE,
     mobile_number VARCHAR(20),
     job_level VARCHAR(50),
@@ -71,10 +101,50 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     salary VARCHAR(50),
     bank_details TEXT,
     id_document VARCHAR(255),
-    created_at TIMESTAMP DEFAULT NOW()
+    employment_status VARCHAR(50) DEFAULT 'active',
+    employment_type VARCHAR(50) DEFAULT 'full_time',
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- Job Listings Table
+  -- 5. Managers Table (Depends on employees)
+  CREATE TABLE IF NOT EXISTS managers (
+    id INTEGER PRIMARY KEY REFERENCES employees(id),
+    department VARCHAR(100),
+    level VARCHAR(50) CHECK (level IN ('team_lead', 'department_head', 'executive')),
+    can_approve_time_off BOOLEAN DEFAULT TRUE,
+    can_hire BOOLEAN DEFAULT FALSE,
+    can_edit_salary BOOLEAN DEFAULT FALSE,
+    max_reports INTEGER DEFAULT 20,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- 6. Departments Table (Depends on companies, managers)
+  CREATE TABLE IF NOT EXISTS departments (
+    id SERIAL PRIMARY KEY,
+    company_id INTEGER REFERENCES companies(id),
+    name VARCHAR(100) NOT NULL,
+    head_id INTEGER REFERENCES managers(id),
+    budget DECIMAL(15,2),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Add department_id to employees after departments table is created
+  ALTER TABLE employees 
+  ADD COLUMN IF NOT EXISTS department_id INTEGER REFERENCES departments(id);
+
+  -- 7. Manager Permissions Table (Depends on managers)
+  CREATE TABLE IF NOT EXISTS manager_permissions (
+    id SERIAL PRIMARY KEY,
+    manager_id INTEGER REFERENCES managers(id) ON DELETE CASCADE,
+    permission_name VARCHAR(100),
+    granted_by INTEGER REFERENCES managers(id),
+    granted_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- 8. Job Listings Table (Depends on companies)
   CREATE TABLE IF NOT EXISTS job_listings (
     id SERIAL PRIMARY KEY,
     company_id INTEGER REFERENCES companies(id) ON DELETE CASCADE,
@@ -117,7 +187,8 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     linkedin_url VARCHAR(255),
     status VARCHAR(50) CHECK (status IN ('pending', 'under_review', 'interviewing', 'rejected', 'accepted')),
     applied_date TIMESTAMP DEFAULT NOW(),
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    last_modified TIMESTAMP DEFAULT NOW()
   );
 
   -- Applicant Notes Table
@@ -161,7 +232,32 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     old_data JSONB,
     new_data JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+  );
+
+  -- Create applicant_activity table to track all changes
+  CREATE TABLE IF NOT EXISTS applicant_activity (
+    id SERIAL PRIMARY KEY,
+    applicant_id INTEGER REFERENCES applicants(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    activity_type VARCHAR(50) CHECK (
+      activity_type IN (
+        'status_change',
+        'note_added',
+        'document_added',
+        'interview_scheduled',
+        'feedback_added'
+      )
+    ),
+    old_value TEXT,
+    new_value TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Create the trigger after all tables are created
+  CREATE TRIGGER applicant_last_modified
+    BEFORE UPDATE ON applicants
+    FOR EACH ROW
+    EXECUTE FUNCTION update_applicant_last_modified();
 
   -- Print success message
   SELECT 'Database setup complete!' AS status;

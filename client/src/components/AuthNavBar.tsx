@@ -36,8 +36,8 @@ function AuthNavbar() {
             <Link to="/profile" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
               Profile
             </Link>
-            <Link to="/listings" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
-              Job Listings
+            <Link to="talent-insights" className="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium">
+              Talent Insights
             </Link>
             <button
               onClick={handleLogout}
@@ -69,8 +69,8 @@ function AuthNavbar() {
             <Link to="/profile" className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium">
               Profile
             </Link>
-            <Link to="/listings" className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium">
-              Job Listings
+            <Link to="talent-insights" className="text-white hover:text-gray-200 block px-3 py-2 rounded-md text-base font-medium">
+              Talent Insights
             </Link>
             <button
               onClick={handleLogout}

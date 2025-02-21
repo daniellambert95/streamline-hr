@@ -6,6 +6,9 @@ import signupRoute from './routes/signupRoute';
 import profileRoute from './routes/profileRoute';
 import userProfileRoute from './routes/userProfileRoute';
 import loginRoute from './routes/loginRoute';
+import employeeRoute from './routes/employeeRoute';
+import teamRoute from './routes/teamRoute';
+import departmentRoute from './routes/departmentRoute';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
@@ -36,6 +39,9 @@ app.use('/api/users', signupRoute);
 app.use('/api/users', profileRoute);
 app.use('/api/users', userProfileRoute);
 app.use('/api/users', loginRoute);
+app.use('/api/employees', employeeRoute);
+app.use('/api/teams', teamRoute);
+app.use('/api/departments', departmentRoute);
 
 // Root endpoint
 app.get('/', (req, res) => {

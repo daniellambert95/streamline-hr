@@ -80,18 +80,17 @@ router.post('/', authenticateJWT, async (req, res) => {
 
     const companyId = companyResult.rows[0].id;
 
-    // Insert job listing
-    const { title, description, requirements, location, type, salary, status } = req.body;
+    // Insert job
+    const { title, description, location, type, salary, status } = req.body;
     const insertQuery = `
-      INSERT INTO job_listings (company_id, title, description, requirements, location, type, salary, status)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO job_listings (company_id, title, description, location, type, salary, status)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
       RETURNING id, title, created_at;
     `;
     const result = await pool.query(insertQuery, [
       companyId,
       title,
       description,
-      requirements,
       location,
       type,
       salary,
@@ -101,6 +100,170 @@ router.post('/', authenticateJWT, async (req, res) => {
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Error creating job listing:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Fetch all applicants for the company
+router.get('/applicants', authenticateJWT, async (req, res) => {
+  const user = (req as any).user;
+
+  try {
+    // Get the company_id for the authenticated user
+    const companyQuery = `
+      SELECT id FROM companies WHERE user_id = $1
+    `;
+    const companyResult = await pool.query(companyQuery, [user.id]);
+    
+    if (companyResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+
+    const companyId = companyResult.rows[0].id;
+
+    // Fetch applicants with job listing information
+    const query = `
+      SELECT 
+        a.id,
+        a.first_name,
+        a.last_name,
+        a.email,
+        a.resume_path,
+        a.cover_letter_path,
+        a.linkedin_url,
+        a.status,
+        a.applied_date,
+        a.job_listing_id,
+        j.title as job_title,
+        (
+          SELECT json_agg(json_build_object(
+            'id', an.id,
+            'content', an.content,
+            'created_at', an.created_at
+          ))
+          FROM applicant_notes an
+          WHERE an.applicant_id = a.id
+        ) as notes
+      FROM applicants a
+      JOIN job_listings j ON a.job_listing_id = j.id
+      WHERE a.company_id = $1
+      ORDER BY a.applied_date DESC
+    `;
+
+    const { rows } = await pool.query(query, [companyId]);
+    
+    // Format the response
+    const formattedApplicants = rows.map(applicant => ({
+      id: applicant.id,
+      first_name: applicant.first_name,
+      last_name: applicant.last_name,
+      email: applicant.email,
+      resume_path: applicant.resume_path,
+      cover_letter_path: applicant.cover_letter_path,
+      linkedin_url: applicant.linkedin_url,
+      status: applicant.status,
+      applied_date: applicant.applied_date,
+      job_listing_id: applicant.job_listing_id,
+      job_title: applicant.job_title,
+      notes: applicant.notes || []
+    }));
+
+    res.status(200).json(formattedApplicants);
+  } catch (error) {
+    console.error('Error fetching applicants:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get a single applicant's details
+router.get('/applicants/:id', authenticateJWT, async (req, res) => {
+  const user = (req as any).user;
+  const applicantId = req.params.id;
+
+  try {
+    // Verify the applicant belongs to the user's company
+    const query = `
+      SELECT 
+        a.*,
+        j.title as job_title,
+        (
+          SELECT json_agg(json_build_object(
+            'id', an.id,
+            'content', an.content,
+            'created_at', an.created_at
+          ))
+          FROM applicant_notes an
+          WHERE an.applicant_id = a.id
+        ) as notes
+      FROM applicants a
+      JOIN job_listings j ON a.job_listing_id = j.id
+      JOIN companies c ON a.company_id = c.id
+      WHERE a.id = $1 AND c.user_id = $2
+    `;
+
+    const { rows } = await pool.query(query, [applicantId, user.id]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Applicant not found' });
+    }
+
+    const applicant = rows[0];
+    res.status(200).json({
+      id: applicant.id,
+      first_name: applicant.first_name,
+      last_name: applicant.last_name,
+      email: applicant.email,
+      resume_path: applicant.resume_path,
+      cover_letter_path: applicant.cover_letter_path,
+      linkedin_url: applicant.linkedin_url,
+      status: applicant.status,
+      applied_date: applicant.applied_date,
+      job_listing_id: applicant.job_listing_id,
+      job_title: applicant.job_title,
+      notes: applicant.notes || []
+    });
+  } catch (error) {
+    console.error('Error fetching applicant:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get recent applicant activity
+router.get('/applicant-activity', authenticateJWT, async (req, res) => {
+  const user = (req as any).user;
+
+  try {
+    const companyQuery = `SELECT id FROM companies WHERE user_id = $1`;
+    const companyResult = await pool.query(companyQuery, [user.id]);
+    
+    if (companyResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+
+    const companyId = companyResult.rows[0].id;
+
+    const query = `
+      SELECT 
+        aa.id,
+        aa.applicant_id,
+        aa.activity_type,
+        aa.old_value,
+        aa.new_value,
+        aa.created_at,
+        CONCAT(a.first_name, ' ', a.last_name) as applicant_name,
+        j.title as job_title
+      FROM applicant_activity aa
+      JOIN applicants a ON aa.applicant_id = a.id
+      JOIN job_listings j ON a.job_listing_id = j.id
+      WHERE a.company_id = $1
+      ORDER BY aa.created_at DESC
+      LIMIT 20
+    `;
+
+    const { rows } = await pool.query(query, [companyId]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching applicant activity:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

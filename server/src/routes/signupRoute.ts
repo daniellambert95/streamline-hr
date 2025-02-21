@@ -11,11 +11,11 @@ const router = Router();
 // Signup (Create a new user)
 router.post('/signup', async (req, res) => {
   console.log('Signup request received:', req.body);
-  const { email, password, company_name, subscription, first_name, last_name } = req.body;
+  const { email, password, company_name, subscription = 'basic' } = req.body;
 
   // Validate required fields
-  if (!email || !password || !company_name || !first_name || !last_name) {
-    return res.status(400).json({ error: 'All fields are required' });
+  if (!email || !password || !company_name) {
+    return res.status(400).json({ error: 'Email, password, and company name are required' });
   }
 
   try {
@@ -49,11 +49,11 @@ router.post('/signup', async (req, res) => {
 
       // Insert user
       const userQuery = `
-        INSERT INTO users (email, password, subscription, role, first_name, last_name)
-        VALUES ($1, $2, $3, 'admin', $4, $5)
-        RETURNING id, email, subscription, first_name, last_name, created_at;
+        INSERT INTO users (email, password, subscription, role)
+        VALUES ($1, $2, $3, 'admin')
+        RETURNING id, email, subscription, created_at;
       `;
-      const userValues = [email, hashedPassword, subscription, first_name, last_name];
+      const userValues = [email, hashedPassword, subscription];
       const userResult = await client.query(userQuery, userValues);
       const user = userResult.rows[0];
 
@@ -73,8 +73,6 @@ router.post('/signup', async (req, res) => {
           id: user.id,
           email: user.email,
           subscription: user.subscription,
-          first_name: user.first_name,
-          last_name: user.last_name,
           created_at: user.created_at,
         },
         company: companyResult.rows[0],

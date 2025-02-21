@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 interface NewJobListingModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose }) => {
-  const [form, setForm] = useState({
+const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose, onSuccess }) => {
+  const initialFormState = {
     title: '',
     description: '',
-    requirements: '',
     location: '',
-    type: 'full-time', // Default value
+    type: 'full-time' as const,
     salary: '',
-    status: 'open', // Default value
-  });
+    status: 'open' as const,
+  };
+
+  const [form, setForm] = useState(initialFormState);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,7 +25,7 @@ const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token'); // Assuming JWT is stored in localStorage
+    const token = localStorage.getItem('token');
 
     try {
       const response = await fetch('http://localhost:3000/api/jobs', {
@@ -35,58 +38,46 @@ const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose
       });
 
       if (response.ok) {
-        alert('Job listing created successfully!');
-        onClose(); // Close the modal
+        toast.success('Job listing created successfully!');
+        setForm(initialFormState);
+        onSuccess();
+        onClose();
       } else {
         const error = await response.json();
-        alert(`Error: ${error.message || 'Failed to create job listing.'}`);
+        toast.error(error.message || 'Failed to create job listing.');
       }
     } catch (err) {
       console.error('Error submitting form:', err);
-      alert('An error occurred. Please try again.');
+      toast.error('An error occurred. Please try again.');
     }
   };
 
   if (!isOpen) return null; // Don't render if modal is not open
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-      onClick={onClose}
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={onClose}>
+    <div 
+      className="bg-white rounded-lg shadow-lg w-full max-w-lg max-h-[90vh] flex flex-col m-4" 
+      onClick={(e) => e.stopPropagation()}
     >
-      <div
-        className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-          onClick={onClose}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <h2 className="text-2xl font-semibold mb-4">Create a New Job Listing</h2>
+      {/* Fixed Header */}
+      <div className="p-6 border-b">
+        <h2 className="text-xl font-bold text-gray-700">Create New Job Listing</h2>
+      </div>
+
+      {/* Scrollable Form Area */}
+      <div className="p-6 overflow-y-auto flex-1">
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Existing form fields with consistent styling */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-              Job Title
-            </label>
+            <label className="block text-sm font-medium text-gray-600">Job Title</label>
             <input
               type="text"
-              id="title"
               name="title"
               value={form.title}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200"
+              className="mt-1 w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -98,20 +89,6 @@ const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose
               id="description"
               name="description"
               value={form.description}
-              onChange={handleChange}
-              rows={4}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200"
-            ></textarea>
-          </div>
-
-          <div>
-            <label htmlFor="requirements" className="block text-sm font-medium text-gray-700">
-              Requirements
-            </label>
-            <textarea
-              id="requirements"
-              name="requirements"
-              value={form.requirements}
               onChange={handleChange}
               rows={4}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-indigo-200"
@@ -165,16 +142,27 @@ const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition"
-          >
-            Submit
-          </button>
+          {/* Footer Buttons */}
+          <div className="pt-6 border-t">
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition mb-2"
+            >
+              Create Job Listing
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full text-gray-500 text-sm hover:text-gray-700"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default NewJobListingModal;
