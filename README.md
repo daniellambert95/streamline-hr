@@ -13,7 +13,6 @@ Streamline HR is a comprehensive Human Resource Management System (HRMS) built w
 - 👔 Job Listings Management
 - 📈 Performance Metrics
 - 🔐 Role-based Access Control
-- 🏢 Multi-company Support
 
 ## Tech Stack
 
@@ -160,26 +159,55 @@ streamline-hr/
 
 - POST `/api/auth/login` - User login
 - POST `/api/auth/signup` - User registration
+- POST `/api/auth/logout` - User logout
 
-### User Management
+### User Profile
 
 - GET `/api/profile` - Get user profile
 - PUT `/api/profile/update-profile` - Update user profile
+- GET `/api/user-profile` - Get employee profile details
 
 ### Employee Management
 
-- GET `/api/employees` - List employees
+- GET `/api/employees` - List all employees
 - POST `/api/employees/create` - Create new employee
+- PUT `/api/employees/:id` - Update employee
+- DELETE `/api/employees/:id` - Delete employee
+- GET `/api/employees/:id` - Get employee details
 
-### Talent Insights
+### Company Management
 
+- GET `/api/companies` - List companies
+- POST `/api/companies/create` - Create new company
+- PUT `/api/companies/:id` - Update company
+- GET `/api/companies/:id` - Get company details
+
+### Team Management
+
+- GET `/api/teams` - List teams
+- POST `/api/teams/create` - Create new team
+- PUT `/api/teams/:id` - Update team
+- DELETE `/api/teams/:id` - Delete team
+
+### Recruitment
+
+- GET `/api/job-listings` - List job listings
+- POST `/api/job-listings/create` - Create job listing
+- PUT `/api/job-listings/:id` - Update job listing
+- DELETE `/api/job-listings/:id` - Delete job listing
+- GET `/api/job-listings/:id` - Get job listing details
+
+### Applicants
+
+- GET `/api/applicants` - List applicants
+- POST `/api/applicants/create` - Create applicant
+- PUT `/api/applicants/:id` - Update applicant status
+- GET `/api/applicants/:id` - Get applicant details
 - GET `/api/applicants/activity` - Get recent activity
 - GET `/api/applicants/stats` - Get application statistics
 
-## Contributing
+### Analytics
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+- GET `/api/analytics/vacancy-trends` - Get vacancy trends
+- GET `/api/analytics/hiring-stats` - Get hiring statistics
+- GET `/api/analytics/department-stats` - Get department statistics
