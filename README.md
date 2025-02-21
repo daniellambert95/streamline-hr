@@ -161,19 +161,14 @@ streamline-hr/
 - POST `/api/auth/signup` - User registration
 - POST `/api/auth/logout` - User logout
 
-### User Profile
-
-- GET `/api/profile` - Get user profile
-- PUT `/api/profile/update-profile` - Update user profile
-- GET `/api/user-profile` - Get employee profile details
-
 ### Employee Management
 
 - GET `/api/employees` - List all employees
 - POST `/api/employees/create` - Create new employee
-- PUT `/api/employees/:id` - Update employee
+- PUT `/api/employees/:id` - Update employee/profile
 - DELETE `/api/employees/:id` - Delete employee
 - GET `/api/employees/:id` - Get employee details
+- GET `/api/employees/profile` - Get current user's profile
 
 ### Company Management
 
