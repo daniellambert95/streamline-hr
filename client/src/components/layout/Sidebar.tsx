@@ -1,16 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { FaHome, FaUsers, FaBriefcase, FaUsersCog, FaBell, FaArchive, FaFileAlt, FaChartBar, FaComments, FaSignOutAlt } from 'react-icons/fa';
 
 const AuthSidebar: React.FC = () => {
-  const { setIsAuthenticated } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user_id');
-    setIsAuthenticated(false); // Update auth state
-    window.dispatchEvent(new Event("storage")); // Force storage event to trigger updates across the app
+    logout();
     navigate('/');
   };
 
@@ -26,7 +23,7 @@ const AuthSidebar: React.FC = () => {
         <ul>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaHome className="mr-3" />
-            <Link to="/profile">Dashboard</Link>
+            <Link to="/dashboard">Dashboard</Link>
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaUsers className="mr-3" />

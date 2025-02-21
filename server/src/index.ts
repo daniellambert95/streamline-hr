@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import uploadRoutes from './routes/uploadRoute';
-import jobsRoutes from './routes/jobsRoute';
+import jobsRoutes from './routes/jobRoutes';
 import signupRoute from './routes/signupRoute';
 import profileRoute from './routes/profileRoute';
 import userProfileRoute from './routes/userProfileRoute';
@@ -9,6 +9,7 @@ import loginRoute from './routes/loginRoute';
 import employeeRoute from './routes/employeeRoute';
 import teamRoute from './routes/teamRoute';
 import departmentRoute from './routes/departmentRoute';
+import applicantRoutes from './routes/applicantRoutes';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
@@ -34,14 +35,15 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Routes
 app.use('/api/uploads', uploadRoutes);
-app.use('/api/jobs', jobsRoutes);
 app.use('/api/users', signupRoute);
-app.use('/api/users', profileRoute);
-app.use('/api/users', userProfileRoute);
 app.use('/api/users', loginRoute);
+app.use('/api/users/profile', profileRoute);
+app.use('/api/users/user-profile', userProfileRoute);
+app.use('/api/jobs', jobsRoutes);
 app.use('/api/employees', employeeRoute);
 app.use('/api/teams', teamRoute);
 app.use('/api/departments', departmentRoute);
+app.use('/api/applicants', applicantRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

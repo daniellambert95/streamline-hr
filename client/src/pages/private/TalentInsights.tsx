@@ -1,51 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import NewJobListingModal from '../components/NewJobListingModal';
 import { toast } from "react-hot-toast";
-import VacancyTrends from '../components/VacancyTrends';
-
-interface JobListing {
-  id: number;
-  title: string;
-  location: string;
-  type: 'full-time' | 'part-time' | 'contract';
-  status: 'open' | 'closed' | 'on-hold';
-  created_at: string;
-  candidates_count: number;
-  salary: string;
-}
-
-interface ApplicantNote {
-  id: number;
-  content: string;
-  created_at: string;
-}
-
-interface Applicant {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  resume_path: string;
-  cover_letter_path: string;
-  linkedin_url: string;
-  status: 'pending' | 'under_review' | 'interviewing' | 'accepted' | 'rejected';
-  applied_date: string;
-  job_listing_id: number;
-  job_title: string;
-  notes: ApplicantNote[];
-}
-
-interface ApplicantActivity {
-  id: number;
-  applicant_id: number;
-  activity_type: string;
-  old_value: string;
-  new_value: string;
-  created_at: string;
-  applicant_name: string;
-  job_title: string;
-}
+import api from "../../services/api";
+import handleApiError from "../../utils/handleApiError";
+import { JobListing } from "../../types/job";
+import { Applicant, ApplicantActivity } from "../../types/applicant";
+import NewJobListingModal from '../../components/forms/NewJobListingForm';
+import VacancyTrends from '../../components/analytics/VacancyTrends';
 
 const TalentInsights: React.FC = () => {
   const navigate = useNavigate();
@@ -56,74 +17,29 @@ const TalentInsights: React.FC = () => {
   const [recentActivity, setRecentActivity] = useState<ApplicantActivity[]>([]);
 
   const fetchListings = async () => {
-    const token = localStorage.getItem('token');
-    
     try {
-      const response = await fetch('http://localhost:3000/api/jobs', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch job listings');
-      }
-
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setListings(data);
-      } else {
-        throw new Error('Invalid response format');
-      }
+      const { data } = await api.get('/api/jobs');
+      setListings(data);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch job listings';
-      console.error('Error fetching job listings:', error);
-      toast.error(errorMessage);
+      handleApiError(error);
     }
   };
 
   const fetchApplicants = async () => {
-    const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:3000/api/jobs/applicants', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch applicants');
-      }
-
-      const data = await response.json();
-      setApplicants(data);
+      const response = await api.get('/api/applicants');
+      setApplicants(response.data);
     } catch (error) {
-      console.error('Error fetching applicants:', error);
-      toast.error('Failed to load applicants');
+      handleApiError(error);
     }
   };
 
   const fetchRecentActivity = async () => {
-    const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:3000/api/jobs/applicant-activity', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch recent activity');
-      }
-
-      const data = await response.json();
+      const { data } = await api.get('/api/applicants/activity');
       setRecentActivity(data);
     } catch (error) {
-      console.error('Error fetching recent activity:', error);
-      toast.error('Failed to load recent activity');
+      handleApiError(error);
     }
   };
 
@@ -469,15 +385,19 @@ const TalentInsights: React.FC = () => {
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
               <h3 className="text-lg font-semibold mb-6">Recent Activity</h3>
               <div className="space-y-4">
-                {recentActivity.slice(0, 5).map(activity => (
+                {recentActivity.map(activity => (
                   <div key={activity.id} className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg transition-colors duration-150">
                     <div>
                       <p className="font-medium text-gray-900">{activity.applicant_name}</p>
                       <p className="text-sm text-gray-500">{activity.job_title}</p>
                       <p className="text-xs text-gray-400 mt-1">
                         {activity.activity_type === 'status_change' 
-                          ? `Status changed from ${activity.old_value} to ${activity.new_value}`
-                          : activity.activity_type.replace('_', ' ')}
+                          ? `Status changed from ${activity.old_value || 'none'} to ${activity.new_value}`
+                          : activity.activity_type === 'note_added'
+                          ? `Note added: ${activity.new_value}`
+                          : activity.activity_type === 'interview_scheduled'
+                          ? `Interview scheduled for ${new Date(activity.new_value).toLocaleDateString()}`
+                          : activity.activity_type.split('_').join(' ')}
                       </p>
                     </div>
                     <span className="text-xs text-gray-500">

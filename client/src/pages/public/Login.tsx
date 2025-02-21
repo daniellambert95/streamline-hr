@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
+import handleApiError from '../../utils/handleApiError';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useAuth();
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,35 +16,17 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-
-      if (response.ok) {
-        const { token, user } = await response.json();
-        console.log('Login successful:', { token, user });
-
-        if (!token || !user?.id) {
-          console.error('Missing token or user ID in response:', { token, user });
-          alert('Invalid server response. Please try again.');
-          return;
-        }
-
-        localStorage.setItem('token', token);
-        localStorage.setItem('user_id', user.id.toString());
-
-        setIsAuthenticated(true);
-        navigate('/profile');
-      } else {
-        const errorText = await response.text();
-        console.error('Login failed with response:', errorText);
-        alert('Login failed! Please check your credentials.');
+      const { data } = await api.post('/api/users/login', form);
+      const { token, user } = data;
+      
+      if (!token || !user?.id) {
+        throw new Error('Invalid server response');
       }
+
+      login(token, user);
+      navigate('/dashboard');
     } catch (error) {
-      console.error('Error during login:', error);
-      alert('An error occurred. Please try again.');
+      handleApiError(error);
     }
   };
 

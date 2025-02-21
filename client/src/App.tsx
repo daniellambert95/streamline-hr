@@ -1,22 +1,27 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
-import Navbar from './components/Navbar';
-// import AuthNavbar from './components/AuthNavBar';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import Sidebar from './components/layout/Sidebar';
+import Navbar from './components/layout/Navbar';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Home from './pages/Home';
-import Profile from './pages/Profile';
-import UserProfile from './pages/UserProfile';
-import Listings from './pages/TalentInsights';
-import Pricing from './pages/Pricing';
-import Applicants from './pages/Applicants';
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import Employees from './pages/Employees';
-import AnalyticsPage from './pages/Analytics';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import Home from './pages/public/Home';
+import Dashboard from './pages/private/Dashboard';
+import UserProfile from './pages/private/UserProfile';
+import TalentInsights from './pages/private/TalentInsights';
+import Pricing from './pages/public/Pricing';
+import Applicants from './pages/private/Applicants';
+import Signup from './pages/public/Signup';
+import Login from './pages/public/Login';
+import Employees from './pages/private/Employees';
+import AnalyticsPage from './pages/private/Analytics';
 import { Toaster } from 'react-hot-toast';
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  
+  // Define public routes
+  const publicRoutes = ['/', '/login', '/signup', '/pricing'];
+  const isPublicRoute = publicRoutes.includes(location.pathname);
 
   return (
     <div className="flex">
@@ -29,22 +34,60 @@ const AppContent = () => {
           isAuthenticated ? 'ml-64' : ''
         } p-6 bg-gray-100 min-h-screen`}
       >
-        {/* Navbar for unauthenticated users */}
-        {!isAuthenticated && <Navbar />}
+        {/* Navbar for public routes */}
+        {isPublicRoute && <Navbar />}
 
         {/* Page Content */}
-        <main className={isAuthenticated ? 'pt-6' : 'pt-16'}>
+        <main className={isPublicRoute ? 'pt-16' : 'pt-6'}>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/user-profile" element={<UserProfile />} />
-            <Route path="/talent-insights" element={<Listings />} />
-            <Route path="/applicants/:jobId" element={<Applicants />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/employees" element={<Employees />} />
-            <Route path="/analytics" element={<AnalyticsPage />} />
+
+            {/* Protected Routes */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/user-profile" element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/talent-insights" element={
+              <ProtectedRoute allowedRoles={['admin', 'recruiter']}>
+                <TalentInsights />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/applicants/:jobId" element={
+              <ProtectedRoute allowedRoles={['admin', 'recruiter']}>
+                <Applicants />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/employees" element={
+              <ProtectedRoute allowedRoles={['admin', 'recruiter']}>
+                <Employees />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/analytics" element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AnalyticsPage />
+              </ProtectedRoute>
+            } />
           </Routes>
         </main>
       </div>

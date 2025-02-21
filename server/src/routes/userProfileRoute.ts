@@ -1,5 +1,5 @@
 import { Router } from "express";
-import pool from "../db"; // Database connection
+import pool from "../config/db"; // Database connection
 import { authenticateJWT } from "../middleware/authMiddleware"; // Authentication middleware
 
 const router = Router();

@@ -1,52 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { generateTemporaryPassword } from '../utils/passwords';
+import { employeeService } from '../../services/api/endpoints/employees';
+import { teamService } from '../../services/api/endpoints/teams';
+import { departmentService } from '../../services/api/endpoints/departments';
+import { managerService } from '../../services/api/endpoints/managers';
+import { EmployeeFormData } from '../../types/employee';
+import { Team } from '../../types/team';
+import { Department } from '../../types/department';
+import { Manager } from '../../types/manager';
+import { generateTemporaryPassword } from '../../utils/passwords';
+import handleApiError from "../../utils/handleApiError";
+import api from "../../services/api";
 
-interface AddEmployeeModalProps {
+interface AddEmployeeFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-interface EmployeeFormData {
-  // User data
-  email: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  role: 'employee' | 'recruiter' | 'admin' | null;
-  
-  // Employee data
-  job_title: string;
-  team_id: number;
-  department_id: number;
-  manager_id: number | null;
-  starting_date: string;
-  mobile_number: string;
-  job_level: string;
-  salary: string;
-  employment_type: 'full_time' | 'part_time' | 'contract';
-  is_manager: boolean;
-}
-
-interface Department {
-  id: number;
-  name: string;
-}
-
-interface Team {
-  id: number;
-  name: string;
-}
-
-interface Manager {
-  id: number;
-  first_name: string;
-  last_name: string;
-  job_title: string;
-}
-
-export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({ isOpen, onClose, onSuccess }) => {
+export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose, onSuccess }) => {
   const initialFormData: EmployeeFormData = {
     email: '',
     password: generateTemporaryPassword(),
@@ -81,39 +53,18 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({ isOpen, onCl
   }, []);
 
   const fetchTeamsAndDepartments = async () => {
-    const token = localStorage.getItem('token');
-    
     try {
-      const [teamsRes, deptsRes, managersRes] = await Promise.all([
-        fetch('http://localhost:3000/api/teams', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }),
-        fetch('http://localhost:3000/api/departments', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }),
-        fetch('http://localhost:3000/api/employees/managers', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-      ]);
-
       const [teamsData, deptsData, managersData] = await Promise.all([
-        teamsRes.json(),
-        deptsRes.json(),
-        managersRes.json()
+        teamService.getAll(),
+        departmentService.getAll(),
+        managerService.getAll()
       ]);
 
-      setTeams(teamsData);
-      setDepartments(deptsData);
-      setManagers(managersData);
+      setTeams(teamsData.data);
+      setDepartments(deptsData.data);
+      setManagers(managersData.data);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error('Failed to load form data');
+      handleApiError(error);
     }
   };
 
@@ -121,32 +72,14 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({ isOpen, onCl
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:3000/api/employees/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create employee');
-      }
-
-      const data = await response.json();
+      await employeeService.create(formData);
       toast.success('Employee added successfully!');
       onSuccess();
       onClose();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-      console.error('Error creating employee:', err);
-      setError(errorMessage);
-      toast.error(errorMessage);
+    } catch (error) {
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
@@ -158,33 +91,15 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({ isOpen, onCl
       return;
     }
 
-    const token = localStorage.getItem('token');
-
     try {
-      const response = await fetch('http://localhost:3000/api/teams', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ name: newTeamName })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to create team');
-      }
-
-      const data = await response.json();
+      const { data } = await api.post('/api/teams', { name: newTeamName });
       setTeams(prev => [...prev, data]);
       setFormData(prev => ({ ...prev, team_id: data.id }));
       setNewTeamName('');
       setIsAddingNewTeam(false);
-      
       toast.success('Team created successfully');
     } catch (error) {
-      console.error('Error creating team:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to create team');
+      handleApiError(error);
     }
   };
 
@@ -443,4 +358,4 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({ isOpen, onCl
   );
 };
 
-export default AddEmployeeModal;
+export default AddEmployeeForm;

@@ -5,6 +5,7 @@ WORKDIR /app
 COPY client/package*.json ./
 
 RUN npm install
+RUN npm install axios @types/axios
 
 COPY client/ .
 

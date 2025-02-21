@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import pool from '../db';
+import pool from '../config/db';
 import bcrypt from '@node-rs/bcrypt';
 import dotenv from 'dotenv';
 import loginRouter from './loginRoute';

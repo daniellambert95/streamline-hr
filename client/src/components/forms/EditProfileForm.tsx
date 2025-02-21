@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
+import api from "../../services/api";
+import handleApiError from "../../utils/handleApiError";
+import { AuthUser } from "../../types/user";
 
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userData: any;
-  onUpdate: (updatedData: any) => void;
+  userData: AuthUser;
+  onUpdate: (updatedData: AuthUser) => void;
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({
@@ -49,29 +53,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-
     try {
-      const response = await fetch("http://localhost:3000/api/users/update-profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(form),
-      });
-
-      if (response.ok) {
-        const updatedData = await response.json();
-        onUpdate(updatedData);
-        onClose();
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.message || "Failed to update profile."}`);
-      }
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      alert("An error occurred. Please try again.");
+      const { data } = await api.put('/api/user-profile/update-profile', form);
+      onUpdate(data);
+      onClose();
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      handleApiError(error);
     }
   };
 

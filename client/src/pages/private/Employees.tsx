@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import AddEmployeeModal from '../components/AddEmployeeModal';
 import { toast } from "react-hot-toast";
-
-interface Employee {
-  id: number;
-  email: string;
-  first_name: string;
-  last_name: string;
-  job_title?: string;
-  team_name?: string;
-  manager_name?: string;
-  starting_date: string;
-}
+import { employeeService } from '../../services/api/endpoints/employees';
+import { Employee } from '../../types/employee';
+import AddEmployeeForm from '../../components/employees/AddEmployeeForm';
 
 const Employees: React.FC = () => {
   const navigate = useNavigate();
@@ -20,26 +11,9 @@ const Employees: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
 
   const fetchEmployees = async () => {
-    const token = localStorage.getItem('token');
-    
     try {
-      const response = await fetch('http://localhost:3000/api/employees', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch employees');
-      }
-
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setEmployees(data);
-      } else {
-        throw new Error('Invalid response format');
-      }
+      const response = await employeeService.getAll();
+      setEmployees(response.data);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch employees';
       console.error('Error fetching employees:', error);
@@ -122,7 +96,7 @@ const Employees: React.FC = () => {
 
     
       {/* Add Employee Modal */}
-      <AddEmployeeModal 
+      <AddEmployeeForm 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onSuccess={handleAddEmployee} 

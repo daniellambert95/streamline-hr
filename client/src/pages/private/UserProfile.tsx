@@ -1,50 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import danielImage from "../assets/daniel.png";
-import EditProfileModal from "../components/EditProfileModal";
+import { useAuth } from "../../context/AuthContext";
+import api from "../../services/api";
+import handleApiError from "../../utils/handleApiError";
+import { AuthUser } from "../../types/user";
+import danielImage from "../../assets/daniel.png";
+import EditProfileForm from "../../components/forms/EditProfileForm";
+import { toast } from "react-hot-toast";
 
 const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("personal"); // Manage tabs
-  const [user, setUser] = useState<any>(null);
-  const { setIsAuthenticated } = useAuth();
-  const navigate = useNavigate();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { user, login } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setIsAuthenticated(false);
+    if (!user) {
       navigate("/login");
-    } else {
-      fetch("http://localhost:3000/api/users/user-profile", {
-        method: "GET",
-        headers: { 
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-      })
-        .then((res) => {
-          if (!res.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return res.json();
-        })
-        .then((data) => {
-          console.log('Received profile data:', data);
-          setUser(data);
-        })
-        .catch((error) => {
-          console.error('Error fetching profile:', error);
-          setIsAuthenticated(false);
-          navigate("/login");
-        });
     }
-  }, [navigate, setIsAuthenticated]);
+  }, [user, navigate]);
 
-  const handleProfileUpdate = (updatedData: any) => {
-    setUser(updatedData);
+  const handleProfileUpdate = async (updatedData: AuthUser) => {
+    try {
+      const { data } = await api.put('/api/profile/update-profile', updatedData);
+      login(localStorage.getItem('token')!, data);
+      toast.success('Profile updated successfully');
+    } catch (error) {
+      handleApiError(error);
+    }
   };
 
   if (!user) {
@@ -192,7 +175,7 @@ const UserProfile: React.FC = () => {
         </button>
       </div>
 
-      <EditProfileModal
+      <EditProfileForm
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         userData={user}

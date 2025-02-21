@@ -30,7 +30,7 @@ const Signup = () => {
       });
 
       if (response.ok) {
-        alert("Signup successful! Redirecting to login...");
+        // alert("Signup successful! Redirecting to login...");
         navigate("/login");
       } else {
         const error = await response.json();

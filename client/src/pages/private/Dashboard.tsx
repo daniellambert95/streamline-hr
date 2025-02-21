@@ -1,48 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import danielImage from "../assets/daniel.png";
-import VacancyTrends from "../components/VacancyTrends";
-import CalanderWidget from "../components/CalanderWidget";
+import { useAuth } from "../../context/AuthContext";
+import danielImage from "../../assets/daniel.png";
+import VacancyTrends from "../../components/analytics/VacancyTrends";
+import CalanderWidget from "../../components/profile/CalanderWidget";
 
-const Profile: React.FC = () => {
-  const [user, setUser] = useState<{
-    first_name: string;
-    last_name: string;
-    email: string;
-    company_name: string;
-  } | null>(null);
-
-  const { setIsAuthenticated } = useAuth();
+const Dashboard: React.FC = () => {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      setIsAuthenticated(false);
+    if (!user) {
       navigate("/login");
-    } else {
-      fetch("http://localhost:3000/api/users/profile", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch user details");
-          }
-          return response.json();
-        })
-        .then((data) => setUser(data))
-        .catch((error) => {
-          console.error(error);
-          setIsAuthenticated(false);
-          navigate("/login");
-        });
     }
-  }, [navigate, setIsAuthenticated]);
+  }, [user, navigate]);
 
   if (!user) {
     return (
@@ -223,4 +194,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile;
+export default Dashboard;

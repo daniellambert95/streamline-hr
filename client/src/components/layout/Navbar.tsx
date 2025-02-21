@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../assets/Streamline-hr_logo.png';
+import logo from "../../assets/Streamline-hr_logo.png";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
