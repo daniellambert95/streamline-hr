@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import api from '../../services/api';
 import handleApiError from '../../utils/handleApiError';
+import { authService } from '../../services/api/endpoints/auth';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -16,7 +16,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data } = await api.post('/api/users/login', form);
+      const { data } = await authService.login(form);
       const { token, user } = data;
       
       if (!token || !user?.id) {

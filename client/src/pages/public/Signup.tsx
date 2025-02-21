@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { normalizeEmail } from '../../utils/emailUtils';
+import { authService } from '../../services/api/endpoints/auth';
+import { toast } from 'react-hot-toast';
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -29,22 +31,12 @@ const Signup = () => {
         email: normalizeEmail(form.email)
       };
 
-      const response = await fetch("http://localhost:3000/api/users/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(normalizedForm),
-      });
-
-      if (response.ok) {
-        // alert("Signup successful! Redirecting to login...");
-        navigate("/login");
-      } else {
-        const error = await response.json();
-        alert(`Signup failed: ${error.error || "Unknown error"}`);
-      }
-    } catch (err) {
-      console.error("Error during signup:", err);
-      alert("Signup failed: Unable to connect to the server.");
+      await authService.signup(normalizedForm);
+      navigate("/login");
+      toast.success("Signup successful! Please login.");
+    } catch (error) {
+      console.error("Error during signup:", error);
+      toast.error("Signup failed. Please try again.");
     }
   };
 

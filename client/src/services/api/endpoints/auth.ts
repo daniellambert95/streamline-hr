@@ -1,5 +1,5 @@
-import api from '.';
-import { LoginForm, SignupForm } from '../../types/auth';
+import api from '../index';
+import { LoginForm, SignupForm } from '../../../types/auth';
 
 export const authService = {
   login: (data: LoginForm) => 
