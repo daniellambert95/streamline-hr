@@ -12,17 +12,18 @@ const router = Router();
 router.post('/signup', async (req, res) => {
   console.log('Signup request received:', req.body);
   const { email, password, company_name, subscription = 'basic' } = req.body;
+  const normalizedEmail = email.toLowerCase().trim(); // Normalize email
 
   // Validate required fields
-  if (!email || !password || !company_name) {
+  if (!normalizedEmail || !password || !company_name) {
     return res.status(400).json({ error: 'Email, password, and company name are required' });
   }
 
   try {
-    // Check if email already exists
+    // Check if email already exists (case-insensitive)
     const existingUser = await pool.query(
-      'SELECT id FROM users WHERE email = $1',
-      [email]
+      'SELECT id FROM users WHERE LOWER(email) = LOWER($1)',
+      [normalizedEmail]
     );
 
     if (existingUser.rows.length > 0) {
@@ -53,7 +54,7 @@ router.post('/signup', async (req, res) => {
         VALUES ($1, $2, $3, 'admin')
         RETURNING id, email, subscription, created_at;
       `;
-      const userValues = [email, hashedPassword, subscription];
+      const userValues = [normalizedEmail, hashedPassword, subscription];
       const userResult = await client.query(userQuery, userValues);
       const user = userResult.rows[0];
 

@@ -28,7 +28,7 @@ const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose
     const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:3000/api/jobs', {
+      const response = await fetch('http://localhost:3000/api/job-listings/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -176,4 +176,84 @@ router.get('/managers', authenticateJWT, async (req, res) => {
   }
 });
 
+// Update employee
+router.put('/:id', authenticateJWT, async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  const client = await pool.connect();
+  
+  try {
+    await client.query('BEGIN');
+
+    // Update users table
+    await client.query(`
+      UPDATE users 
+      SET first_name = $1, last_name = $2, email = $3
+      WHERE id = $4
+    `, [updates.first_name, updates.last_name, updates.email, id]);
+
+    // Update employee record
+    await client.query(`
+      UPDATE employees 
+      SET 
+        job_title = $1,
+        mobile_number = $2,
+        job_level = $3,
+        salary = $4,
+        holiday_time = $5,
+        starting_date = $6
+      WHERE id = $7
+    `, [
+      updates.job_title,
+      updates.mobile_number,
+      updates.job_level,
+      updates.salary,
+      updates.holiday_time,
+      updates.starting_date,
+      id
+    ]);
+
+    // Fetch updated profile data
+    const result = await client.query(`
+      SELECT 
+        u.id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        u.role,
+        e.job_title,
+        e.starting_date,
+        e.mobile_number,
+        e.job_level,
+        e.holiday_time,
+        e.salary,
+        e.bank_details,
+        e.id_document,
+        c.company_name,
+        c.industry,
+        c.address,
+        t.name as team_name,
+        CONCAT(m.first_name, ' ', m.last_name) as manager_name
+      FROM users u
+      LEFT JOIN employees e ON u.id = e.id
+      LEFT JOIN companies c ON e.company_id = c.id
+      LEFT JOIN teams t ON e.team_id = t.id
+      LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
+      LEFT JOIN users m ON manager_e.id = m.id
+      WHERE u.id = $1
+    `, [id]);
+
+    await client.query('COMMIT');
+    res.json(result.rows[0]);
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error updating employee:', error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Failed to update employee'
+    });
+  } finally {
+    client.release();
+  }
+});
+
 export default router; 

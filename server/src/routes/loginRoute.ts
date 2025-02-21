@@ -14,7 +14,8 @@ const JWT_EXPIRES_IN = '8h'; // Token expiration time
 
 // Login (Authenticate a user)
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  const password = req.body.password;
+  const email = req.body.email.toLowerCase().trim(); // Normalize email
   
   try {
     const query = `
@@ -32,7 +33,7 @@ router.post('/login', async (req, res) => {
       FROM users u
       LEFT JOIN companies c ON u.id = c.user_id
       LEFT JOIN employees e ON u.id = e.id
-      WHERE u.email = $1
+      WHERE LOWER(u.email) = LOWER($1)
     `;
     const { rows } = await pool.query(query, [email]);
 

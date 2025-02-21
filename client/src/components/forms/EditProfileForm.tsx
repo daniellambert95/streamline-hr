@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import api from "../../services/api";
-import handleApiError from "../../utils/handleApiError";
+import { useAuth } from "../../context/AuthContext";
 import { AuthUser } from "../../types/user";
+import api from "../../services/api";
 
 interface EditProfileModalProps {
   isOpen: boolean;
@@ -17,6 +17,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   userData,
   onUpdate,
 }) => {
+  const { user, login } = useAuth();
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
@@ -53,13 +54,23 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user?.id) {
+      console.error('User ID is undefined');
+      toast.error('User ID is missing');
+      return;
+    }
+
     try {
-      const { data } = await api.put('/api/user-profile/update-profile', form);
-      onUpdate(data);
+      const { data } = await api.put(`/api/employees/${user.id}`, form);
+      const token = localStorage.getItem('token');
+      if (token) {
+        login(token, data);
+      }
       onClose();
       toast.success('Profile updated successfully');
     } catch (error) {
-      handleApiError(error);
+      console.error('Network error:', error);
+      toast.error('Network error occurred');
     }
   };
 

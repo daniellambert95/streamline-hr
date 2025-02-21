@@ -131,6 +131,7 @@ router.put("/update-profile", authenticateJWT, async (req, res) => {
       // Fetch updated profile data
       const profileQuery = `
         SELECT 
+          u.id,
           u.first_name,
           u.last_name,
           u.email,
@@ -156,10 +157,14 @@ router.put("/update-profile", authenticateJWT, async (req, res) => {
         LEFT JOIN users m ON manager_e.id = m.id
         WHERE u.id = $1
       `;
-      const updatedProfile = await client.query(profileQuery, [user.id]);
+      const result = await client.query(profileQuery, [user.id]);
+      const updatedProfile = {
+        ...result.rows[0],
+        id: user.id  // Explicitly include the ID in the response
+      };
 
       await client.query('COMMIT');
-      res.json(updatedProfile.rows[0]);
+      res.json(updatedProfile);
     } catch (err) {
       await client.query('ROLLBACK');
       throw err;

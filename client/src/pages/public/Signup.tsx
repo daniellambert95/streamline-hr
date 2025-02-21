@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { normalizeEmail } from '../../utils/emailUtils';
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -23,10 +24,15 @@ const Signup = () => {
     e.preventDefault();
 
     try {
+      const normalizedForm = {
+        ...form,
+        email: normalizeEmail(form.email)
+      };
+
       const response = await fetch("http://localhost:3000/api/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(normalizedForm),
       });
 
       if (response.ok) {
