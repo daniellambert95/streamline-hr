@@ -148,7 +148,7 @@ streamline-hr/
 │
 ├── docker-compose.yml        # Docker Compose configuration
 ├── Makefile                 # Make commands
-├── .env.example             # Environment variables example
+├── .env                     # Environment variables example
 ├── .gitignore              # Git ignore rules
 └── README.md               # Project documentation
 ```
