@@ -35,9 +35,19 @@ Streamline HR is a comprehensive Human Resource Management System (HRMS) built w
 
 ## Getting Started
 
-### Environment Setup
+### Local Development Setup
 
-1. Create a `.env` file in the root directory:
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/streamline-hr.git
+cd streamline-hr
+```
+
+2. Configure environment variables:
+
+   - Create a `.env` file in the root directory:
+   - Fill in the required environment variables
 
 ```bash
 # Database Configuration
@@ -51,20 +61,6 @@ JWT_SECRET=XXXX
 # API Configuration
 VITE_API_DOMAIN=XXXX
 ```
-
-### Local Development Setup
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/streamline-hr.git
-cd streamline-hr
-```
-
-2. Configure environment variables:
-
-   - Copy `.env.example` to `.env`
-   - Fill in the required environment variables
 
 3. Build and start the containers:
 
