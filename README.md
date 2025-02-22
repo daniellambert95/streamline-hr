@@ -13,6 +13,9 @@ Streamline HR is a comprehensive Human Resource Management System (HRMS) built w
 - 👔 Job Listings Management
 - 📈 Performance Metrics
 - 🔐 Role-based Access Control
+- 📅 Leave Management
+- 👥 Team Management
+- 🏢 Department Management
 
 ## Tech Stack
 
@@ -111,6 +114,7 @@ streamline-hr/
 ├── client/                      # Frontend React application
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
+│   │   │   ├── employees/     # Employee-related components
 │   │   │   ├── forms/         # Form components
 │   │   │   ├── layout/        # Layout components
 │   │   │   ├── modals/        # Modal components
@@ -119,6 +123,8 @@ streamline-hr/
 │   │   │   ├── private/       # Protected routes
 │   │   │   └── public/        # Public routes
 │   │   ├── services/          # API services
+│   │   │   └── api/          # API endpoints and configuration
+│   │   │       └── endpoints/ # API endpoint services
 │   │   ├── hooks/             # Custom React hooks
 │   │   ├── context/           # React context providers
 │   │   ├── types/             # TypeScript type definitions
@@ -129,22 +135,26 @@ streamline-hr/
 │
 ├── server/                     # Backend Express application
 │   ├── src/
-│   │   ├── routes/            # API routes
-│   │   ├── services/          # Business logic
+│   │   ├── routes/            # API route handlers
+│   │   ├── services/          # Business logic services
 │   │   ├── middleware/        # Express middleware
 │   │   ├── config/            # Configuration files
+│   │   │   └── db.ts         # Database configuration
 │   │   ├── types/            # TypeScript type definitions
 │   │   └── utils/            # Utility functions
 │   ├── tests/                # Test files
+│   ├── migrations/           # Database migrations
 │   └── tsconfig.json         # TypeScript configuration
 │
 ├── scripts/                   # Database and utility scripts
 │   ├── setup-db.sh          # Database initialization
 │   └── populate-db.sh       # Sample data population
 │
-├── docker/                   # Docker configuration
-│   ├── client/              # Frontend Docker setup
-│   └── server/              # Backend Docker setup
+├── docker/                    # Docker configuration
+│   ├── client/
+│   │   └── Dockerfile       # Frontend Dockerfile
+│   └── server/
+│       └── Dockerfile       # Backend Dockerfile
 │
 ├── docker-compose.yml        # Docker Compose configuration
 ├── Makefile                 # Make commands
@@ -169,13 +179,7 @@ streamline-hr/
 - DELETE `/api/v1/employees/:id` - Delete employee
 - GET `/api/v1/employees/:id` - Get employee details
 - GET `/api/v1/employees/profile` - Get current user's profile
-
-### Company Management
-
-- GET `/api/v1/companies` - List companies
-- POST `/api/v1/companies/create` - Create new company
-- PUT `/api/v1/companies/:id` - Update company
-- GET `/api/v1/companies/:id` - Get company details
+- GET `/api/v1/employees/managers` - Get all managers
 
 ### Team Management
 
@@ -184,25 +188,23 @@ streamline-hr/
 - PUT `/api/v1/teams/:id` - Update team
 - DELETE `/api/v1/teams/:id` - Delete team
 
-### Recruitment
+### Department Management
 
-- GET `/api/v1/job-listings` - List job listings
-- POST `/api/v1/job-listings/create` - Create job listing
-- PUT `/api/v1/job-listings/:id` - Update job listing
-- DELETE `/api/v1/job-listings/:id` - Delete job listing
-- GET `/api/v1/job-listings/:id` - Get job listing details
+- GET `/api/v1/departments` - List departments
+- POST `/api/v1/departments/create` - Create department
+- PUT `/api/v1/departments/:id` - Update department
+- DELETE `/api/v1/departments/:id` - Delete department
 
-### Applicants
+### Job Management
 
-- GET `/api/v1/applicants` - List applicants
-- POST `/api/v1/applicants/create` - Create applicant
-- PUT `/api/v1/applicants/:id` - Update applicant status
-- GET `/api/v1/applicants/:id` - Get applicant details
-- GET `/api/v1/applicants/activity` - Get recent activity
-- GET `/api/v1/applicants/stats` - Get application statistics
+- GET `/api/v1/jobs` - List job listings
+- POST `/api/v1/jobs` - Create job listing
+- PUT `/api/v1/jobs/:id` - Update job listing
+- DELETE `/api/v1/jobs/:id` - Delete job listing
 
 ### Analytics
 
 - GET `/api/v1/analytics/vacancy-trends` - Get vacancy trends
 - GET `/api/v1/analytics/hiring-stats` - Get hiring statistics
 - GET `/api/v1/analytics/department-stats` - Get department statistics
+- GET `/api/v1/employee-management/analytics` - Get employee analytics
