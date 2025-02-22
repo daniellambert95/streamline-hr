@@ -93,7 +93,7 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
     }
 
     try {
-      const { data } = await api.post('/api/teams', { name: newTeamName });
+      const { data } = await api.post('/api/v1/teams', { name: newTeamName });
       setTeams(prev => [...prev, data]);
       setFormData(prev => ({ ...prev, team_id: data.id }));
       setNewTeamName('');

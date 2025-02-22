@@ -36,18 +36,18 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Routes
-app.use('/api/uploads', uploadRoutes);
-app.use('/api/users', signupRoute);
-app.use('/api/users', loginRoute);
-app.use('/api/users/profile', profileRoute);
-app.use('/api/users/user-profile', userProfileRoute);
-app.use('/api/jobs', jobsRoutes);
-app.use('/api/employees', employeeRoute);
-app.use('/api/teams', teamRoute);
-app.use('/api/departments', departmentRoute);
-app.use('/api/applicants', applicantRoutes);
-app.use('/api/employee-management', employeeManagementRoute);
-app.use('/api/analytics', analyticsRoute);
+app.use('/api/v1/uploads', uploadRoutes);
+app.use('/api/v1/users', signupRoute);
+app.use('/api/v1/users', loginRoute);
+app.use('/api/v1/users/profile', profileRoute);
+app.use('/api/v1/users/user-profile', userProfileRoute);
+app.use('/api/v1/jobs', jobsRoutes);
+app.use('/api/v1/employees', employeeRoute);
+app.use('/api/v1/teams', teamRoute);
+app.use('/api/v1/departments', departmentRoute);
+app.use('/api/v1/applicants', applicantRoutes);
+app.use('/api/v1/employee-management', employeeManagementRoute);
+app.use('/api/v1/analytics', analyticsRoute);
 // Root endpoint
 app.get('/', (req, res) => {
   res.send('Hello from Streamline HR Server!');

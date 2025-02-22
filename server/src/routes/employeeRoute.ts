@@ -4,6 +4,7 @@ import { authenticateJWT } from "../middleware/authMiddleware";
 
 const router = Router();
 
+// POST /api/v1/employees/create
 router.post('/create', authenticateJWT, async (req, res) => {
   const client = await pool.connect();
   const user = (req as any).user;
@@ -205,7 +206,7 @@ router.put('/:id', authenticateJWT, async (req, res) => {
         mobile_number = $2,
         job_level = $3,
         salary = $4,
-        holiday_time = $5,
+        leave_balance = $5,
         starting_date = $6
       WHERE id = $7
     `, [
@@ -213,7 +214,7 @@ router.put('/:id', authenticateJWT, async (req, res) => {
       updates.mobile_number,
       updates.job_level,
       updates.salary,
-      updates.holiday_time,
+      updates.leave_balance,
       updates.starting_date,
       id
     ]);
@@ -230,7 +231,7 @@ router.put('/:id', authenticateJWT, async (req, res) => {
         e.starting_date,
         e.mobile_number,
         e.job_level,
-        e.holiday_time,
+        e.leave_balance,
         e.salary,
         e.bank_details,
         e.id_document,

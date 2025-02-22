@@ -12,7 +12,7 @@ if (!JWT_SECRET) {
 const JWT_EXPIRES_IN = '8h'; // Token expiration time
 
 
-// Login (Authenticate a user)
+// POST /api/v1/users/login
 router.post('/login', async (req, res) => {
   const password = req.body.password;
   const email = req.body.email.toLowerCase().trim(); // Normalize email
@@ -29,7 +29,7 @@ router.post('/login', async (req, res) => {
         e.starting_date,
         e.mobile_number,
         e.salary,
-        e.holiday_time
+        e.leave_balance
       FROM users u
       LEFT JOIN companies c ON u.id = c.user_id
       LEFT JOIN employees e ON u.id = e.id
@@ -76,7 +76,7 @@ router.post('/login', async (req, res) => {
         starting_date: user.starting_date,
         mobile_number: user.mobile_number,
         salary: user.salary,
-        holiday_time: user.holiday_time
+        leave_balance: user.leave_balance
       }
     });
   } catch (error) {

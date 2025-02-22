@@ -19,7 +19,7 @@ router.get('/profile', authenticateJWT, async (req, res) => {
         e.starting_date,
         e.mobile_number,
         e.job_level,
-        e.holiday_time,
+        e.leave_balance,
         e.salary,
         e.bank_details,
         e.id_document,
@@ -74,14 +74,14 @@ router.put('/update-profile', authenticateJWT, async (req, res) => {
       await client.query(`
         UPDATE employees 
         SET job_title = $1, mobile_number = $2, job_level = $3,
-            salary = $4, holiday_time = $5, starting_date = $6
+            salary = $4, leave_balance = $5, starting_date = $6
         WHERE id = $7
       `, [
         updates.job_title,
         updates.mobile_number,
         updates.job_level,
         updates.salary,
-        updates.holiday_time,
+        updates.leave_balance,
         updates.starting_date,
         user.id
       ]);
@@ -89,7 +89,7 @@ router.put('/update-profile', authenticateJWT, async (req, res) => {
       await client.query(`
         INSERT INTO employees (
           id, job_title, mobile_number, job_level,
-          salary, holiday_time, starting_date
+          salary, leave_balance, starting_date
         ) VALUES ($1, $2, $3, $4, $5, $6, $7)
       `, [
         user.id,
@@ -97,7 +97,7 @@ router.put('/update-profile', authenticateJWT, async (req, res) => {
         updates.mobile_number,
         updates.job_level,
         updates.salary,
-        updates.holiday_time,
+        updates.leave_balance,
         updates.starting_date
       ]);
     }
@@ -113,7 +113,7 @@ router.put('/update-profile', authenticateJWT, async (req, res) => {
         e.starting_date,
         e.mobile_number,
         e.job_level,
-        e.holiday_time,
+        e.leave_balance,
         e.salary,
         e.bank_details,
         e.id_document,

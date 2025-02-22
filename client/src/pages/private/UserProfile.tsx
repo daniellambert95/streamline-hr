@@ -119,8 +119,8 @@ const UserProfile: React.FC = () => {
               <p className="font-medium">{user.salary ? `$${user.salary}` : 'N/A'}</p>
             </div>
             <div>
-              <h3 className="text-gray-600">Holiday Time</h3>
-              <p className="font-medium">{user.holiday_time ? `${user.holiday_time} days` : 'N/A'}</p>
+              <h3 className="text-gray-600">Leave Balance</h3>
+              <p className="font-medium">{user.leave_balance ? `${user.leave_balance} days` : 'N/A'}</p>
             </div>
             <div>
               <h3 className="text-gray-600">Mobile Number</h3>
@@ -156,8 +156,8 @@ const UserProfile: React.FC = () => {
         {activeTab === "emergency" && (
           <div>
             <p className="text-gray-500">Emergency Contact</p>
-            {user.emergency_contact ? (
-              <p className="font-medium">{user.emergency_contact}</p>
+            {user.emergency_contact_name ? (
+              <p className="font-medium">{user.emergency_contact_name}</p>
             ) : (
               <p className="font-medium">No emergency contact set</p>
             )}

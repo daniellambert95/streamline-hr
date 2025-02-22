@@ -3,8 +3,8 @@ import { AuthUser } from '../../../types/user';
 
 export const profileService = {
   update: (id: number, data: Partial<AuthUser>) => 
-    api.put(`/api/employees/${id}`, data),
+    api.put(`/api/v1/employees/${id}`, data),
     
   get: () => 
-    api.get<AuthUser>('/api/employees/profile')
+    api.get<AuthUser>('/api/v1/employees/profile')
 }; 

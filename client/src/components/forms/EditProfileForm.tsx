@@ -27,7 +27,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     job_level: "",
     team_name: "",
     salary: "",
-    holiday_time: "",
+    leave_balance: "",
     starting_date: "",
   });
 
@@ -41,8 +41,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
         mobile_number: userData.mobile_number || "",
         job_level: userData.job_level || "",
         team_name: userData.team_name || "",
-        salary: userData.salary || "",
-        holiday_time: userData.holiday_time || "",
+        salary: userData.salary?.toString() || "",
+        leave_balance: userData.leave_balance?.toString() || "",
         starting_date: userData.starting_date ? new Date(userData.starting_date).toISOString().split('T')[0] : "",
       });
     }
@@ -61,7 +61,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
 
     try {
-      const { data } = await api.put(`/api/employees/${user.id}`, form);
+      const { data } = await api.put(`/api/v1/employees/${user.id}`, form);
       const token = localStorage.getItem('token');
       if (token) {
         login(token, data);
@@ -163,11 +163,11 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">Holiday Time</label>
+              <label className="block text-sm font-medium text-gray-700">Leave Balance</label>
               <input
                 type="number"
-                name="holiday_time"
-                value={form.holiday_time}
+                name="leave_balance"
+                value={form.leave_balance}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg"
               />

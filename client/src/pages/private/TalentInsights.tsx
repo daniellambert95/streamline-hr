@@ -18,7 +18,7 @@ const TalentInsights: React.FC = () => {
 
   const fetchListings = async () => {
     try {
-      const { data } = await api.get('/api/jobs');
+      const { data } = await api.get('/api/v1/jobs');
       setListings(data);
     } catch (error) {
       handleApiError(error);
@@ -27,7 +27,7 @@ const TalentInsights: React.FC = () => {
 
   const fetchApplicants = async () => {
     try {
-      const response = await api.get('/api/applicants');
+      const response = await api.get('/api/v1/applicants');
       setApplicants(response.data);
     } catch (error) {
       handleApiError(error);
@@ -36,7 +36,7 @@ const TalentInsights: React.FC = () => {
 
   const fetchRecentActivity = async () => {
     try {
-      const { data } = await api.get('/api/applicants/activity');
+      const { data } = await api.get('/api/v1/applicants/activity');
       setRecentActivity(data);
     } catch (error) {
       handleApiError(error);
