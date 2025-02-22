@@ -5,12 +5,18 @@ export const employeeService = {
   getAll: () => 
     api.get<Employee[]>('/api/employees'),
     
-  create: (data: EmployeeFormData) => 
-    api.post('/api/employees/create', data),
+  getById: (id: number) => 
+    api.get<Employee>(`/api/employees/${id}`),
     
-  update: (id: number, data: Partial<EmployeeFormData>) => 
-    api.put(`/api/employees/${id}`, data),
+  create: (data: Partial<Employee>) => 
+    api.post<EmployeeFormData>('/api/employees/create', data),
+    
+  update: (id: number, data: Partial<Employee>) => 
+    api.put<Employee>(`/api/employees/${id}`, data),
     
   delete: (id: number) => 
-    api.delete(`/api/employees/${id}`)
+    api.delete<void>(`/api/employees/${id}`),
+    
+  getManagers: () => 
+    api.get<Employee[]>('/api/employees/managers')
 }; 

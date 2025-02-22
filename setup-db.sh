@@ -49,9 +49,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
   END;
   \$\$ LANGUAGE plpgsql;
 
-  -- Now proceed with table creation
-
-  -- Users Table
+  -- Create tables in correct order without foreign key constraints first
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100),
@@ -66,50 +64,71 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- 2. Companies Table (Depends on users)
   CREATE TABLE IF NOT EXISTS companies (
     id SERIAL PRIMARY KEY,
     company_name VARCHAR(255) NOT NULL,
     industry VARCHAR(100),
     address TEXT,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- 3. Teams Table (Depends on companies)
+  CREATE TABLE IF NOT EXISTS departments (
+    id SERIAL PRIMARY KEY,
+    company_id INTEGER,
+    name VARCHAR(100) NOT NULL,
+    head_id INTEGER,
+    budget DECIMAL(15,2),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
   CREATE TABLE IF NOT EXISTS teams (
     id SERIAL PRIMARY KEY,
-    company_id INTEGER REFERENCES companies(id),
+    company_id INTEGER,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- 4. Employees Table (Depends on users, companies, teams)
   CREATE TABLE IF NOT EXISTS employees (
-    id INTEGER PRIMARY KEY REFERENCES users(id),
-    company_id INTEGER REFERENCES companies(id),
-    team_id INTEGER REFERENCES teams(id),
-    manager_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    id INTEGER PRIMARY KEY,
+    company_id INTEGER,
+    team_id INTEGER,
+    department_id INTEGER,
+    manager_id INTEGER,
     job_title VARCHAR(255),
     starting_date DATE,
     mobile_number VARCHAR(20),
     job_level VARCHAR(50),
-    holiday_time INTEGER DEFAULT 25,
+    leave_balance INTEGER DEFAULT 25,
     salary VARCHAR(50),
     bank_details TEXT,
     id_document VARCHAR(255),
     employment_status VARCHAR(50) DEFAULT 'active',
     employment_type VARCHAR(50) DEFAULT 'full_time',
+    personal_email VARCHAR(255),
+    date_of_birth DATE,
+    gender VARCHAR(20) CHECK (gender IN ('male', 'female', 'non-binary', 'prefer_not_to_say')),
+    marital_status VARCHAR(50) CHECK (marital_status IN ('single', 'married', 'divorced', 'widowed')),
+    address TEXT,
+    emergency_contact_name VARCHAR(100),
+    emergency_contact_phone VARCHAR(20),
+    work_permit_status VARCHAR(50),
+    work_permit_expiry DATE,
+    health_insurance_provider VARCHAR(100),
+    tax_id VARCHAR(50),
+    probation_end_date DATE,
+    contract_end_date DATE,
+    last_promotion_date DATE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- 5. Managers Table (Depends on employees)
   CREATE TABLE IF NOT EXISTS managers (
-    id INTEGER PRIMARY KEY REFERENCES employees(id),
+    id INTEGER PRIMARY KEY,
     department VARCHAR(100),
     level VARCHAR(50) CHECK (level IN ('team_lead', 'department_head', 'executive')),
     can_approve_time_off BOOLEAN DEFAULT TRUE,
@@ -120,20 +139,26 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     updated_at TIMESTAMP DEFAULT NOW()
   );
 
-  -- 6. Departments Table (Depends on companies, managers)
-  CREATE TABLE IF NOT EXISTS departments (
-    id SERIAL PRIMARY KEY,
-    company_id INTEGER REFERENCES companies(id),
-    name VARCHAR(100) NOT NULL,
-    head_id INTEGER REFERENCES managers(id),
-    budget DECIMAL(15,2),
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-  );
+  -- Now add all the foreign key constraints
+  ALTER TABLE companies
+    ADD CONSTRAINT fk_companies_user FOREIGN KEY (user_id) REFERENCES users(id);
 
-  -- Add department_id to employees after departments table is created
-  ALTER TABLE employees 
-  ADD COLUMN IF NOT EXISTS department_id INTEGER REFERENCES departments(id);
+  ALTER TABLE departments
+    ADD CONSTRAINT fk_departments_company FOREIGN KEY (company_id) REFERENCES companies(id),
+    ADD CONSTRAINT fk_departments_head FOREIGN KEY (head_id) REFERENCES managers(id);
+
+  ALTER TABLE teams
+    ADD CONSTRAINT fk_teams_company FOREIGN KEY (company_id) REFERENCES companies(id);
+
+  ALTER TABLE employees
+    ADD CONSTRAINT fk_employees_user FOREIGN KEY (id) REFERENCES users(id),
+    ADD CONSTRAINT fk_employees_company FOREIGN KEY (company_id) REFERENCES companies(id),
+    ADD CONSTRAINT fk_employees_team FOREIGN KEY (team_id) REFERENCES teams(id),
+    ADD CONSTRAINT fk_employees_department FOREIGN KEY (department_id) REFERENCES departments(id),
+    ADD CONSTRAINT fk_employees_manager FOREIGN KEY (manager_id) REFERENCES users(id);
+
+  ALTER TABLE managers
+    ADD CONSTRAINT fk_managers_employee FOREIGN KEY (id) REFERENCES employees(id);
 
   -- 7. Manager Permissions Table (Depends on managers)
   CREATE TABLE IF NOT EXISTS manager_permissions (

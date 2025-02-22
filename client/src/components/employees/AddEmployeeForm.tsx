@@ -35,6 +35,7 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
     salary: '',
     employment_type: 'full_time',
     is_manager: false,
+    status: "active"
   };
 
   const [formData, setFormData] = useState<EmployeeFormData>(initialFormData);
@@ -190,7 +191,7 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
               <label className="block text-sm font-medium text-gray-600">Department</label>
               <select
                 name="department_id"
-                value={formData.department_id}
+                value={formData.department_id || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, department_id: Number(e.target.value) }))}
                 className="w-full px-3 py-2 border rounded-lg"
               >
@@ -205,7 +206,7 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
               <label className="block text-sm font-medium text-gray-600">Team</label>
               <select
                 name="team_id"
-                value={formData.team_id}
+                value={formData.team_id || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, team_id: Number(e.target.value) }))}
                 className="w-full px-3 py-2 border rounded-lg"
               >

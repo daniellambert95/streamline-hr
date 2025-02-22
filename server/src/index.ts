@@ -13,6 +13,8 @@ import applicantRoutes from './routes/applicantRoutes';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import employeeManagementRoute from './routes/employeeManagementRoute';
+import analyticsRoute from './routes/analyticsRoute';
 
 dotenv.config();
 
@@ -44,7 +46,8 @@ app.use('/api/employees', employeeRoute);
 app.use('/api/teams', teamRoute);
 app.use('/api/departments', departmentRoute);
 app.use('/api/applicants', applicantRoutes);
-
+app.use('/api/employee-management', employeeManagementRoute);
+app.use('/api/analytics', analyticsRoute);
 // Root endpoint
 app.get('/', (req, res) => {
   res.send('Hello from Streamline HR Server!');

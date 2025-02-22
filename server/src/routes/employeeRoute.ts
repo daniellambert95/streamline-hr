@@ -64,9 +64,10 @@ router.post('/create', authenticateJWT, async (req, res) => {
       INSERT INTO employees (
         id, company_id, team_id, department_id,
         job_title, starting_date, mobile_number,
-        job_level, salary, employment_type, manager_id
+        job_level, salary, employment_type, manager_id,
+        employment_status
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
     `, [
       userId,
       companyResult.rows[0].id,
@@ -78,7 +79,8 @@ router.post('/create', authenticateJWT, async (req, res) => {
       req.body.job_level || null,
       req.body.salary || null,
       req.body.employment_type || 'full_time',
-      req.body.manager_id || null
+      req.body.manager_id || null,
+      req.body.status || 'active'
     ]);
 
     // If marked as manager, create manager record
@@ -122,11 +124,14 @@ router.get('/', authenticateJWT, async (req, res) => {
         u.first_name,
         u.last_name,
         e.job_title,
+        e.employment_status as status,
+        d.name as department,
         t.name as team_name,
         CONCAT(m.first_name, ' ', m.last_name) as manager_name,
         e.starting_date
       FROM employees e
       JOIN users u ON e.id = u.id
+      LEFT JOIN departments d ON e.department_id = d.id
       LEFT JOIN teams t ON e.team_id = t.id
       LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
       LEFT JOIN users m ON manager_e.id = m.id

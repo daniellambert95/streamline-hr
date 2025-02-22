@@ -12,7 +12,7 @@ import Applicants from './pages/private/Applicants';
 import Signup from './pages/public/Signup';
 import Login from './pages/public/Login';
 import Employees from './pages/private/Employees';
-import AnalyticsPage from './pages/private/Analytics';
+import EmployeeManagement from './pages/private/EmployeeManagement';
 import { Toaster } from 'react-hot-toast';
 
 const AppContent = () => {
@@ -83,11 +83,14 @@ const AppContent = () => {
               </ProtectedRoute>
             } />
 
-            <Route path="/analytics" element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AnalyticsPage />
-              </ProtectedRoute>
-            } />
+            <Route 
+              path="/employee-management" 
+              element={
+                <ProtectedRoute>
+                  <EmployeeManagement />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </main>
       </div>

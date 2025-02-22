@@ -61,7 +61,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
     c.id,
     t.id,
     'CEO',
-    '2024-01-01',
+    '2025-02-22',
     '+1234567890',
     'executive',
     30,
@@ -138,7 +138,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
       WHEN 'michael@streamlinehr.com' THEN 'Product Manager'
       WHEN 'emma@streamlinehr.com' THEN 'Recruitment Lead'
     END,
-    '2024-01-01',
+    '2025-02-22',
     '+1234567891',
     CASE u.email
       WHEN 'oliver@streamlinehr.com' THEN 'department_head'

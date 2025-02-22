@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { jobService } from '../../services/api/endpoints/jobs';
+import handleApiError from '../../utils/handleApiError';
 
 interface NewJobListingModalProps {
   isOpen: boolean;
@@ -25,30 +27,15 @@ const NewJobListingModal: React.FC<NewJobListingModalProps> = ({ isOpen, onClose
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch('http://localhost:3000/api/job-listings/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(form),
-      });
-
-      if (response.ok) {
-        toast.success('Job listing created successfully!');
-        setForm(initialFormState);
-        onSuccess();
-        onClose();
-      } else {
-        const error = await response.json();
-        toast.error(error.message || 'Failed to create job listing.');
-      }
-    } catch (err) {
-      console.error('Error submitting form:', err);
-      toast.error('An error occurred. Please try again.');
+      await jobService.create(form);
+      toast.success('Job listing created successfully!');
+      setForm(initialFormState);
+      onSuccess();
+      onClose();
+    } catch (error) {
+      handleApiError(error);
     }
   };
 

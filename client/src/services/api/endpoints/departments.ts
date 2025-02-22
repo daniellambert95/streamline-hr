@@ -1,16 +1,21 @@
 import api from '../index';
 import { Department } from '../../../types/department';
 
+// getById: (id: number) => api.get(`/api/departments/${id}`),
+
 export const departmentService = {
   getAll: () => 
     api.get<Department[]>('/api/departments'),
     
-  create: (name: string) => 
-    api.post('/api/departments', { name }),
+  getById: (id: number) => 
+    api.get<Department>(`/api/departments/${id}`),
+    
+  create: (data: Partial<Department>) => 
+    api.post<Department>('/api/departments', data),
     
   update: (id: number, data: Partial<Department>) => 
-    api.put(`/api/departments/${id}`, data),
+    api.put<Department>(`/api/departments/${id}`, data),
     
   delete: (id: number) => 
-    api.delete(`/api/departments/${id}`)
+    api.delete<void>(`/api/departments/${id}`)
 };

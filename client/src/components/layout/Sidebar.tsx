@@ -27,7 +27,7 @@ const AuthSidebar: React.FC = () => {
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaUsers className="mr-3" />
-            <Link to="/employees">Employees</Link>
+            <Link to="/employee-management">Employee Management</Link>
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaBriefcase className="mr-3" />
@@ -38,16 +38,8 @@ const AuthSidebar: React.FC = () => {
             <Link to="/notifications">Notifications</Link>
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
-            <FaArchive className="mr-3" />
-            <Link to="/candidates">Candidates</Link>
-          </li>
-          <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaFileAlt className="mr-3" />
             <Link to="/templates">Templates</Link>
-          </li>
-          <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
-            <FaChartBar className="mr-3" />
-            <Link to="/analytics">Analytics</Link>
           </li>
         </ul>
       </nav>
