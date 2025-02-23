@@ -1,13 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { UserRole, AuthUser } from '../types/user';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: AuthUser | null;
-  login: (token: string, userData: AuthUser) => void;
-  logout: () => void;
-  hasPermission: (allowedRoles: UserRole[]) => boolean;
-}
+import { AuthContextType } from '../types/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
