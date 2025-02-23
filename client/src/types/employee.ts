@@ -1,3 +1,5 @@
+import { UserRole } from "./user";
+
 export interface Employee {
     id: number;
     email: string;
@@ -14,7 +16,7 @@ export interface Employee {
     role: 'employee' | 'recruiter' | 'admin' | null;
     personal_email?: string;
     date_of_birth?: string;
-    gender?: 'male' | 'female' | 'non-binary' | 'prefer_not_to_say';
+    gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
     marital_status?: string;
     address?: string;
     emergency_contact_name?: string;
@@ -35,7 +37,7 @@ export interface EmployeeFormData {
     password: string;
     first_name: string;
     last_name: string;
-    role: 'employee' | 'recruiter' | 'admin' | null;
+    role: UserRole;
 
     // Employee data
     job_title: string;
@@ -47,11 +49,11 @@ export interface EmployeeFormData {
     job_level: string;
     salary: string;
     employment_type: 'full_time' | 'part_time' | 'contract';
-    is_manager?: boolean;
+    is_manager: boolean;
     status: 'active' | 'inactive' | 'onboarding' | 'on_leave';
     personal_email?: string;
     date_of_birth?: string;
-    gender?: 'male' | 'female' | 'non-binary' | 'prefer_not_to_say';
+    gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
     marital_status?: string;
     address?: string;
     emergency_contact_name?: string;

@@ -8,6 +8,7 @@ import { EmployeeFormData } from '../../types/employee';
 import { Team } from '../../types/team';
 import { Department } from '../../types/department';
 import { Manager } from '../../types/manager';
+import { UserRole } from '../../types/user';
 import { generateTemporaryPassword } from '../../utils/passwords';
 import handleApiError from "../../utils/handleApiError";
 import api from "../../services/api";
@@ -18,13 +19,15 @@ interface AddEmployeeFormProps {
   onSuccess: () => void;
 }
 
+const roleOptions: UserRole[] = ['employee', 'recruiter', 'manager']; // Excluding 'admin' for security
+
 export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose, onSuccess }) => {
   const initialFormData: EmployeeFormData = {
     email: '',
     password: generateTemporaryPassword(),
     first_name: '',
     last_name: '',
-    role: null,
+    role: 'employee', // default role
     job_title: '',
     team_id: 0,
     department_id: 0,
@@ -164,13 +167,20 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
                 <label className="block text-sm font-medium text-gray-600">Role</label>
                 <select
                   name="role"
-                  value={formData.role || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as EmployeeFormData['role'] }))}
+                  value={formData.role}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    role: e.target.value as UserRole,
+                    is_manager: e.target.value === 'manager'
+                  }))}
                   className="w-full px-3 py-2 border rounded-lg"
+                  required
                 >
-                  <option value="">Employee</option>
-                  <option value="admin">Admin</option>
-                  <option value="recruiter">Recruiter</option>
+                  {roleOptions.map(role => (
+                    <option key={role} value={role}>
+                      {role.charAt(0).toUpperCase() + role.slice(1)}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -319,19 +329,6 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
                   </option>
                 ))}
               </select>
-            </div>
-
-            <div className="flex items-center gap-2 mt-4">
-              <input
-                type="checkbox"
-                id="is_manager"
-                checked={formData.is_manager}
-                onChange={(e) => setFormData(prev => ({ ...prev, is_manager: e.target.checked }))}
-                className="h-4 w-4"
-              />
-              <label htmlFor="is_manager" className="text-sm font-medium text-gray-600">
-                Assign as Manager
-              </label>
             </div>
 
             <div className="p-6 border-t mt-6">

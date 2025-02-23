@@ -16,7 +16,7 @@ router.get('/employees', authenticateJWT, async (req, res) => {
         u.first_name,
         u.last_name,
         e.job_title,
-        e.status,
+        e.employment_status as status,
         d.name as department,
         t.name as team_name,
         CONCAT(m.first_name, ' ', m.last_name) as manager_name,
@@ -28,7 +28,9 @@ router.get('/employees', authenticateJWT, async (req, res) => {
       LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
       LEFT JOIN users m ON manager_e.id = m.id
       WHERE e.company_id = (
-        SELECT id FROM companies WHERE user_id = $1
+        SELECT e2.company_id 
+        FROM employees e2 
+        WHERE e2.id = $1
       )
     `, [user.id]);
     
@@ -100,19 +102,17 @@ router.get('/analytics', authenticateJWT, async (req, res) => {
       SELECT 
         COUNT(DISTINCT e.id) as active_employees,
         COUNT(DISTINCT t.id) as total_teams,
-        COUNT(DISTINCT e2.id) as total_managers,
+        COUNT(DISTINCT m.id) as total_managers,
         COUNT(*) FILTER (WHERE e.starting_date >= NOW() - INTERVAL '30 days') as new_hires
       FROM employees e
       LEFT JOIN teams t ON e.team_id = t.id
-      LEFT JOIN employees e2 ON e2.id = e.id AND (
-        e2.job_level IN ('executive', 'department_head', 'team_lead')
-        OR EXISTS (
-          SELECT 1 FROM employees 
-          WHERE manager_id = e2.id
-        )
+      LEFT JOIN managers m ON m.employee_id = e.id
+      WHERE e.company_id = (
+        SELECT e2.company_id 
+        FROM employees e2 
+        WHERE e2.id = $1
       )
-      WHERE e.company_id = (SELECT id FROM companies WHERE user_id = $1)
-        AND e.employment_status = 'active'
+      AND e.employment_status = 'active'
     `, [user.id]);
     
     res.json({

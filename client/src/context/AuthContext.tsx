@@ -26,7 +26,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const hasPermission = (allowedRoles: UserRole[]) => {
-    return user ? allowedRoles.includes(user.role) : false;
+    return user ? user.roles.some(role => allowedRoles.includes(role)) : false;
   };
 
   useEffect(() => {

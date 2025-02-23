@@ -34,7 +34,9 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     departments,
     teams,
     companies,
-    users
+    users,
+    roles,
+    user_roles
   CASCADE;
 
   -- Drop the trigger function if it exists
@@ -49,19 +51,42 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
   END;
   \$\$ LANGUAGE plpgsql;
 
-  -- Create tables in correct order without foreign key constraints first
+  -- Create roles table first
+  CREATE TABLE IF NOT EXISTS roles (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Insert default roles
+  INSERT INTO roles (name, description) VALUES
+    ('admin', 'Full system access and control'),
+    ('recruiter', 'Manage recruitment process and candidates'),
+    ('manager', 'Manage employees and teams'),
+    ('employee', 'Standard employee access');
+
+  -- Create users table
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL CHECK (role IN ('admin', 'recruiter', 'employee')),
     status VARCHAR(50) DEFAULT 'active',
     subscription VARCHAR(50) NOT NULL DEFAULT 'basic',
     user_image_path VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  -- Create user_roles junction table
+  CREATE TABLE IF NOT EXISTS user_roles (
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (user_id, role_id)
   );
 
   CREATE TABLE IF NOT EXISTS companies (
@@ -111,7 +136,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     employment_type VARCHAR(50) DEFAULT 'full_time',
     personal_email VARCHAR(255),
     date_of_birth DATE,
-    gender VARCHAR(20) CHECK (gender IN ('male', 'female', 'non-binary', 'prefer_not_to_say')),
+    gender VARCHAR(20) CHECK (gender IN ('male', 'female', 'other', 'prefer_not_to_say')),
     marital_status VARCHAR(50) CHECK (marital_status IN ('single', 'married', 'divorced', 'widowed')),
     address TEXT,
     emergency_contact_name VARCHAR(100),
@@ -129,7 +154,8 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
 
   CREATE TABLE IF NOT EXISTS managers (
     id INTEGER PRIMARY KEY,
-    department VARCHAR(100),
+    employee_id INTEGER UNIQUE REFERENCES employees(id) ON DELETE CASCADE,
+    department_id INTEGER REFERENCES departments(id),
     level VARCHAR(50) CHECK (level IN ('team_lead', 'department_head', 'executive')),
     can_approve_time_off BOOLEAN DEFAULT TRUE,
     can_hire BOOLEAN DEFAULT FALSE,

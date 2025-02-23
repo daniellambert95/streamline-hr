@@ -48,10 +48,10 @@ router.post('/signup', async (req, res) => {
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Insert user
+      // Insert user without role
       const userQuery = `
-        INSERT INTO users (email, password, subscription, role)
-        VALUES ($1, $2, $3, 'admin')
+        INSERT INTO users (email, password, subscription)
+        VALUES ($1, $2, $3)
         RETURNING id, email, subscription, created_at;
       `;
       const userValues = [normalizedEmail, hashedPassword, subscription];
@@ -67,6 +67,21 @@ router.post('/signup', async (req, res) => {
       const companyValues = [user.id, company_name];
       const companyResult = await client.query(companyQuery, companyValues);
 
+      // Get admin role ID and assign it to the user
+      const roleQuery = `
+        WITH admin_role AS (
+          SELECT id FROM roles WHERE name = 'admin'
+        )
+        INSERT INTO user_roles (user_id, role_id)
+        SELECT $1, id FROM admin_role
+        RETURNING (
+          SELECT ARRAY_AGG(name) 
+          FROM roles 
+          WHERE id IN (SELECT role_id FROM user_roles WHERE user_id = $1)
+        ) as roles;
+      `;
+      const roleResult = await client.query(roleQuery, [user.id]);
+
       await client.query('COMMIT');
 
       res.status(201).json({
@@ -75,6 +90,7 @@ router.post('/signup', async (req, res) => {
           email: user.email,
           subscription: user.subscription,
           created_at: user.created_at,
+          roles: roleResult.rows[0].roles
         },
         company: companyResult.rows[0],
       });

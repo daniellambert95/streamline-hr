@@ -45,21 +45,33 @@ router.post('/create', authenticateJWT, async (req, res) => {
     // Create user first
     const userResult = await client.query(`
       INSERT INTO users (
-        email, password, role, status, 
+        email, password, status, 
         first_name, last_name
       )
-      VALUES ($1, $2, $3, 'active', $4, $5)
+      VALUES ($1, $2, 'active', $3, $4)
       RETURNING id
     `, [
       req.body.email, 
-      req.body.password, 
-      req.body.role || 'employee',
+      req.body.password,
       req.body.first_name,
       req.body.last_name
     ]);
     
     const userId = userResult.rows[0].id;
     
+    // Assign selected role to the user
+    const roleQuery = `
+      WITH selected_role AS (
+        SELECT id FROM roles WHERE name = $1
+      )
+      INSERT INTO user_roles (user_id, role_id)
+      SELECT $2, id FROM selected_role
+      RETURNING (
+        SELECT name FROM roles WHERE id = role_id
+      ) as role_name;
+    `;
+    await client.query(roleQuery, [req.body.role || 'employee', userId]);
+
     // Create employee record
     await client.query(`
       INSERT INTO employees (
@@ -126,19 +138,49 @@ router.get('/', authenticateJWT, async (req, res) => {
         u.last_name,
         e.job_title,
         e.employment_status as status,
+        e.personal_email,
+        e.date_of_birth,
+        e.gender,
+        e.marital_status,
+        e.address,
+        e.emergency_contact_name,
+        e.emergency_contact_phone,
+        e.work_permit_status,
+        e.work_permit_expiry,
+        e.health_insurance_provider,
+        e.tax_id,
+        e.probation_end_date,
+        e.contract_end_date,
+        e.last_promotion_date,
+        e.leave_balance,
         d.name as department,
         t.name as team_name,
         CONCAT(m.first_name, ' ', m.last_name) as manager_name,
-        e.starting_date
+        e.starting_date,
+        ARRAY_AGG(r.name) as roles
       FROM employees e
       JOIN users u ON e.id = u.id
       LEFT JOIN departments d ON e.department_id = d.id
       LEFT JOIN teams t ON e.team_id = t.id
       LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
       LEFT JOIN users m ON manager_e.id = m.id
+      LEFT JOIN user_roles ur ON u.id = ur.user_id
+      LEFT JOIN roles r ON ur.role_id = r.id
       WHERE e.company_id = (
-        SELECT id FROM companies WHERE user_id = $1
+        SELECT e2.company_id 
+        FROM employees e2 
+        WHERE e2.id = $1
       )
+      GROUP BY 
+        u.id, u.email, u.first_name, u.last_name,
+        e.job_title, e.employment_status, e.personal_email,
+        e.date_of_birth, e.gender, e.marital_status,
+        e.address, e.emergency_contact_name, e.emergency_contact_phone,
+        e.work_permit_status, e.work_permit_expiry,
+        e.health_insurance_provider, e.tax_id,
+        e.probation_end_date, e.contract_end_date,
+        e.last_promotion_date, e.leave_balance,
+        d.name, t.name, manager_name, e.starting_date
     `, [user.id]);
     
     res.json(result.rows);
@@ -161,24 +203,28 @@ router.get('/managers', authenticateJWT, async (req, res) => {
         u.id,
         u.first_name,
         u.last_name,
-        e.job_title
-      FROM employees e
+        u.email,
+        e.job_title,
+        m.can_approve_time_off,
+        m.can_hire,
+        m.can_edit_salary
+      FROM managers m
+      JOIN employees e ON m.employee_id = e.id
       JOIN users u ON e.id = u.id
       WHERE e.company_id = (
-        SELECT id FROM companies WHERE user_id = $1
-      ) AND (
-        e.job_level IN ('executive', 'department_head', 'team_lead')
-        OR EXISTS (
-          SELECT 1 FROM employees 
-          WHERE manager_id = e.id
-        )
+        SELECT e2.company_id 
+        FROM employees e2 
+        WHERE e2.id = $1
       )
     `, [user.id]);
-    
+   
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching managers:', error);
-    res.status(500).json({ error: 'Failed to fetch managers' });
+    res.status(500).json({ 
+      error: 'Failed to fetch managers',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
