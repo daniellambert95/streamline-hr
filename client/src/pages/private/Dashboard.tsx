@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import danielImage from "../../assets/daniel.png";
 import VacancyTrends from "../../components/analytics/VacancyTrends";
-import CalanderWidget from "../../components/profile/CalanderWidget";
+import CalanderWidget from "../../components/dashboard/CalanderWidget";
 import { getGreeting } from '../../utils/greetingUtils';
 
 const Dashboard: React.FC = () => {

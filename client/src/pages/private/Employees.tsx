@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { employeeService } from '../../services/api/endpoints/employees';
 import { Employee } from '../../types/employee';
-import AddEmployeeForm from '../../components/employees/AddEmployeeForm';
+import AddEmployeeForm from '../../components/forms/AddEmployeeForm';
 
 const Employees: React.FC = () => {
   const navigate = useNavigate();

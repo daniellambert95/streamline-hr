@@ -6,7 +6,7 @@ import { Employee } from '../../types/employee';
 import { Department } from '../../types/department';
 import { Team } from '../../types/team';
 import { Manager } from '../../types/manager';
-import AddEmployeeForm from '../../components/employees/AddEmployeeForm';
+import AddEmployeeForm from '../../components/forms/AddEmployeeForm';
 import StatCard from '../../components/common/StatCard';
 import { employeeService } from '../../services/api/endpoints/employees';
 import { teamService } from '../../services/api/endpoints/teams';
