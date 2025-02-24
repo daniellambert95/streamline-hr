@@ -13,7 +13,8 @@ router.get('/', authenticateJWT, async (req, res) => {
       SELECT t.* 
       FROM teams t
       JOIN companies c ON t.company_id = c.id
-      WHERE c.user_id = $1
+      JOIN users u ON u.company_name = c.company_name
+      WHERE u.id = $1
     `, [user.id]);
     
     res.json(result.rows);
@@ -29,11 +30,15 @@ router.post('/', authenticateJWT, async (req, res) => {
   const { name } = req.body;
   
   try {
-    // Get company_id first
+    // Get company_id using company_name from user
     const companyResult = await pool.query(
-      'SELECT id FROM companies WHERE user_id = $1',
-      [user.id]
+      'SELECT id FROM companies WHERE company_name = $1',
+      [user.company_name]
     );
+    
+    if (companyResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
     
     const companyId = companyResult.rows[0].id;
     
@@ -41,7 +46,7 @@ router.post('/', authenticateJWT, async (req, res) => {
     const result = await pool.query(`
       INSERT INTO teams (name, company_id)
       VALUES ($1, $2)
-      RETURNING id, name
+      RETURNING id, name, company_id, created_at, updated_at
     `, [name, companyId]);
     
     res.status(201).json(result.rows[0]);

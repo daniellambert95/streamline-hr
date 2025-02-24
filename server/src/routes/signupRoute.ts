@@ -48,23 +48,23 @@ router.post('/signup', async (req, res) => {
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Insert user without role
+      // Insert user with company_name
       const userQuery = `
-        INSERT INTO users (email, password, subscription)
-        VALUES ($1, $2, $3)
-        RETURNING id, email, subscription, created_at;
+        INSERT INTO users (email, password, subscription, company_name)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, email, subscription, company_name, created_at;
       `;
-      const userValues = [normalizedEmail, hashedPassword, subscription];
+      const userValues = [normalizedEmail, hashedPassword, subscription, company_name];
       const userResult = await client.query(userQuery, userValues);
       const user = userResult.rows[0];
 
-      // Insert company
+      // Insert company with reference to user
       const companyQuery = `
-        INSERT INTO companies (user_id, company_name)
+        INSERT INTO companies (company_name, created_by)
         VALUES ($1, $2)
         RETURNING id, company_name, created_at;
       `;
-      const companyValues = [user.id, company_name];
+      const companyValues = [company_name, user.id];
       const companyResult = await client.query(companyQuery, companyValues);
 
       // Get admin role ID and assign it to the user
@@ -75,10 +75,10 @@ router.post('/signup', async (req, res) => {
         INSERT INTO user_roles (user_id, role_id)
         SELECT $1, id FROM admin_role
         RETURNING (
-          SELECT ARRAY_AGG(name) 
+          SELECT name 
           FROM roles 
-          WHERE id IN (SELECT role_id FROM user_roles WHERE user_id = $1)
-        ) as roles;
+          WHERE id = role_id
+        ) as role;
       `;
       const roleResult = await client.query(roleQuery, [user.id]);
 
@@ -89,8 +89,9 @@ router.post('/signup', async (req, res) => {
           id: user.id,
           email: user.email,
           subscription: user.subscription,
+          company_name: user.company_name,
           created_at: user.created_at,
-          roles: roleResult.rows[0].roles
+          role: roleResult.rows[0].role
         },
         company: companyResult.rows[0],
       });

@@ -11,7 +11,6 @@ import { Manager } from '../../types/manager';
 import { UserRole } from '../../types/user';
 import { generateTemporaryPassword } from '../../utils/passwords';
 import handleApiError from "../../utils/handleApiError";
-import api from "../../services/api";
 
 interface AddEmployeeFormProps {
   isOpen: boolean;
@@ -27,10 +26,10 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
     password: generateTemporaryPassword(),
     first_name: '',
     last_name: '',
-    role: 'employee', // default role
+    role: 'employee',
     job_title: '',
-    team_id: 0,
-    department_id: 0,
+    team_id: null,
+    department_id: null,
     manager_id: null,
     starting_date: new Date().toISOString().split('T')[0],
     mobile_number: '',
@@ -50,6 +49,8 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
   const [error, setError] = useState<string | null>(null);
   const [isAddingNewTeam, setIsAddingNewTeam] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
+  const [isAddingNewDepartment, setIsAddingNewDepartment] = useState(false);
+  const [newDepartmentName, setNewDepartmentName] = useState('');
 
   useEffect(() => {
     // Fetch teams and departments on mount
@@ -94,14 +95,32 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
       toast.error('Please enter a team name');
       return;
     }
-
+  
     try {
-      const { data } = await api.post('/api/v1/teams', { name: newTeamName });
+      const { data } = await teamService.create({ name: newTeamName });
       setTeams(prev => [...prev, data]);
       setFormData(prev => ({ ...prev, team_id: data.id }));
       setNewTeamName('');
       setIsAddingNewTeam(false);
       toast.success('Team created successfully');
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
+  const handleCreateNewDepartment = async () => {
+    if (!newDepartmentName.trim()) {
+      toast.error('Please enter a department name');
+      return;
+    }
+
+    try {
+      const { data } = await departmentService.create({ name: newDepartmentName });
+      setDepartments(prev => [...prev, data]);
+      setFormData(prev => ({ ...prev, department_id: data.id }));
+      setNewDepartmentName('');
+      setIsAddingNewDepartment(false);
+      toast.success('Department created successfully');
     } catch (error) {
       handleApiError(error);
     }
@@ -210,6 +229,35 @@ export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClos
                   <option key={dept.id} value={dept.id}>{dept.name}</option>
                 ))}
               </select>
+
+              <div className="mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddingNewDepartment(!isAddingNewDepartment)}
+                  className="text-blue-600 text-sm hover:underline"
+                >
+                  {isAddingNewDepartment ? 'Cancel' : 'Add New Department'}
+                </button>
+                
+                {isAddingNewDepartment && (
+                  <div className="mt-2 space-y-2">
+                    <input
+                      type="text"
+                      value={newDepartmentName}
+                      onChange={(e) => setNewDepartmentName(e.target.value)}
+                      placeholder="Enter new department name"
+                      className="w-full px-3 py-2 border rounded-lg"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleCreateNewDepartment}
+                      className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    >
+                      Create Department
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>

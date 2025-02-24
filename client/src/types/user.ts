@@ -3,7 +3,7 @@ export type UserRole = 'admin' | 'recruiter' | 'employee' | 'manager';
 export interface User {
   id: number;
   email: string;
-  roles: UserRole[];  // Changed from single role to array of roles
+  role: UserRole;
   first_name: string;
   last_name: string;
   company_id?: number;
@@ -20,7 +20,6 @@ export interface AuthUser extends User {
   mobile_number?: string;
   salary?: string;
   leave_balance?: number;
-  // Employee data
   team_name?: string;
   manager_name?: string;
   industry?: string;
@@ -39,4 +38,7 @@ export interface AuthUser extends User {
   probation_end_date?: string;
   contract_end_date?: string;
   last_promotion_date?: string;
+  department?: string;
+  employment_status?: string;
+  employment_type?: string;
 }

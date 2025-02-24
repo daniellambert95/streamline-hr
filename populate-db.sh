@@ -21,18 +21,18 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
   -- Insert test users (starting from ID 2)
   WITH inserted_users AS (
-    INSERT INTO users (email, password, first_name, last_name, status)
+    INSERT INTO users (email, password, first_name, last_name, status, company_name)
     VALUES 
-      ('john@streamlinehr.com', '\$2b\$10\$test_hash', 'John', 'Doe', 'active'),
-      ('emma@streamlinehr.com', '\$2b\$10\$test_hash', 'Emma', 'Wilson', 'active'),
-      ('sarah@streamlinehr.com', '\$2b\$10\$test_hash', 'Sarah', 'Brown', 'active'),
-      ('mike@streamlinehr.com', '\$2b\$10\$test_hash', 'Mike', 'Johnson', 'active'),
-      ('alex@streamlinehr.com', '\$2b\$10\$test_hash', 'Alex', 'Turner', 'active'),
-      ('lisa@streamlinehr.com', '\$2b\$10\$test_hash', 'Lisa', 'Anderson', 'active'),
-      ('david@streamlinehr.com', '\$2b\$10\$test_hash', 'David', 'Clark', 'active'),
-      ('rachel@streamlinehr.com', '\$2b\$10\$test_hash', 'Rachel', 'White', 'active'),
-      ('james@streamlinehr.com', '\$2b\$10\$test_hash', 'James', 'Miller', 'active'),
-      ('sophia@streamlinehr.com', '\$2b\$10\$test_hash', 'Sophia', 'Davis', 'active')
+      ('john@streamlinehr.com', '\$2b\$10\$test_hash', 'John', 'Doe', 'active', 'Streamline HR'),
+      ('emma@streamlinehr.com', '\$2b\$10\$test_hash', 'Emma', 'Wilson', 'active', 'Streamline HR'),
+      ('sarah@streamlinehr.com', '\$2b\$10\$test_hash', 'Sarah', 'Brown', 'active', 'Streamline HR'),
+      ('mike@streamlinehr.com', '\$2b\$10\$test_hash', 'Mike', 'Johnson', 'active', 'Streamline HR'),
+      ('alex@streamlinehr.com', '\$2b\$10\$test_hash', 'Alex', 'Turner', 'active', 'Streamline HR'),
+      ('lisa@streamlinehr.com', '\$2b\$10\$test_hash', 'Lisa', 'Anderson', 'active', 'Streamline HR'),
+      ('david@streamlinehr.com', '\$2b\$10\$test_hash', 'David', 'Clark', 'active', 'Streamline HR'),
+      ('rachel@streamlinehr.com', '\$2b\$10\$test_hash', 'Rachel', 'White', 'active', 'Streamline HR'),
+      ('james@streamlinehr.com', '\$2b\$10\$test_hash', 'James', 'Miller', 'active', 'Streamline HR'),
+      ('sophia@streamlinehr.com', '\$2b\$10\$test_hash', 'Sophia', 'Davis', 'active', 'Streamline HR')
     RETURNING id, email
   )
   INSERT INTO user_roles (user_id, role_id)
@@ -74,21 +74,21 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
 
   -- Insert employees with random dates between 2025-01-25 and 2025-02-23
   INSERT INTO employees (
-    id, company_id, team_id, department_id,
+    id, company_id, team_id, department_id, manager_id,
     job_title, starting_date, mobile_number,
     job_level, salary, employment_status, employment_type
   )
   VALUES 
-    (1, 1, 1, 1, 'CEO', '2025-01-25', '+1234567890', 'executive', '150000', 'active', 'full_time'),
-    (2, 1, 2, 2, 'HR Director', '2025-01-27', '+1234567891', 'senior', '100000', 'active', 'full_time'),
-    (3, 1, 1, 1, 'Engineering Manager', '2025-01-30', '+1234567892', 'senior', '120000', 'active', 'full_time'),
-    (4, 1, 1, 1, 'Senior Developer', '2025-02-01', '+1234567893', 'senior', '90000', 'active', 'full_time'),
-    (5, 1, 3, 1, 'DevOps Engineer', '2025-02-05', '+1234567894', 'mid', '85000', 'active', 'full_time'),
-    (6, 1, 4, 1, 'QA Lead', '2025-02-08', '+1234567895', 'senior', '95000', 'active', 'full_time'),
-    (7, 1, 5, 1, 'Mobile Developer', '2025-02-12', '+1234567896', 'mid', '80000', 'active', 'full_time'),
-    (8, 1, 6, 3, 'UI Designer', '2025-02-15', '+1234567897', 'mid', '75000', 'active', 'full_time'),
-    (9, 1, 7, 1, 'Data Scientist', '2025-02-18', '+1234567898', 'senior', '110000', 'active', 'full_time'),
-    (10, 1, 8, 6, 'Support Specialist', '2025-02-20', '+1234567899', 'junior', '65000', 'active', 'full_time');
+    (1, 1, 1, 1, NULL, 'CEO', '2025-01-25', '+1234567890', 'executive', '150000', 'active', 'full_time'),
+    (2, 1, 2, 2, 1, 'HR Director', '2025-01-27', '+1234567891', 'senior', '100000', 'active', 'full_time'),
+    (3, 1, 1, 1, 1, 'Engineering Manager', '2025-01-30', '+1234567892', 'senior', '120000', 'active', 'full_time'),
+    (4, 1, 1, 1, 1, 'Senior Developer', '2025-02-01', '+1234567893', 'senior', '90000', 'active', 'full_time'),
+    (5, 1, 3, 1, 1, 'DevOps Engineer', '2025-02-05', '+1234567894', 'mid', '85000', 'active', 'full_time'),
+    (6, 1, 4, 1, 1, 'QA Lead', '2025-02-08', '+1234567895', 'senior', '95000', 'active', 'full_time'),
+    (7, 1, 5, 1, 1, 'Mobile Developer', '2025-02-12', '+1234567896', 'mid', '80000', 'active', 'full_time'),
+    (8, 1, 6, 3, 1, 'UI Designer', '2025-02-15', '+1234567897', 'mid', '75000', 'active', 'full_time'),
+    (9, 1, 7, 1, 1, 'Data Scientist', '2025-02-18', '+1234567898', 'senior', '110000', 'active', 'full_time'),
+    (10, 1, 8, 6, 1, 'Support Specialist', '2025-02-20', '+1234567899', 'junior', '65000', 'active', 'full_time');
 
   -- Insert managers
   INSERT INTO managers (

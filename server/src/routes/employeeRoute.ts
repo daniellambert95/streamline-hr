@@ -34,8 +34,8 @@ router.post('/create', authenticateJWT, async (req, res) => {
 
     // Get company_id first
     const companyResult = await client.query(
-      'SELECT id FROM companies WHERE user_id = $1',
-      [user.id]
+      'SELECT id FROM companies WHERE company_name = $1',
+      [user.company_name]
     );
 
     if (companyResult.rows.length === 0) {
@@ -46,15 +46,17 @@ router.post('/create', authenticateJWT, async (req, res) => {
     const userResult = await client.query(`
       INSERT INTO users (
         email, password, status, 
-        first_name, last_name
+        first_name, last_name,
+        company_name
       )
-      VALUES ($1, $2, 'active', $3, $4)
+      VALUES ($1, $2, 'active', $3, $4, $5)
       RETURNING id
     `, [
       req.body.email, 
       req.body.password,
       req.body.first_name,
-      req.body.last_name
+      req.body.last_name,
+      user.company_name
     ]);
     
     const userId = userResult.rows[0].id;
@@ -130,6 +132,16 @@ router.get('/', authenticateJWT, async (req, res) => {
   const user = (req as any).user;
   
   try {
+    // First, let's check if there are any manager relationships
+    const managerCheck = await pool.query(`
+      SELECT e.id, e.manager_id 
+      FROM employees e 
+      WHERE e.company_id = (
+        SELECT e2.company_id FROM employees e2 WHERE e2.id = $1
+      )
+    `, [user.id]);
+
+
     const result = await pool.query(`
       SELECT 
         u.id,
@@ -139,31 +151,18 @@ router.get('/', authenticateJWT, async (req, res) => {
         e.job_title,
         e.employment_status as status,
         e.personal_email,
-        e.date_of_birth,
-        e.gender,
-        e.marital_status,
-        e.address,
-        e.emergency_contact_name,
-        e.emergency_contact_phone,
-        e.work_permit_status,
-        e.work_permit_expiry,
-        e.health_insurance_provider,
-        e.tax_id,
-        e.probation_end_date,
-        e.contract_end_date,
-        e.last_promotion_date,
-        e.leave_balance,
+        e.manager_id,
         d.name as department,
         t.name as team_name,
-        CONCAT(m.first_name, ' ', m.last_name) as manager_name,
+        CONCAT(manager_u.first_name, ' ', manager_u.last_name) as manager_name,
         e.starting_date,
-        ARRAY_AGG(r.name) as roles
+        r.name as role
       FROM employees e
       JOIN users u ON e.id = u.id
       LEFT JOIN departments d ON e.department_id = d.id
       LEFT JOIN teams t ON e.team_id = t.id
       LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
-      LEFT JOIN users m ON manager_e.id = m.id
+      LEFT JOIN users manager_u ON manager_e.id = manager_u.id
       LEFT JOIN user_roles ur ON u.id = ur.user_id
       LEFT JOIN roles r ON ur.role_id = r.id
       WHERE e.company_id = (
@@ -171,21 +170,11 @@ router.get('/', authenticateJWT, async (req, res) => {
         FROM employees e2 
         WHERE e2.id = $1
       )
-      GROUP BY 
-        u.id, u.email, u.first_name, u.last_name,
-        e.job_title, e.employment_status, e.personal_email,
-        e.date_of_birth, e.gender, e.marital_status,
-        e.address, e.emergency_contact_name, e.emergency_contact_phone,
-        e.work_permit_status, e.work_permit_expiry,
-        e.health_insurance_provider, e.tax_id,
-        e.probation_end_date, e.contract_end_date,
-        e.last_promotion_date, e.leave_balance,
-        d.name, t.name, manager_name, e.starting_date
     `, [user.id]);
+
     
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching employees:', error);
     res.status(500).json({ 
       error: 'Failed to fetch employees',
       details: error instanceof Error ? error.message : 'Unknown error'
@@ -205,12 +194,17 @@ router.get('/managers', authenticateJWT, async (req, res) => {
         u.last_name,
         u.email,
         e.job_title,
+        e.department_id,
+        d.name as department_name,
+        m.level,
         m.can_approve_time_off,
         m.can_hire,
-        m.can_edit_salary
-      FROM managers m
-      JOIN employees e ON m.employee_id = e.id
+        m.can_edit_salary,
+        m.max_reports
+      FROM employees e
       JOIN users u ON e.id = u.id
+      JOIN managers m ON e.id = m.id
+      LEFT JOIN departments d ON e.department_id = d.id
       WHERE e.company_id = (
         SELECT e2.company_id 
         FROM employees e2 
@@ -220,7 +214,6 @@ router.get('/managers', authenticateJWT, async (req, res) => {
    
     res.json(result.rows);
   } catch (error) {
-    console.error('Error fetching managers:', error);
     res.status(500).json({ 
       error: 'Failed to fetch managers',
       details: error instanceof Error ? error.message : 'Unknown error'
@@ -232,29 +225,80 @@ router.get('/managers', authenticateJWT, async (req, res) => {
 router.put('/:id', authenticateJWT, async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
+  
   const client = await pool.connect();
   
   try {
     await client.query('BEGIN');
 
     // Update users table
-    await client.query(`
-      UPDATE users 
-      SET first_name = $1, last_name = $2, email = $3
-      WHERE id = $4
-    `, [updates.first_name, updates.last_name, updates.email, id]);
+    if (updates.first_name || updates.last_name || updates.email) {
+      await client.query(`
+        UPDATE users 
+        SET 
+          first_name = COALESCE($1, first_name),
+          last_name = COALESCE($2, last_name),
+          email = COALESCE($3, email)
+        WHERE id = $4
+      `, [updates.first_name, updates.last_name, updates.email, id]);
+    }
+
+    // Get department_id and team_id from names
+    let department_id = null;
+    let team_id = null;
+
+    if (updates.department) {
+      const deptResult = await client.query(
+        `SELECT id FROM departments WHERE name = $1 AND company_id = (
+          SELECT company_id FROM employees WHERE id = $2
+        )`,
+        [updates.department, id]
+      );
+      if (deptResult.rows.length > 0) {
+        department_id = deptResult.rows[0].id;
+      }
+    }
+
+    if (updates.team_name) {
+      const teamResult = await client.query(
+        `SELECT id FROM teams WHERE name = $1 AND company_id = (
+          SELECT company_id FROM employees WHERE id = $2
+        )`,
+        [updates.team_name, id]
+      );
+      if (teamResult.rows.length > 0) {
+        team_id = teamResult.rows[0].id;
+      }
+    }
 
     // Update employee record
     await client.query(`
       UPDATE employees 
       SET 
-        job_title = $1,
-        mobile_number = $2,
-        job_level = $3,
-        salary = $4,
-        leave_balance = $5,
-        starting_date = $6
-      WHERE id = $7
+        job_title = COALESCE($1, job_title),
+        mobile_number = COALESCE($2, mobile_number),
+        job_level = COALESCE($3, job_level),
+        salary = COALESCE($4, salary),
+        leave_balance = COALESCE($5, leave_balance),
+        starting_date = COALESCE($6, starting_date),
+        gender = COALESCE($7, gender),
+        marital_status = COALESCE($8, marital_status),
+        address = COALESCE($9, address),
+        department_id = COALESCE($10, department_id),
+        team_id = COALESCE($11, team_id),
+        date_of_birth = COALESCE($12, date_of_birth),
+        personal_email = COALESCE($13, personal_email),
+        emergency_contact_name = COALESCE($14, emergency_contact_name),
+        emergency_contact_phone = COALESCE($15, emergency_contact_phone),
+        work_permit_status = COALESCE($16, work_permit_status),
+        work_permit_expiry = COALESCE($17, work_permit_expiry),
+        health_insurance_provider = COALESCE($18, health_insurance_provider),
+        tax_id = COALESCE($19, tax_id),
+        probation_end_date = COALESCE($20, probation_end_date),
+        contract_end_date = COALESCE($21, contract_end_date),
+        last_promotion_date = COALESCE($22, last_promotion_date)
+      WHERE id = $23
+      RETURNING *
     `, [
       updates.job_title,
       updates.mobile_number,
@@ -262,6 +306,22 @@ router.put('/:id', authenticateJWT, async (req, res) => {
       updates.salary,
       updates.leave_balance,
       updates.starting_date,
+      updates.gender,
+      updates.marital_status,
+      updates.address,
+      department_id,
+      team_id,
+      updates.date_of_birth,
+      updates.personal_email,
+      updates.emergency_contact_name,
+      updates.emergency_contact_phone,
+      updates.work_permit_status,
+      updates.work_permit_expiry,
+      updates.health_insurance_provider,
+      updates.tax_id,
+      updates.probation_end_date,
+      updates.contract_end_date,
+      updates.last_promotion_date,
       id
     ]);
 
@@ -272,26 +332,22 @@ router.put('/:id', authenticateJWT, async (req, res) => {
         u.first_name,
         u.last_name,
         u.email,
-        u.role,
-        e.job_title,
-        e.starting_date,
-        e.mobile_number,
-        e.job_level,
-        e.leave_balance,
-        e.salary,
-        e.bank_details,
-        e.id_document,
-        c.company_name,
-        c.industry,
-        c.address,
+        u.company_name,
+        e.*,
+        d.name as department,
         t.name as team_name,
-        CONCAT(m.first_name, ' ', m.last_name) as manager_name
+        CONCAT(manager_u.first_name, ' ', manager_u.last_name) as manager_name,
+        (SELECT name FROM roles r 
+         JOIN user_roles ur ON r.id = ur.role_id 
+         WHERE ur.user_id = u.id 
+         LIMIT 1) as role
       FROM users u
       LEFT JOIN employees e ON u.id = e.id
-      LEFT JOIN companies c ON e.company_id = c.id
+      LEFT JOIN departments d ON e.department_id = d.id
       LEFT JOIN teams t ON e.team_id = t.id
       LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
-      LEFT JOIN users m ON manager_e.id = m.id
+      LEFT JOIN users manager_u ON manager_e.id = manager_u.id
+      LEFT JOIN companies c ON u.company_name = c.company_name
       WHERE u.id = $1
     `, [id]);
 
@@ -301,7 +357,8 @@ router.put('/:id', authenticateJWT, async (req, res) => {
     await client.query('ROLLBACK');
     console.error('Error updating employee:', error);
     res.status(500).json({
-      error: error instanceof Error ? error.message : 'Failed to update employee'
+      error: error instanceof Error ? error.message : 'Failed to update employee',
+      details: error
     });
   } finally {
     client.release();

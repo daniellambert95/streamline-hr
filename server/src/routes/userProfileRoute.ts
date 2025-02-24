@@ -14,7 +14,7 @@ router.get("/user-profile", authenticateJWT, async (req, res) => {
         u.first_name,
         u.last_name,
         u.email,
-        u.role,
+        u.company_name,
         e.job_title,
         e.starting_date,
         e.mobile_number,
@@ -23,14 +23,13 @@ router.get("/user-profile", authenticateJWT, async (req, res) => {
         e.salary,
         e.bank_details,
         e.id_document,
-        c.company_name,
         c.industry,
         c.address,
         t.name as team_name,
         CONCAT(m.first_name, ' ', m.last_name) as manager_name
       FROM users u
       LEFT JOIN employees e ON u.id = e.id
-      LEFT JOIN companies c ON e.company_id = c.id
+      LEFT JOIN companies c ON u.company_name = c.company_name
       LEFT JOIN teams t ON e.team_id = t.id
       LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
       LEFT JOIN users m ON manager_e.id = m.id
@@ -135,7 +134,7 @@ router.put("/update-profile", authenticateJWT, async (req, res) => {
           u.first_name,
           u.last_name,
           u.email,
-          u.role,
+          u.company_name,
           e.job_title,
           e.starting_date,
           e.mobile_number,
@@ -144,14 +143,13 @@ router.put("/update-profile", authenticateJWT, async (req, res) => {
           e.salary,
           e.bank_details,
           e.id_document,
-          c.company_name,
           c.industry,
           c.address,
           t.name as team_name,
           CONCAT(m.first_name, ' ', m.last_name) as manager_name
         FROM users u
         LEFT JOIN employees e ON u.id = e.id
-        LEFT JOIN companies c ON e.company_id = c.id
+        LEFT JOIN companies c ON u.company_name = c.company_name
         LEFT JOIN teams t ON e.team_id = t.id
         LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
         LEFT JOIN users m ON manager_e.id = m.id

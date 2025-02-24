@@ -12,6 +12,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   });
 
   const login = (token: string, userData: AuthUser) => {
+    console.log('Login called with userData:', userData);
+    if (!userData.id || !userData.email || !userData.role) {
+      throw new Error('Missing required user data fields');
+    }
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
     setIsAuthenticated(true);
@@ -26,7 +30,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const hasPermission = (allowedRoles: UserRole[]) => {
-    return user ? user.roles.some(role => allowedRoles.includes(role)) : false;
+    return user ? allowedRoles.includes(user.role) : false;
   };
 
   useEffect(() => {

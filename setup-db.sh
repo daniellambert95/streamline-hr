@@ -76,6 +76,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     password VARCHAR(255) NOT NULL,
     status VARCHAR(50) DEFAULT 'active',
     subscription VARCHAR(50) NOT NULL DEFAULT 'basic',
+    company_name VARCHAR(255) NOT NULL,
     user_image_path VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
@@ -91,10 +92,10 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
 
   CREATE TABLE IF NOT EXISTS companies (
     id SERIAL PRIMARY KEY,
-    company_name VARCHAR(255) NOT NULL,
+    company_name VARCHAR(255) UNIQUE NOT NULL,
     industry VARCHAR(100),
     address TEXT,
-    user_id INTEGER,
+    created_by INTEGER REFERENCES users(id),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   );
@@ -167,7 +168,7 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
 
   -- Now add all the foreign key constraints
   ALTER TABLE companies
-    ADD CONSTRAINT fk_companies_user FOREIGN KEY (user_id) REFERENCES users(id);
+    ADD CONSTRAINT fk_companies_user FOREIGN KEY (created_by) REFERENCES users(id);
 
   ALTER TABLE departments
     ADD CONSTRAINT fk_departments_company FOREIGN KEY (company_id) REFERENCES companies(id),
@@ -177,8 +178,8 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     ADD CONSTRAINT fk_teams_company FOREIGN KEY (company_id) REFERENCES companies(id);
 
   ALTER TABLE employees
-    ADD CONSTRAINT fk_employees_user FOREIGN KEY (id) REFERENCES users(id),
     ADD CONSTRAINT fk_employees_company FOREIGN KEY (company_id) REFERENCES companies(id),
+    ADD CONSTRAINT fk_employees_user FOREIGN KEY (id) REFERENCES users(id),
     ADD CONSTRAINT fk_employees_team FOREIGN KEY (team_id) REFERENCES teams(id),
     ADD CONSTRAINT fk_employees_department FOREIGN KEY (department_id) REFERENCES departments(id),
     ADD CONSTRAINT fk_employees_manager FOREIGN KEY (manager_id) REFERENCES users(id);
