@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import handleApiError from "../../utils/handleApiError";
-import { AuthUser } from "../../types/user"
-import EditProfileForm from "../../components/forms/EditProfileForm";
+import { useAuth } from "../../domains/auth/context/AuthContext";
+import handleApiError from "../../shared/utils/handleApiError";
+import { AuthUser } from "../../domains/users/types/user"
+import EditProfileForm from "../../domains/employees/components/forms/UpdateProfileForm";
 import { toast } from "react-hot-toast";
-import { formatDate } from '../../utils/dateUtils';
+import { formatDate } from '../../shared/utils/dateUtils';
 
 const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("public");

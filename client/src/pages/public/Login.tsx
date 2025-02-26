@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import handleApiError from '../../utils/handleApiError';
-import { authService } from '../../services/api/endpoints/auth';
+import { useAuth } from '../../domains/auth/context/AuthContext';
+import handleApiError from '../../shared/utils/handleApiError';
+import { authService } from '../../domains/auth/services/auth';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });

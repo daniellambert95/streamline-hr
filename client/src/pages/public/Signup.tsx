@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { normalizeEmail } from '../../utils/emailUtils';
-import { authService } from '../../services/api/endpoints/auth';
+import { normalizeEmail } from '../../shared/utils/emailUtils';
+import { authService } from '../../domains/auth/services/auth';
 import { toast } from 'react-hot-toast';
 
 const Signup = () => {

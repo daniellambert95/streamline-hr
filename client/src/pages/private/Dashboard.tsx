@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../domains/auth/context/AuthContext";
 import danielImage from "../../assets/daniel.png";
-import VacancyTrends from "../../components/analytics/VacancyTrends";
-import CalanderWidget from "../../components/dashboard/CalanderWidget";
-import { getGreeting } from '../../utils/greetingUtils';
+import VacancyTrends from "../../domains/analytics/components/VacancyTrends";
+import CalanderWidget from "../../domains/dashboard/components/CalanderWidget";
+import { getGreeting } from '../../shared/utils/greetingUtils';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();

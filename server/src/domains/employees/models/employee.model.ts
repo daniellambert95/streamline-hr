@@ -72,12 +72,23 @@ export class EmployeeModel {
     try {
       await client.query('BEGIN');
 
-      // Create user first
+      // Get company_name from the company_id
+      const companyResult = await client.query(`
+        SELECT company_name 
+        FROM companies 
+        WHERE id = $1
+      `, [data.company_id]);
+
+      if (companyResult.rows.length === 0) {
+        throw new ValidationError('Company not found');
+      }
+
+      // Create user first with company_name instead of company_id
       const userResult = await client.query(`
         INSERT INTO users (
           email, password, status, 
           first_name, last_name,
-          company_id
+          company_name
         )
         VALUES ($1, $2, 'active', $3, $4, $5)
         RETURNING id
@@ -86,7 +97,7 @@ export class EmployeeModel {
         data.password,
         data.first_name,
         data.last_name,
-        data.company_id
+        companyResult.rows[0].company_name
       ]);
       
       const userId = userResult.rows[0].id;
@@ -100,7 +111,7 @@ export class EmployeeModel {
         SELECT $2, id FROM selected_role
       `, [data.role || 'employee', userId]);
 
-      // Create employee record
+      // Create employee record (company_id is stored here instead)
       const employeeResult = await client.query(`
         INSERT INTO employees (
           id, company_id, department_id, team_id,

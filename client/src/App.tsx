@@ -1,18 +1,17 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import Sidebar from './components/layout/Sidebar';
-import Navbar from './components/layout/Navbar';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import Sidebar from './shared/components/layout/Sidebar';
+import Navbar from './shared/components/layout/Navbar';
+import { AuthProvider, useAuth } from './domains/auth/context/AuthContext';
+import { ProtectedRoute } from './domains/auth/ProtectedRoute';
 import Home from './pages/public/Home';
 import Dashboard from './pages/private/Dashboard';
 import UserProfile from './pages/private/UserProfile';
-import TalentInsights from './pages/private/TalentInsights';
+import TalentInsights from './pages/private/recruitment/TalentInsights';
 import Pricing from './pages/public/Pricing';
-import Applicants from './pages/private/Applicants';
+import Applicants from './pages/private/recruitment/Applicants';
 import Signup from './pages/public/Signup';
 import Login from './pages/public/Login';
-import Employees from './pages/private/Employees';
-import EmployeeManagement from './pages/private/EmployeeManagement';
+import EmployeeManagement from './pages/private/employees/EmployeeManagement';
 import { Toaster } from 'react-hot-toast';
 
 const AppContent = () => {
@@ -74,12 +73,6 @@ const AppContent = () => {
             <Route path="/applicants/:jobId" element={
               <ProtectedRoute allowedRoles={['admin', 'recruiter']}>
                 <Applicants />
-              </ProtectedRoute>
-            } />
-
-            <Route path="/employees" element={
-              <ProtectedRoute allowedRoles={['admin', 'recruiter']}>
-                <Employees />
               </ProtectedRoute>
             } />
 
