@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
-import Sidebar from './shared/components/layout/Sidebar';
-import Navbar from './shared/components/layout/Navbar';
+import Sidebar from './core/components/layout/Sidebar';
+import Navbar from './core/components/layout/Navbar';
 import { AuthProvider, useAuth } from './domains/auth/context/AuthContext';
 import { ProtectedRoute } from './domains/auth/ProtectedRoute';
 import Home from './pages/public/Home';

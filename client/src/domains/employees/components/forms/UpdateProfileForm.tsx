@@ -6,7 +6,7 @@ import { departmentService } from "../../../organization/services/departments";
 import { teamService } from "../../../organization/services/teams";
 import { Department } from "../../../organization/types/department";
 import { Team } from "../../../organization/types/team";
-import handleApiError from "../../../../shared/utils/handleApiError";
+import handleApiError from "../../../../core/utils/handleApiError";
 
 interface EditProfileModalProps {
   isOpen: boolean;

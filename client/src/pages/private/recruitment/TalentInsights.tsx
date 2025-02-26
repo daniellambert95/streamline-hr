@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import handleApiError from "../../../shared/utils/handleApiError";
-import { JobListing } from "../../../domains/recruitment/types/job";
-import { Applicant } from "../../../domains/recruitment/types/applicant";
-import NewJobListingModal from '../../../domains/recruitment/components/NewJobListingForm';
-import VacancyTrends from '../../../domains/analytics/components/VacancyTrends.tsx';
+import handleApiError from "../../../core/utils/handleApiError.ts";
+import { JobListing } from "../../../domains/recruitment/types/job.ts";
+import { Applicant } from "../../../domains/recruitment/types/applicant.ts";
+import NewJobListingModal from '../../../domains/recruitment/components/NewJobListingForm.tsx';
+import VacancyTrends from '../../../domains/analytics/components/analytics/VacancyTrends.tsx';
 import { applicantService, jobService } from "../../../domains/recruitment/services/recruitment.ts";
 
 const TalentInsights: React.FC = () => {
@@ -52,7 +52,7 @@ const TalentInsights: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-6">
+    <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
       {/* Header Section */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-700">Talent Insights</h1>

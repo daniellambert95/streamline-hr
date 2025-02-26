@@ -9,8 +9,8 @@ import { Team } from '../../../organization/types/team';
 import { Department } from '../../../organization/types/department';
 import { Manager } from '../../../organization/types/manager';
 import { UserRole } from '../../../users/types/user';
-import { generateTemporaryPassword } from '../../../../shared/utils/passwords';
-import handleApiError from "../../../../shared/utils/handleApiError";
+import { generateTemporaryPassword } from '../../../../core/utils/passwords';
+import handleApiError from "../../../../core/utils/handleApiError";
 import { useAuth } from '../../../auth/context/AuthContext';
 
 interface AddEmployeeFormProps {

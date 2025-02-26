@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { normalizeEmail } from '../../shared/utils/emailUtils';
+import { normalizeEmail } from '../../core/utils/emailUtils';
 import { authService } from '../../domains/auth/services/auth';
 import { toast } from 'react-hot-toast';
 

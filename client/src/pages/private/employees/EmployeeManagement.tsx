@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import handleApiError from '../../../shared/utils/handleApiError';
+import handleApiError from '../../../core/utils/handleApiError';
 import { Employee } from '../../../domains/employees/types/employee';
 import { Department } from '../../../domains/organization/types/department';
 import { Team } from '../../../domains/organization/types/team';
 import { Manager } from '../../../domains/organization/types/manager';
 import AddEmployeeForm from '../../../domains/employees/components/forms/AddEmployeeForm';
-import StatCard from '../../../shared/components/common/StatCard';
+import StatCard from '../../../core/components/common/StatCard';
 import { employeeService } from '../../../domains/employees/services/employees';
 import { teamService } from '../../../domains/organization/services/teams';
 import { departmentService } from '../../../domains/organization/services/departments';
 import { analyticsService } from '../../../domains/analytics/services/analytics';
 import { managerService } from '../../../domains/organization/services/managers';
 import { GenericAnalyticsData } from '../../../domains/analytics/types/genericAnalytics';
+import { useEmployeeSearch } from '../../../domains/employees/hooks/useEmployeeSearch';
 
 const EmployeeManagement: React.FC = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('directory');
-  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [, setEmployees] = useState<Employee[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
   const [managers, setManagers] = useState<Manager[]>([]);
@@ -33,6 +34,8 @@ const EmployeeManagement: React.FC = () => {
     turnoverRate: 0,
     avgTenure: 0
   });
+
+  const { query, setQuery, employees: searchEmployees, isLoading } = useEmployeeSearch();
 
   // Fetch data based on active tab
   const fetchData = async () => {
@@ -173,7 +176,7 @@ const EmployeeManagement: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto mt-10 bg-white shadow-lg rounded-lg p-6">
+    <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
       {/* Header Section */}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-700">Employee Management</h1>
@@ -233,10 +236,20 @@ const EmployeeManagement: React.FC = () => {
 
       {/* Tab Content */}
       <div className="mt-6">
+
         {/* Employee Directory Tab */}
         {activeTab === 'directory' && (
           <div className="space-y-6">
-
+            {/* Search Input */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Search employees..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
             {/* Employee Table */}
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -252,39 +265,45 @@ const EmployeeManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {employees.map((employee) => (
-                  <tr key={employee.id} className="border-t hover:bg-gray-50">
-                    <td className="py-3 px-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {employee.first_name} {employee.last_name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {employee.email}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">{employee.job_title || '-'}</td>
-                    <td className="py-3 px-4">{employee.department_name || '-'}</td>
-                    <td className="py-3 px-4">{employee.team_name || '-'}</td>
-                    <td className="py-3 px-4">{employee.manager_name || '-'}</td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${employee.status === 'active' ? 'bg-green-100 text-green-800' : 
-                          'bg-gray-100 text-gray-800'}`}>
-                        {employee.status || 'inactive'}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <button
-                        onClick={() => navigate(`/employee/${employee.id}`)}
-                        className="bg-indigo-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-600"
-                      >
-                        View
-                      </button>
-                    </td>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="py-3 px-4 text-center">Loading...</td>
                   </tr>
-                ))}
+                ) : (
+                  searchEmployees.map((employee) => (
+                    <tr key={employee.id} className="border-t hover:bg-gray-50">
+                      <td className="py-3 px-4">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {employee.first_name} {employee.last_name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {employee.email}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">{employee.job_title || '-'}</td>
+                      <td className="py-3 px-4">{employee.department_name || '-'}</td>
+                      <td className="py-3 px-4">{employee.team_name || '-'}</td>
+                      <td className="py-3 px-4">{employee.manager_name || '-'}</td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                          ${employee.status === 'active' ? 'bg-green-100 text-green-800' : 
+                            'bg-gray-100 text-gray-800'}`}>
+                          {employee.status || 'inactive'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          onClick={() => navigate(`/employee/${employee.id}`)}
+                          className="bg-indigo-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-600"
+                        >
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
                 </tbody>
               </table>
             </div>

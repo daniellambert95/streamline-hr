@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { jobService } from '../services/recruitment';
-import handleApiError from '../../../shared/utils/handleApiError';
+import handleApiError from '../../../core/utils/handleApiError';
 
 interface NewJobListingModalProps {
   isOpen: boolean;

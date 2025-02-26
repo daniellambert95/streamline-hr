@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../domains/auth/context/AuthContext";
 import danielImage from "../../assets/daniel.png";
-import VacancyTrends from "../../domains/analytics/components/VacancyTrends";
+import VacancyTrends from "../../domains/analytics/components/analytics/VacancyTrends";
 import CalanderWidget from "../../domains/dashboard/components/CalanderWidget";
-import { getGreeting } from '../../shared/utils/greetingUtils';
+import { getGreeting } from '../../core/utils/greetingUtils';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();

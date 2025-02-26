@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../domains/auth/context/AuthContext';
-import handleApiError from '../../shared/utils/handleApiError';
+import handleApiError from '../../core/utils/handleApiError';
 import { authService } from '../../domains/auth/services/auth';
 
 const Login = () => {
