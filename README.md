@@ -107,74 +107,74 @@ make populate-db
 
 ```
 streamline-hr/
-├── client/                      # Frontend React application
+├── client/                   # Frontend React application
 │   ├── src/
-│   │   ├── components/         # Reusable UI components
-│   │   │   ├── employees/     # Employee-related components
-│   │   │   ├── forms/         # Form components
-│   │   │   ├── layout/        # Layout components
-│   │   │   ├── modals/        # Modal components
-│   │   │   └── ui/            # UI components
-│   │   ├── pages/             # Page components
-│   │   │   ├── private/       # Protected routes
-│   │   │   └── public/        # Public routes
-│   │   ├── services/          # API services
+│   │   ├── components/       # Reusable UI components
+│   │   │   ├── employees/    # Employee-related components
+│   │   │   ├── forms/        # Form components
+│   │   │   ├── layout/       # Layout components
+│   │   │   ├── modals/       # Modal components
+│   │   │   └── ui/           # UI components
+│   │   ├── pages/            # Page components
+│   │   │   ├── private/      # Protected routes
+│   │   │   └── public/       # Public routes
+│   │   ├── services/         # API services
 │   │   │   └── api/          # API endpoints and configuration
-│   │   │       └── endpoints/ # API endpoint services
-│   │   ├── hooks/             # Custom React hooks
-│   │   ├── context/           # React context providers
-│   │   ├── types/             # TypeScript type definitions
-│   │   ├── utils/             # Utility functions
-│   │   └── assets/            # Static assets
-│   ├── public/                # Public assets
-│   └── vite.config.ts         # Vite configuration
+│   │   │       └── endpoints/# API endpoint services
+│   │   ├── hooks/            # Custom React hooks
+│   │   ├── context/          # React context providers
+│   │   ├── types/            # TypeScript type definitions
+│   │   ├── utils/            # Utility functions
+│   │   └── assets/           # Static assets
+│   ├── public/               # Public assets
+│   └── vite.config.ts        # Vite configuration
 │
-├── server/                     # Backend Express application
+├── server/                   # Backend Express application
 │   ├── src/
-│   │   ├── domains/           # Domain-driven design structure
-│   │   │   ├── analytics/     # Analytics domain
+│   │   ├── domains/          # Domain-driven design structure
+│   │   │   ├── analytics/    # Analytics domain
 │   │   │   ├── auth/         # Authentication domain
 │   │   │   ├── dashboard/    # Dashboard domain
 │   │   │   ├── employees/    # Employee management domain
 │   │   │   ├── organization/ # Organization domain
 │   │   │   ├── recruitment/  # Recruitment domain
-│   │   │   └── users/       # User management domain
+│   │   │   └── users/        # User management domain
 │   │   ├── shared/           # Shared utilities and types
-│   │   │   ├── config/      # Configuration
-│   │   │   ├── errors/      # Error handling
-│   │   │   └── types/       # Shared types
-│   │   └── index.ts         # Application entry point
+│   │   │   ├── config/       # Configuration
+│   │   │   ├── errors/       # Error handling
+│   │   │   └── types/        # Shared types
+│   │   └── index.ts          # Application entry point
 │   ├── tests/                # Test files
 │   └── migrations/           # Database migrations
 │
-├── scripts/                   # Database and utility scripts
-│   ├── setup-db.sh          # Database initialization
-│   └── populate-db.sh       # Sample data population
+├── scripts/                  # Database and utility scripts
+│   ├── setup-db.sh           # Database initialization
+│   └── populate-db.sh        # Sample data population
 │
-├── docker/                    # Docker configuration
+├── docker/                   # Docker configuration
 │   ├── client/
-│   │   └── Dockerfile       # Frontend Dockerfile
+│   │   └── Dockerfile        # Frontend Dockerfile
 │   └── server/
-│       └── Dockerfile       # Backend Dockerfile
+│       └── Dockerfile        # Backend Dockerfile
 │
 ├── docker-compose.yml        # Docker Compose configuration
-├── Makefile                 # Make commands
-├── .env                     # Environment variables example
-├── .gitignore              # Git ignore rules
-└── README.md               # Project documentation
+├── Makefile                  # Make commands
+├── .env                      # Environment variables example
+├── .gitignore                # Git ignore rules
+└── README.md                 # Project documentation
 ```
 
 ## Domain Structure
 
 ```
 domain/
-├── controllers/     # Request handlers
-├── services/       # Business logic
-├── models/         # Data access layer
-├── routes/         # Route definitions
-├── types/          # Domain-specific types
-├── validators/     # Input validation
-└── middleware/     # Domain-specific middleware
+├── controllers/              # Request handlers
+├── services/                 # Business logic
+├── models/                   # Data access layer
+├── routes/                   # Route definitions
+├── types/                    # Domain-specific types
+├── validators/               # Input validation
+└── middleware/               # Domain-specific middleware
 ```
 
 ## API Documentation
