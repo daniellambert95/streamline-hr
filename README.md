@@ -131,16 +131,21 @@ streamline-hr/
 │
 ├── server/                     # Backend Express application
 │   ├── src/
-│   │   ├── routes/            # API route handlers
-│   │   ├── services/          # Business logic services
-│   │   ├── middleware/        # Express middleware
-│   │   ├── config/            # Configuration files
-│   │   │   └── db.ts         # Database configuration
-│   │   ├── types/            # TypeScript type definitions
-│   │   └── utils/            # Utility functions
+│   │   ├── domains/           # Domain-driven design structure
+│   │   │   ├── analytics/     # Analytics domain
+│   │   │   ├── auth/         # Authentication domain
+│   │   │   ├── dashboard/    # Dashboard domain
+│   │   │   ├── employees/    # Employee management domain
+│   │   │   ├── organization/ # Organization domain
+│   │   │   ├── recruitment/  # Recruitment domain
+│   │   │   └── users/       # User management domain
+│   │   ├── shared/           # Shared utilities and types
+│   │   │   ├── config/      # Configuration
+│   │   │   ├── errors/      # Error handling
+│   │   │   └── types/       # Shared types
+│   │   └── index.ts         # Application entry point
 │   ├── tests/                # Test files
-│   ├── migrations/           # Database migrations
-│   └── tsconfig.json         # TypeScript configuration
+│   └── migrations/           # Database migrations
 │
 ├── scripts/                   # Database and utility scripts
 │   ├── setup-db.sh          # Database initialization
@@ -159,6 +164,19 @@ streamline-hr/
 └── README.md               # Project documentation
 ```
 
+## Domain Structure
+
+```
+domain/
+├── controllers/     # Request handlers
+├── services/       # Business logic
+├── models/         # Data access layer
+├── routes/         # Route definitions
+├── types/          # Domain-specific types
+├── validators/     # Input validation
+└── middleware/     # Domain-specific middleware
+```
+
 ## API Documentation
 
 ### Authentication
@@ -171,36 +189,46 @@ streamline-hr/
 
 - GET `/api/v1/employees` - List all employees
 - POST `/api/v1/employees/create` - Create new employee
-- PUT `/api/v1/employees/:id` - Update employee/profile
-- DELETE `/api/v1/employees/:id` - Delete employee
-- GET `/api/v1/employees/:id` - Get employee details
+- PUT `/api/v1/employees/:id` - Update employee
 - GET `/api/v1/employees/profile` - Get current user's profile
 - GET `/api/v1/employees/managers` - Get all managers
 
-### Team Management
+### Organization Management
 
-- GET `/api/v1/teams` - List teams
-- POST `/api/v1/teams/create` - Create new team
-- PUT `/api/v1/teams/:id` - Update team
-- DELETE `/api/v1/teams/:id` - Delete team
+- GET `/api/v1/organization/departments` - List departments
+- POST `/api/v1/organization/departments` - Create department
+- PUT `/api/v1/organization/departments/:id` - Update department
+- DELETE `/api/v1/organization/departments/:id` - Delete department
+- GET `/api/v1/organization/teams` - List teams
+- POST `/api/v1/organization/teams` - Create team
+- PUT `/api/v1/organization/teams/:id` - Update team
+- DELETE `/api/v1/organization/teams/:id` - Delete team
 
-### Department Management
+### Recruitment
 
-- GET `/api/v1/departments` - List departments
-- POST `/api/v1/departments/create` - Create department
-- PUT `/api/v1/departments/:id` - Update department
-- DELETE `/api/v1/departments/:id` - Delete department
-
-### Job Management
-
-- GET `/api/v1/jobs` - List job listings
-- POST `/api/v1/jobs` - Create job listing
-- PUT `/api/v1/jobs/:id` - Update job listing
-- DELETE `/api/v1/jobs/:id` - Delete job listing
+- GET `/api/v1/recruitment/jobs` - List job listings
+- POST `/api/v1/recruitment/jobs` - Create job listing
+- GET `/api/v1/recruitment/applicants` - List applicants
+- GET `/api/v1/recruitment/stats` - Get recruitment statistics
 
 ### Analytics
 
-- GET `/api/v1/analytics/vacancy-trends` - Get vacancy trends
-- GET `/api/v1/analytics/hiring-stats` - Get hiring statistics
-- GET `/api/v1/analytics/department-stats` - Get department statistics
-- GET `/api/v1/employee-management/analytics` - Get employee analytics
+- GET `/api/v1/analytics/employee-analytics` - Get employee analytics
+
+## Error Handling
+
+The application implements a standardized error handling approach with custom error types:
+
+- DatabaseError
+- ValidationError
+- AuthorizationError
+- ConfigError
+
+## Authentication & Authorization
+
+The system uses JWT-based authentication with role-based access control:
+
+- Admin: Full system access
+- Manager: Team management and limited HR functions
+- Recruiter: Recruitment and applicant management
+- Employee: Self-service and basic access
