@@ -261,7 +261,7 @@ const EmployeeManagement: React.FC = () => {
                       </div>
                     </td>
                     <td className="py-3 px-4">{employee.job_title || '-'}</td>
-                    <td className="py-3 px-4">{employee.department || '-'}</td>
+                    <td className="py-3 px-4">{employee.department_name || '-'}</td>
                     <td className="py-3 px-4">{employee.team_name || '-'}</td>
                     <td className="py-3 px-4">{employee.manager_name || '-'}</td>
                     <td className="py-3 px-4">

@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import handleApiError from "../../utils/handleApiError";
-import { AuthUser } from "../../types/user";
-import danielImage from "../../assets/daniel.png";
+import { AuthUser } from "../../types/user"
 import EditProfileForm from "../../components/forms/EditProfileForm";
 import { toast } from "react-hot-toast";
+import { formatDate } from '../../utils/dateUtils';
 
 const UserProfile: React.FC = () => {
   const [activeTab, setActiveTab] = useState("public");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const { user, login } = useAuth();
+  const { user, login, refreshProfile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,6 +18,12 @@ const UserProfile: React.FC = () => {
       navigate("/login");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (user) {
+      refreshProfile();
+    }
+  }, []);
 
   const handleProfileUpdate = async (updatedData: AuthUser) => {
     try {
@@ -123,7 +129,7 @@ const UserProfile: React.FC = () => {
             </div>
             <div>
               <h3 className="text-gray-600">Date of Birth</h3>
-              <p className="font-medium">{user.date_of_birth || 'N/A'}</p>
+              <p className="font-medium">{formatDate(user.date_of_birth)}</p>
             </div>
             <div>
               <h3 className="text-gray-600">Gender</h3>
@@ -141,7 +147,7 @@ const UserProfile: React.FC = () => {
             </div>
             <div>
               <h3 className="text-gray-600">Department</h3>
-              <p className="font-medium">{user.department || 'N/A'}</p>
+              <p className="font-medium">{user.department_name || 'N/A'}</p>
             </div>
             <div>
               <h3 className="text-gray-600">Team</h3>

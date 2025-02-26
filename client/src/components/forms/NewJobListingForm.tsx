@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-hot-toast';
-import { jobService } from '../../services/api/endpoints/jobs';
+import { jobService } from '../../services/api/endpoints/recruitment';
 import handleApiError from '../../utils/handleApiError';
 
 interface NewJobListingModalProps {

@@ -5,17 +5,17 @@ import { Team } from '../../../types/team';
 
 export const teamService = {
   getAll: () => 
-    api.get<Team[]>('/api/v1/teams'),
+    api.get<Team[]>('/api/v1/organization/teams'),
     
   getById: (id: number) => 
-    api.get<Team>(`/api/v1/teams/${id}`),
+    api.get<Team>(`/api/v1/organization/teams/${id}`),
     
   create: (data: Partial<Team>) => 
-    api.post<Team>('/api/v1/teams', data),
+    api.post<Team>('/api/v1/organization/teams', data),
     
   update: (id: number, data: Partial<Team>) => 
-    api.put<Team>(`/api/v1/teams/${id}`, data),
+    api.put<Team>(`/api/v1/organization/teams/${id}`, data),
     
   delete: (id: number) => 
-    api.delete<void>(`/api/v1/teams/${id}`)
+    api.delete<void>(`/api/v1/organization/teams/${id}`)
 };

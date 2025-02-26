@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { useAuth } from "../../context/AuthContext";
 import { AuthUser } from "../../types/user";
 import { profileService } from "../../services/api/endpoints/profile";
 import { departmentService } from "../../services/api/endpoints/departments";
@@ -22,7 +21,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   userData,
   onUpdate,
 }) => {
-  const { user, login } = useAuth();
   const [form, setForm] = useState<Partial<AuthUser>>({
     // Basic Info
     first_name: "",
@@ -36,7 +34,9 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     // Job Info
     job_title: "",
     job_level: "",
-    department: "",
+    department_id: "",
+    team_id: "",  
+    department_name: "",
     team_name: "",
     manager_name: "",
     employment_status: "",
@@ -61,7 +61,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     tax_id: "",
   });
 
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [department_names, setDepartments] = useState<Department[]>([]);
   const [teams, setTeams] = useState<Team[]>([]);
 
   const [isAddingNewDepartment, setIsAddingNewDepartment] = useState(false);
@@ -106,44 +106,39 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
   }, [userData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    if (name === "department_name") {
+      const selectedDept = department_names.find(dept => dept.name === value);
+      setForm(prev => ({ 
+        ...prev,
+        department_id: selectedDept?.id.toString() || "",
+        department_name: value
+      }));
+    } else if (name === "team_name") {
+      const selectedTeam = teams.find(team => team.name === value);
+      setForm(prev => ({ 
+        ...prev,
+        team_id: selectedTeam?.id.toString() || "",
+        team_name: value
+      }));
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    
     try {
-      // Get token first
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      // Check if user exists before updating
-      if (!user) {
-        throw new Error('No user found');
-      }
-
-      const formattedData = {
-        ...form,
-        leave_balance: form.leave_balance ? Number(form.leave_balance) : undefined,
-      };
-
-      // Check if user exists before updating
-      if (!user) {
-        throw new Error('No user found');
-      }
-
-      const { data } = await profileService.update(user.id, formattedData);
+      await profileService.update(form);
       
-      // Update the context with new user data
-      login(token, data);
-      onUpdate(data);
-      onClose();
       toast.success('Profile updated successfully');
+      onUpdate(form as AuthUser);
+      onClose();
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile');
+      handleApiError(error);
     }
   };
 
@@ -156,7 +151,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
     try {
       const { data } = await departmentService.create({ name: newDepartmentName });
       setDepartments(prev => [...prev, data]);
-      setForm(prev => ({ ...prev, department: data.name }));
+      setForm(prev => ({ ...prev, department_name: data.name }));
       setNewDepartmentName('');
       setIsAddingNewDepartment(false);
       toast.success('Department created successfully');
@@ -224,13 +219,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({
               <div>
                 <label className="block text-sm font-medium text-gray-600">Department</label>
                 <select
-                  name="department"
-                  value={form.department || ''}
+                  name="department_name"
+                  value={form.department_name || ''}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border rounded-lg"
                 >
                   <option value="">Select Department</option>
-                  {departments.map(dept => (
+                  {department_names.map(dept => (
                     <option key={dept.id} value={dept.name}>{dept.name}</option>
                   ))}
                 </select>

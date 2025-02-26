@@ -17,7 +17,9 @@ export interface SignupForm {
 export interface AuthContextType {
   isAuthenticated: boolean;
   user: AuthUser | null;
-  login: (token: string, userData: AuthUser) => void;
+  setUser: (user: AuthUser | null) => void;
+  login: (token: string, userData: AuthUser) => Promise<void>;
   logout: () => void;
   hasPermission: (allowedRoles: UserRole[]) => boolean;
+  refreshProfile: () => Promise<void>;
 }

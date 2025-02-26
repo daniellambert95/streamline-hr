@@ -9,7 +9,7 @@ export interface Employee {
     team_name?: string;
     manager_name?: string;
     starting_date: string;
-    department: string;
+    department_name: string;
     team: string;
     manager: string;
     status: 'active' | 'inactive' | 'onboarding' | 'on_leave';

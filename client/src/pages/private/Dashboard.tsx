@@ -33,7 +33,7 @@ const Dashboard: React.FC = () => {
         </h1>
   
         {/* User Profile Link */}
-        <Link to="/user-profile" className="flex items-center gap-4 p-4 border rounded-lg shadow bg-white cursor-pointer hover:shadow-lg transition">
+        <Link to="/profile" className="flex items-center gap-4 p-4 border rounded-lg shadow bg-white cursor-pointer hover:shadow-lg transition">
           <div>
             <p className="text-sm font-semibold">
               {user.first_name} {user.last_name}
@@ -44,19 +44,24 @@ const Dashboard: React.FC = () => {
         </Link>
       </div>
 
-
-      {/* Grid Layout for Calendar and Vacancy Trends */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Calendar Widget */}
-        <div className="md:col-span-2">
-          <CalanderWidget />
-        </div>
-        {/* Vacancy Trends */}
-        <div className="md:col-span-1">
-          <VacancyTrends />
+      {/* Employee Information */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4">Employee Information</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <InfoItem label="Department" value={user.department_name} />
+          <InfoItem label="Team" value={user.team_name} />
+          <InfoItem label="Job Title" value={user.job_title} />
+          <InfoItem label="Job Level" value={user.job_level} />
+          <InfoItem label="Employment Type" value={user.employment_type} />
+          <InfoItem label="Company" value={user.company_name} />
         </div>
       </div>
-      
+
+      {/* Other Dashboard Components */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <VacancyTrends />
+        <CalanderWidget />
+      </div>
       {/* Cards Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
@@ -102,7 +107,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Candidate Table */}
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-lg font-bold mb-4">Candidates</h2>
@@ -194,5 +198,13 @@ const Dashboard: React.FC = () => {
     </div>
   );
 };
+
+// Helper component for displaying info items
+const InfoItem = ({ label, value }: { label: string; value?: string }) => (
+  <div>
+    <h3 className="text-gray-600">{label}</h3>
+    <p className="font-medium">{value || 'N/A'}</p>
+  </div>
+);
 
 export default Dashboard;

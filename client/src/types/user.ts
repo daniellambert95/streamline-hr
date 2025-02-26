@@ -21,7 +21,12 @@ export interface AuthUser extends User {
   salary?: string;
   leave_balance?: number;
   team_name?: string;
+  team_id?: string;
   manager_name?: string;
+  department_name?: string;
+  department_id?: string;
+  employment_status?: string;
+  employment_type?: string;
   industry?: string;
   id_document?: string;
   personal_email?: string;
@@ -38,7 +43,4 @@ export interface AuthUser extends User {
   probation_end_date?: string;
   contract_end_date?: string;
   last_promotion_date?: string;
-  department?: string;
-  employment_status?: string;
-  employment_type?: string;
 }

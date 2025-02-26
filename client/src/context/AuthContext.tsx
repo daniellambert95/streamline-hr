@@ -1,8 +1,18 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { UserRole, AuthUser } from '../types/user';
 import { AuthContextType } from '../types/auth';
+import { profileService } from '../services/api/endpoints/profile';
+import api from '../services/api';
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  isAuthenticated: false,
+  setUser: () => {},
+  login: async () => {},
+  logout: () => {},
+  hasPermission: () => false,
+  refreshProfile: async () => {}
+});
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
@@ -11,15 +21,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return userData ? JSON.parse(userData) : null;
   });
 
-  const login = (token: string, userData: AuthUser) => {
-    console.log('Login called with userData:', userData);
-    if (!userData.id || !userData.email || !userData.role) {
-      throw new Error('Missing required user data fields');
+  const login = async (token: string, basicUserData: AuthUser) => {
+    try {
+      // Store token first
+      localStorage.setItem('token', token);
+      
+      // Set initial data
+      setIsAuthenticated(true);
+      setUser(basicUserData);
+      
+      // Fetch complete profile in one go
+      const response = await api.get('/api/v1/dashboard/data');
+      const completeProfile = response.data.user;
+      
+      // Update with complete data
+      localStorage.setItem('user', JSON.stringify(completeProfile));
+      setUser(completeProfile);
+    } catch (error) {
+      console.error('Error during login:', error);
+      throw error;
     }
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setIsAuthenticated(true);
-    setUser(userData);
   };
 
   const logout = () => {
@@ -31,6 +52,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const hasPermission = (allowedRoles: UserRole[]) => {
     return user ? allowedRoles.includes(user.role) : false;
+  };
+
+  const refreshProfile = async () => {
+    try {
+      const data = await profileService.getFullProfile();
+      if (data) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          // Preserve any existing user data that isn't included in the profile response
+          setUser(prevUser => ({
+            ...prevUser,
+            ...data
+          }));
+          localStorage.setItem('user', JSON.stringify({
+            ...user,
+            ...data
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing profile:', error);
+    }
   };
 
   useEffect(() => {
@@ -48,7 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, hasPermission }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, hasPermission, refreshProfile, setUser }}>
       {children}
     </AuthContext.Provider>
   );
