@@ -5,7 +5,9 @@ export const getGreeting = (): string => {
     return "Good morning";
   } else if (currentHour < 18) {
     return "Good afternoon";
-  } else {
+  } else if (currentHour < 21) {
     return "Good evening";
+  } else {
+    return "Good night";
   }
 }; 
