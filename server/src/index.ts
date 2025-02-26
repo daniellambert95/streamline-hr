@@ -1,21 +1,17 @@
 import express from 'express';
 import cors from 'cors';
-import uploadRoutes from './routes/uploadRoute';
-import jobsRoutes from './routes/jobRoutes';
-import signupRoute from './routes/signupRoute';
-import profileRoute from './routes/profileRoute';
-import userProfileRoute from './routes/userProfileRoute';
-import loginRoute from './routes/loginRoute';
-import employeeRoute from './routes/employeeRoute';
-import teamRoute from './routes/teamRoute';
-import departmentRoute from './routes/departmentRoute';
-import applicantRoutes from './routes/applicantRoutes';
 import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
-import employeeManagementRoute from './routes/employeeManagementRoute';
-import analyticsRoute from './routes/analyticsRoute';
-import profileRouter from './routes/profileRoute';
+
+// Route imports
+import { createAuthRouter } from './domains/auth/routes/auth.routes';
+import { createUserRouter } from './domains/users/routes/user.routes';
+import { createDashboardRouter } from './domains/dashboard/routes/dashboard.routes';
+import { createEmployeeRouter } from './domains/employees/routes/employee.route';
+import { createOrganizationRouter } from './domains/organization/routes/organization.routes';
+import { createRecruitmentRouter } from './domains/recruitment/routes/recruitment.routes';
+import { createAnalyticsRouter } from './domains/analytics/routes/analytics.routes';
 
 dotenv.config();
 
@@ -37,19 +33,13 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Routes
-app.use('/api/v1/uploads', uploadRoutes);
-app.use('/api/v1/users', signupRoute);
-app.use('/api/v1/users', loginRoute);
-app.use('/api/v1/users/profile', profileRoute);
-app.use('/api/v1/users/user-profile', userProfileRoute);
-app.use('/api/v1/jobs', jobsRoutes);
-app.use('/api/v1/employees', employeeRoute);
-app.use('/api/v1/teams', teamRoute);
-app.use('/api/v1/departments', departmentRoute);
-app.use('/api/v1/applicants', applicantRoutes);
-app.use('/api/v1/employee-management', employeeManagementRoute);
-app.use('/api/v1/analytics', analyticsRoute);
-app.use('/api/v1/employees', profileRouter);
+app.use('/api/v1/auth', createAuthRouter());
+app.use('/api/v1/users', createUserRouter());
+app.use('/api/v1/dashboard', createDashboardRouter());
+app.use('/api/v1/employees', createEmployeeRouter());
+app.use('/api/v1/organization', createOrganizationRouter());
+app.use('/api/v1/recruitment', createRecruitmentRouter());
+app.use('/api/v1/analytics', createAnalyticsRouter());
 
 // Root endpoint
 app.get('/', (req, res) => {

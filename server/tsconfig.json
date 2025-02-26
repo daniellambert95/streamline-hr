@@ -8,9 +8,14 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "typeRoots": [
+      "./src/shared/types",
+      "./node_modules/@types"
+    ],
     "types": ["node", "express"]
   },
-  "include": ["src/**/*", "src/types/express/index.d.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
 }
