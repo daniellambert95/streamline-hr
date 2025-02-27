@@ -5,6 +5,8 @@ import danielImage from "../../assets/daniel.png";
 import VacancyTrends from "../../domains/analytics/components/analytics/VacancyTrends";
 import CalanderWidget from "../../domains/dashboard/components/CalanderWidget";
 import { getGreeting } from '../../core/utils/greetingUtils';
+import { FaBell, FaComments } from 'react-icons/fa';
+import TaskList from "../../domains/dashboard/components/TaskList";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -32,36 +34,38 @@ const Dashboard: React.FC = () => {
           {getGreeting()}, <span className="text-indigo-600">{user.first_name}</span> 👋
         </h1>
   
-        {/* User Profile Link */}
-        <Link to="/profile" className="flex items-center gap-4 p-4 border rounded-lg shadow bg-white cursor-pointer hover:shadow-lg transition">
-          <div>
-            <p className="text-sm font-semibold">
-              {user.first_name} {user.last_name}
-            </p>
-            <p className="text-sm text-gray-500">{user.company_name}</p>
+        {/* User Profile Section with Notifications */}
+        <div className="flex items-center gap-6">
+          {/* Notification Icons */}
+          <div className="flex items-center gap-4">
+            <Link to="/notifications" className="relative p-2 hover:bg-gray-100 rounded-full">
+              <FaBell className="text-gray-600 text-xl" />
+              <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                3
+              </span>
+            </Link>
+            <Link to="/messages" className="relative p-2 hover:bg-gray-100 rounded-full">
+              <FaComments className="text-gray-600 text-xl" />
+              <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                2
+              </span>
+            </Link>
           </div>
-          <img src={danielImage} alt="User" className="ml-12 w-12 h-12 rounded-full" />
-        </Link>
-      </div>
-
-      {/* Employee Information */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Employee Information</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <InfoItem label="Department" value={user.department_name} />
-          <InfoItem label="Team" value={user.team_name} />
-          <InfoItem label="Job Title" value={user.job_title} />
-          <InfoItem label="Job Level" value={user.job_level} />
-          <InfoItem label="Employment Type" value={user.employment_type} />
-          <InfoItem label="Company" value={user.company_name} />
+          
+          {/* Profile Link */}
+          <Link to="/profile" className="flex items-center gap-4 p-4 border rounded-lg shadow bg-white cursor-pointer hover:shadow-lg transition">
+            <div>
+              <p className="text-sm font-semibold">
+                {user.first_name} {user.last_name}
+              </p>
+              <p className="text-sm text-gray-500">{user.company_name}</p>
+            </div>
+            <img src={danielImage} alt="User" className="ml-12 w-12 h-12 rounded-full" />
+          </Link>
         </div>
       </div>
 
       {/* Other Dashboard Components */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <VacancyTrends />
-        <CalanderWidget />
-      </div>
       {/* Cards Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
@@ -81,6 +85,23 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Analytics Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Calendar and Tasks in first row */}
+        <CalanderWidget />
+        <TaskList />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CalanderWidget />
+          <TaskList />
+        </div>
+        <div className="col-span-1">
+          <VacancyTrends />
+        </div>
+      </div>
+
       {/* Upcoming Interview Section */}
       <div className="bg-white p-6 rounded-lg shadow space-y-4">
         <h2 className="text-lg font-bold">Upcoming Interview</h2>
@@ -96,10 +117,6 @@ const Dashboard: React.FC = () => {
             <div>
               <p className="text-sm text-gray-500">Time</p>
               <p>11:30 AM - 12:45 AM</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Company</p>
-              <p>StreamlineHR</p>
             </div>
             <button className="bg-indigo-500 text-white px-4 py-2 rounded-md">
               View Details

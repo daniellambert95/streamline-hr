@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import handleApiError from "../../../core/utils/handleApiError.ts";
-import { JobListing } from "../../../domains/recruitment/types/job.ts";
-import { Applicant } from "../../../domains/recruitment/types/applicant.ts";
-import NewJobListingModal from '../../../domains/recruitment/components/NewJobListingForm.tsx';
-import VacancyTrends from '../../../domains/analytics/components/analytics/VacancyTrends.tsx';
-import { applicantService, jobService } from "../../../domains/recruitment/services/recruitment.ts";
+import handleApiError from "../../core/utils/handleApiError.ts";
+import { JobListing } from "../../domains/recruitment/types/job.ts";
+import { Applicant } from "../../domains/recruitment/types/applicant.ts";
+import NewJobListingModal from '../../domains/recruitment/components/NewJobListingForm.tsx';
+import VacancyTrends from '../../domains/analytics/components/analytics/VacancyTrends.tsx';
+import { applicantService, jobService } from "../../domains/recruitment/services/recruitment.ts";
 
 const TalentInsights: React.FC = () => {
   const navigate = useNavigate();

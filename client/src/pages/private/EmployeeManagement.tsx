@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import handleApiError from '../../../core/utils/handleApiError';
-import { Employee } from '../../../domains/employees/types/employee';
-import { Department } from '../../../domains/organization/types/department';
-import { Team } from '../../../domains/organization/types/team';
-import { Manager } from '../../../domains/organization/types/manager';
-import AddEmployeeForm from '../../../domains/employees/components/forms/AddEmployeeForm';
-import StatCard from '../../../core/components/common/StatCard';
-import { employeeService } from '../../../domains/employees/services/employees';
-import { teamService } from '../../../domains/organization/services/teams';
-import { departmentService } from '../../../domains/organization/services/departments';
-import { analyticsService } from '../../../domains/analytics/services/analytics';
-import { managerService } from '../../../domains/organization/services/managers';
-import { GenericAnalyticsData } from '../../../domains/analytics/types/genericAnalytics';
-import { useEmployeeSearch } from '../../../domains/employees/hooks/useEmployeeSearch';
+import handleApiError from '../../core/utils/handleApiError';
+import { Employee } from '../../domains/employees/types/employee';
+import { Department } from '../../domains/organization/types/department';
+import { Team } from '../../domains/organization/types/team';
+import { Manager } from '../../domains/organization/types/manager';
+import AddEmployeeForm from '../../domains/employees/components/forms/AddEmployeeForm';
+import StatCard from '../../core/components/common/StatCard';
+import { employeeService } from '../../domains/employees/services/employees';
+import { teamService } from '../../domains/organization/services/teams';
+import { departmentService } from '../../domains/organization/services/departments';
+import { analyticsService } from '../../domains/analytics/services/analytics';
+import { managerService } from '../../domains/organization/services/managers';
+import { GenericAnalyticsData } from '../../domains/analytics/types/genericAnalytics';
+import { useEmployeeSearch } from '../../domains/employees/hooks/useEmployeeSearch';
 
 const EmployeeManagement: React.FC = () => {
   const navigate = useNavigate();

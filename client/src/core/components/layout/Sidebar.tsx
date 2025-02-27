@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../domains/auth/context/AuthContext';
-import { FaHome, FaUsers, FaBriefcase, FaUsersCog, FaBell, FaFileAlt, FaComments, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaUsers, FaBriefcase, FaUsersCog, FaFileAlt, FaComments, FaSignOutAlt, FaDollarSign, FaChartLine } from 'react-icons/fa';
 
 const AuthSidebar: React.FC = () => {
   const { logout } = useAuth();
@@ -34,12 +34,16 @@ const AuthSidebar: React.FC = () => {
             <Link to="/talent-insights">Talent Insights</Link>
           </li>
           <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
-            <FaBell className="mr-3" />
-            <Link to="/notifications">Notifications</Link>
-          </li>
-          <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
             <FaFileAlt className="mr-3" />
             <Link to="/templates">Templates</Link>
+          </li>
+          <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
+            <FaDollarSign className="mr-3" />
+            <Link to="/payroll">Payroll</Link>
+          </li>
+          <li className="px-6 py-4 hover:bg-indigo-500 flex items-center">
+            <FaChartLine className="mr-3" />
+            <Link to="/performance">Performance</Link>
           </li>
         </ul>
       </nav>

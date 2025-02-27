@@ -6,13 +6,15 @@ import { ProtectedRoute } from './domains/auth/ProtectedRoute';
 import Home from './pages/public/Home';
 import Dashboard from './pages/private/Dashboard';
 import UserProfile from './pages/private/UserProfile';
-import TalentInsights from './pages/private/recruitment/TalentInsights';
+import TalentInsights from './pages/private/TalentInsights';
 import Pricing from './pages/public/Pricing';
-import Applicants from './pages/private/recruitment/Applicants';
+import Applicants from './pages/private/Applicants';
 import Signup from './pages/public/Signup';
 import Login from './pages/public/Login';
-import EmployeeManagement from './pages/private/employees/EmployeeManagement';
+import EmployeeManagement from './pages/private/EmployeeManagement';
 import { Toaster } from 'react-hot-toast';
+import PayrollManagement from './pages/private/Payroll';
+import PerformanceReviews from './pages/private/Performance';
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
@@ -58,12 +60,6 @@ const AppContent = () => {
               </ProtectedRoute>
             } />
 
-            <Route path="/user-profile" element={
-              <ProtectedRoute>
-                <UserProfile />
-              </ProtectedRoute>
-            } />
-
             <Route path="/talent-insights" element={
               <ProtectedRoute allowedRoles={['admin', 'recruiter']}>
                 <TalentInsights />
@@ -81,6 +77,24 @@ const AppContent = () => {
               element={
                 <ProtectedRoute>
                   <EmployeeManagement />
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/payroll" 
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                  <PayrollManagement />
+                </ProtectedRoute>
+              } 
+            />
+
+            <Route 
+              path="/performance" 
+              element={
+                <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                  <PerformanceReviews />
                 </ProtectedRoute>
               } 
             />
