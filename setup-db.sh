@@ -23,12 +23,15 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     audit_logs,
     time_off_requests,
     notifications,
+    messages,
     applicant_activity,
     applicant_notes,
     applicants,
     job_interviewers,
     job_listings,
     manager_permissions,
+    tasks,
+    task_lists,
     employees,
     managers,
     departments,
@@ -255,10 +258,43 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
   -- Notifications Table
   CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    recipient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    sender_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    type VARCHAR(50) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+    );
+
+  CREATE TABLE IF NOT EXISTS messages (
+    id SERIAL PRIMARY KEY,
+    sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE SET NULL,
+    recipient_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    subject VARCHAR(255),
     content TEXT NOT NULL,
-    status VARCHAR CHECK (status IN ('read', 'unread')),
-    created_at TIMESTAMP DEFAULT NOW()
+    sent_at TIMESTAMP DEFAULT NOW(),
+    is_read BOOLEAN DEFAULT FALSE
+  );  
+
+  -- Add before the final trigger creation
+  CREATE TABLE IF NOT EXISTS task_lists (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    task_list_id INTEGER NOT NULL REFERENCES task_lists(id) ON DELETE CASCADE,
+    description TEXT NOT NULL,
+    due_date DATE,
+    status VARCHAR(50) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed')),
+    priority INTEGER CHECK (priority BETWEEN 1 AND 5),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
   );
 
   -- Time Off Requests

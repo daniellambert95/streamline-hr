@@ -141,6 +141,35 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
     (4, 'Perfect fit for the role', NOW() - INTERVAL '9 days'),
     (7, 'Good problem-solving skills', NOW() - INTERVAL '17 days');
 
+  -- Insert task lists and tasks for user 1
+  INSERT INTO task_lists (user_id, name)
+  VALUES 
+    (1, 'Work Tasks'),
+    (1, 'Personal Tasks');
+
+  -- Insert tasks for the task lists
+  INSERT INTO tasks (task_list_id, description, due_date, status, priority)
+  VALUES 
+    (1, 'Review Q1 performance reports', '2024-03-31', 'pending', 4),
+    (1, 'Schedule team meeting', '2024-03-25', 'in_progress', 3),
+    (1, 'Update HR policies', '2024-04-15', 'pending', 5),
+    (2, 'Gym session', '2024-03-24', 'pending', 2),
+    (2, 'Book dentist appointment', '2024-03-30', 'pending', 3);
+
+  -- Insert notifications for user 1
+  INSERT INTO notifications (recipient_id, sender_id, type, message, is_read)
+  VALUES 
+    (1, 2, 'application', 'New job application received for Senior Frontend Developer position', false),
+    (1, 2, 'meeting', 'Team meeting scheduled for tomorrow at 10 AM', false),
+    (1, 2, 'review', 'Employee review deadline approaching', false);
+
+  -- Insert messages for user 1
+  INSERT INTO messages (sender_id, recipient_id, subject, content, is_read)
+  VALUES 
+    (2, 1, 'Weekly Update', 'Here is the weekly progress report for the engineering team.', false),
+    (2, 1, 'Meeting Request', 'Can we schedule a meeting to discuss the new project requirements?', false),
+    (2, 1, 'Document Review', 'Please review the attached technical specifications when you have a moment.', false);
+
   DO \$\$
   BEGIN
     RAISE NOTICE 'Database populated with dummy data successfully!';
