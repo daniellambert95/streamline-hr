@@ -38,16 +38,16 @@ const Dashboard: React.FC = () => {
         <div className="flex items-center gap-6">
           {/* Notification Icons */}
           <div className="flex items-center gap-4">
-            <Link to="/notifications" className="relative p-2 hover:bg-gray-100 rounded-full">
-              <FaBell className="text-gray-600 text-xl" />
-              <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                3
-              </span>
-            </Link>
             <Link to="/messages" className="relative p-2 hover:bg-gray-100 rounded-full">
               <FaComments className="text-gray-600 text-xl" />
               <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 2
+              </span>
+            </Link>
+            <Link to="/notifications" className="relative p-2 hover:bg-gray-100 rounded-full">
+              <FaBell className="text-gray-600 text-xl" />
+              <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                3
               </span>
             </Link>
           </div>
