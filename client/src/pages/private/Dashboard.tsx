@@ -218,7 +218,7 @@ const Dashboard: React.FC = () => {
         </h1>
   
         {/* User Profile Section with Notifications */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
           {/* Notification Icons */}
           <div className="flex items-center gap-4">
             {/* Messages Dropdown */}
@@ -455,7 +455,7 @@ const Dashboard: React.FC = () => {
 
       {/* Other Dashboard Components */}
       {/* Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white p-6 rounded-lg shadow">
           <p className="text-sm text-gray-500">Total Employees</p>
           <p className="text-3xl font-bold">418</p>
@@ -471,21 +471,25 @@ const Dashboard: React.FC = () => {
           <p className="text-3xl font-bold">14</p>
           <p className="text-green-600 text-sm">+4% last month</p>
         </div>
+        <div className="bg-white p-6 rounded-lg shadow">
+          <p className="text-sm text-gray-500">Employees On Leave</p>
+          <p className="text-3xl font-bold">4</p>
+          <p className="text-green-600 text-sm">-15% less than last usual</p>
+        </div>
       </div>
 
       {/* Analytics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Calendar and Tasks in first row */}
-        <CalanderWidget />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Calendar takes up 2 columns, Tasks takes 1 column */}
+        <div className="md:col-span-2">
+          <CalanderWidget />
+        </div>
         <TaskList />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <CalanderWidget />
-          <TaskList />
-        </div>
-        <div className="col-span-1">
+        <div className="col-span-1 md:col-span-2">
           <VacancyTrends />
         </div>
       </div>

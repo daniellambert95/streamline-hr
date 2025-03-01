@@ -15,23 +15,29 @@ import EmployeeManagement from './pages/private/EmployeeManagement';
 import { Toaster } from 'react-hot-toast';
 import PayrollManagement from './pages/private/Payroll';
 import PerformanceReviews from './pages/private/Performance';
+import { useState } from 'react';
 
 const AppContent = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   // Define public routes
   const publicRoutes = ['/', '/login', '/signup', '/pricing'];
   const isPublicRoute = publicRoutes.includes(location.pathname);
 
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
+
   return (
     <div className="flex">
       {/* Sidebar for authenticated users */}
-      {isAuthenticated && <Sidebar />}
+      {isAuthenticated && <Sidebar isCollapsed={isSidebarCollapsed} toggleSidebar={toggleSidebar} />}
 
       {/* Main Content Area */}
       <div
-        className={`flex-grow ${isAuthenticated ? 'ml-64' : ''} p-6 bg-gray-100 min-h-screen`}
+        className={`flex-grow ${isAuthenticated ? (isSidebarCollapsed ? 'ml-16' : 'ml-64') : ''} p-6 bg-gray-100 min-h-screen transition-all duration-300`}
       >
         {/* Navbar for public routes */}
         {isPublicRoute && <Navbar />}
