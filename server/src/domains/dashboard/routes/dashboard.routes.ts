@@ -9,7 +9,7 @@ import pool from '../../../shared/config/database_client';
 export const createDashboardRouter = () => {
   const router = Router();
   const userModel = new UserModel(pool);
-  const userService = new UserService(userModel);
+  const userService = new UserService(userModel, pool);
   const employeeService = new EmployeeService(pool);
   const dashboardController = new DashboardController(employeeService, userService);
 

@@ -263,6 +263,9 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     type VARCHAR(50) NOT NULL,
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
+    is_reminder BOOLEAN DEFAULT FALSE,
+    reminder_date TIMESTAMP,
+    external_delivery JSONB, -- For storing Slack/Gmail delivery preferences
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
     );
@@ -274,7 +277,8 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d $POSTGRES_DB <
     subject VARCHAR(255),
     content TEXT NOT NULL,
     sent_at TIMESTAMP DEFAULT NOW(),
-    is_read BOOLEAN DEFAULT FALSE
+    is_read BOOLEAN DEFAULT FALSE,
+    is_important BOOLEAN DEFAULT FALSE
   );  
 
   -- Add before the final trigger creation

@@ -17,13 +17,22 @@ export class DashboardController {
       // Get employee profile
       const employeeProfile = await this.employeeService.getEmployeeProfile(req.user!.id);
 
+      // Get notifications and messages
+      const notifications = await this.userService.getUserNotifications(req.user!.id);
+      const unreadNotificationsCount = await this.userService.getUnreadNotificationsCount(req.user!.id);
+      const messages = await this.userService.getUserMessages(req.user!.id);
+      const unreadMessagesCount = await this.userService.getUnreadMessagesCount(req.user!.id);
+
       // Combine the data
       const dashboardData = {
         user: {
           ...userProfile,
           ...employeeProfile
         },
-        // Add other dashboard specific data here
+        notifications,
+        unreadNotificationsCount,
+        messages,
+        unreadMessagesCount
       };
 
       res.json(dashboardData);

@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
 import { User, UserCreationDTO, UserUpdateDTO } from '../types/user.types';
 import { DatabaseError } from '../../../shared/errors/application.errors';
+import { Employee } from '../../employees/types/employee.types';
 
 export class UserModel {
   constructor(private pool: Pool) {}
@@ -119,6 +120,33 @@ export class UserModel {
       return rows[0];
     } catch (error) {
       throw new DatabaseError('Error updating user');
+    }
+  }
+
+  async findByCompanyId(companyId: number): Promise<Employee[]> {
+    const query = `
+      SELECT 
+        e.*,
+        u.email,
+        u.first_name,
+        u.last_name,
+        d.name as department_name,
+        t.name as team_name,
+        CONCAT(m.first_name, ' ', m.last_name) as manager_name
+      FROM employees e
+      JOIN users u ON e.id = u.id
+      LEFT JOIN departments d ON e.department_id = d.id
+      LEFT JOIN teams t ON e.team_id = t.id
+      LEFT JOIN employees manager_e ON e.manager_id = manager_e.id
+      LEFT JOIN users m ON manager_e.id = m.id
+      WHERE e.company_id = $1
+    `;
+
+    try {
+      const { rows } = await this.pool.query(query, [companyId]);
+      return rows;
+    } catch (error) {
+      throw new DatabaseError('Error finding employees');
     }
   }
 }

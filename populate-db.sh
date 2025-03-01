@@ -150,25 +150,28 @@ docker exec -i postgres_streamline_hr psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
   -- Insert tasks for the task lists
   INSERT INTO tasks (task_list_id, description, due_date, status, priority)
   VALUES 
-    (1, 'Review Q1 performance reports', '2024-03-31', 'pending', 4),
-    (1, 'Schedule team meeting', '2024-03-25', 'in_progress', 3),
-    (1, 'Update HR policies', '2024-04-15', 'pending', 5),
-    (2, 'Gym session', '2024-03-24', 'pending', 2),
-    (2, 'Book dentist appointment', '2024-03-30', 'pending', 3);
-
-  -- Insert notifications for user 1
-  INSERT INTO notifications (recipient_id, sender_id, type, message, is_read)
-  VALUES 
-    (1, 2, 'application', 'New job application received for Senior Frontend Developer position', false),
-    (1, 2, 'meeting', 'Team meeting scheduled for tomorrow at 10 AM', false),
-    (1, 2, 'review', 'Employee review deadline approaching', false);
+    (1, 'Review Q1 performance reports', '2025-03-31', 'pending', 4),
+    (1, 'Schedule team meeting', '2025-03-25', 'in_progress', 3),
+    (1, 'Update HR policies', '2025-04-15', 'pending', 5),
+    (2, 'Gym session', '2025-03-24', 'pending', 2),
+    (2, 'Book dentist appointment', '2025-03-30', 'pending', 3);
 
   -- Insert messages for user 1
-  INSERT INTO messages (sender_id, recipient_id, subject, content, is_read)
+  INSERT INTO messages (sender_id, recipient_id, subject, content, is_read, is_important)
   VALUES 
-    (2, 1, 'Weekly Update', 'Here is the weekly progress report for the engineering team.', false),
-    (2, 1, 'Meeting Request', 'Can we schedule a meeting to discuss the new project requirements?', false),
-    (2, 1, 'Document Review', 'Please review the attached technical specifications when you have a moment.', false);
+    (2, 1, 'Weekly Update', 'Here is the weekly progress report for the engineering team.', false, false),
+    (2, 1, 'Meeting Request', 'Can we schedule a meeting to discuss the new project requirements?', false, true),
+    (3, 1, 'Urgent: Server Issue', 'We are experiencing some downtime with the production server.', false, true),
+    (4, 1, 'Document Review', 'Please review the attached technical specifications when you have a moment.', false, false);
+
+  -- Insert notifications for user 1
+  INSERT INTO notifications (recipient_id, sender_id, type, message, is_read, is_reminder, reminder_date)
+  VALUES 
+    (1, 2, 'application', 'New job application received for Senior Frontend Developer position', false, false, NULL),
+    (1, 2, 'meeting', 'Team meeting scheduled for tomorrow at 10 AM', false, true, NOW() + INTERVAL '1 day'),
+    (1, 2, 'review', 'Employee review deadline approaching', false, true, NOW() + INTERVAL '3 days'),
+    (1, NULL, 'reminder', 'Call the client about project timeline', false, true, NOW() + INTERVAL '2 days'),
+    (1, NULL, 'reminder', 'Prepare quarterly report', false, true, NOW() + INTERVAL '5 days');
 
   DO \$\$
   BEGIN
