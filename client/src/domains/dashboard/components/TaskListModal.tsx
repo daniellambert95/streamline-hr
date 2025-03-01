@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus, FaTimes, FaCheck, FaTrash, FaCalendar, FaFlag, FaEdit, FaSave, FaTasks, FaSpinner } from 'react-icons/fa';
+import { FaPlus, FaTimes, FaCheck, FaTrash, FaCalendar, FaFlag, FaEdit, FaSave, FaTasks, FaSpinner, FaExpand, FaSort } from 'react-icons/fa';
 import { Task, TaskList as TaskListType } from '../../users/types/task.types';
 import { taskService } from '../../users/services/tasks';
 import { toast } from 'react-hot-toast';
@@ -9,9 +9,10 @@ import "react-datepicker/dist/react-datepicker.css";
 interface TaskListModalProps {
   isOpen: boolean;
   onClose: () => void;
+  selectedTaskId?: number | null;
 }
 
-const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
+const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selectedTaskId = null }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [taskLists, setTaskLists] = useState<TaskListType[]>([]);
   const [newTask, setNewTask] = useState('');
@@ -26,6 +27,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
   const [taskViewFilter, setTaskViewFilter] = useState('all'); // 'all', 'pending', 'completed', 'overdue'
   const [pendingTasksCount, setPendingTasksCount] = useState(0);
   const [newTaskStatus, setNewTaskStatus] = useState<'pending' | 'in_progress' | 'completed'>('pending');
+  const [sortOrder, setSortOrder] = useState<string>('default');
 
   useEffect(() => {
     if (isOpen) {
@@ -37,6 +39,38 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
     const pendingTasks = tasks.filter(task => task.status === 'pending');
     setPendingTasksCount(pendingTasks.length);
   }, [tasks]);
+
+  useEffect(() => {
+    if (selectedTaskId && isOpen) {
+      // Find the task in our tasks array
+      const task = tasks.find(t => t.id === selectedTaskId);
+      if (task) {
+        // Set the active task list to match the selected task
+        setActiveTaskList(task.task_list_id);
+        
+        // Find the list name for the dropdown
+        const list = taskLists.find(l => l.id === task.task_list_id);
+        if (list) {
+          // Update any state that tracks the selected list name if you have it
+          // setSelectedTaskList(list.name);
+        }
+        
+        // Wait for the DOM to update, then scroll to the element
+        setTimeout(() => {
+          const element = document.getElementById(`task-${selectedTaskId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.classList.add('border-indigo-500', 'border-2'); // Only add border, no background change
+            
+            // Remove highlight after a few seconds
+            setTimeout(() => {
+              element.classList.remove('border-indigo-500', 'border-2');
+            }, 3000);
+          }
+        }, 100);
+      }
+    }
+  }, [selectedTaskId, isOpen, tasks, taskLists]);
 
   const fetchTasksAndLists = async () => {
     try {
@@ -73,26 +107,54 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
     return dueDate < today;
   };
 
-  // Filter tasks based on active list and view filter
-  const filteredTasks = tasks.filter(task => {
-    const listMatch = task.task_list_id === activeTaskList;
+  // Add a function to sort tasks
+  const getSortedTasks = () => {
+    // First filter based on active list and view filter
+    let result = tasks.filter(task => {
+      const listMatch = task.task_list_id === activeTaskList;
+      
+      if (!listMatch) return false;
+      
+      switch (taskViewFilter) {
+        case 'pending':
+          return task.status === 'pending';
+        case 'in_progress':
+          return task.status === 'in_progress';
+        case 'completed':
+          return task.status === 'completed';
+        case 'overdue':
+          return (task.status === 'pending' || task.status === 'in_progress') && 
+                 isPastDue(task.due_date as string | null);
+        default:
+          return true;
+      }
+    });
     
-    if (!listMatch) return false;
-    
-    switch (taskViewFilter) {
-      case 'pending':
-        return task.status === 'pending';
-      case 'in_progress':
-        return task.status === 'in_progress';
-      case 'completed':
-        return task.status === 'completed';
-      case 'overdue':
-        return (task.status === 'pending' || task.status === 'in_progress') && 
-               isPastDue(task.due_date as string | null);
+    // Then sort based on selected order
+    switch (sortOrder) {
+      case 'due-date-asc':
+        return result.sort((a, b) => {
+          if (!a.due_date) return 1;
+          if (!b.due_date) return -1;
+          return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+        });
+      case 'due-date-desc':
+        return result.sort((a, b) => {
+          if (!a.due_date) return 1;
+          if (!b.due_date) return -1;
+          return new Date(b.due_date).getTime() - new Date(a.due_date).getTime();
+        });
+      case 'priority-high':
+        return result.sort((a, b) => a.priority - b.priority); // Lower number = higher priority
+      case 'priority-low':
+        return result.sort((a, b) => b.priority - a.priority); // Higher number = lower priority
       default:
-        return true;
+        return result; // Default order (by creation date/ID)
     }
-  });
+  };
+
+  // Replace filteredTasks with sortedTasks
+  const sortedTasks = getSortedTasks();
 
   // Add missing functions
   const getPriorityColor = (priority: number) => {
@@ -397,7 +459,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
           
           {/* Tasks Content */}
           <div className="col-span-9 overflow-hidden flex flex-col h-full p-4">
-            {/* Task filters - Added Overdue tab */}
+            {/* Task filters - Added sort dropdown */}
             <div className="mb-4 flex justify-between items-center">
               <div className="flex space-x-2">
                 <button
@@ -442,8 +504,27 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
                 </button>
               </div>
               
-              <div className="text-sm text-gray-500">
-                {filteredTasks.length} tasks
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <select
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                    className="appearance-none bg-white border rounded-lg px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="default">Default Order</option>
+                    <option value="due-date-asc">Due Date (Earliest)</option>
+                    <option value="due-date-desc">Due Date (Latest)</option>
+                    <option value="priority-high">Priority (High to Low)</option>
+                    <option value="priority-low">Priority (Low to High)</option>
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <FaSort className="h-3 w-3 text-gray-500" />
+                  </div>
+                </div>
+                
+                <div className="text-sm text-gray-500">
+                  {sortedTasks.length} tasks
+                </div>
               </div>
             </div>
             
@@ -524,7 +605,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
               </div>
             ) : (
               <div className="space-y-2 overflow-y-auto flex-grow">
-                {filteredTasks.length === 0 ? (
+                {sortedTasks.length === 0 ? (
                   <p className="text-center text-gray-500 py-8">
                     {!activeTaskList 
                       ? 'Select a task list to get started'
@@ -533,9 +614,10 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose }) => {
                         : 'No tasks yet. Add your first one!'}
                   </p>
                 ) : (
-                  filteredTasks.map(task => (
+                  sortedTasks.map(task => (
                     <div
                       key={task.id}
+                      id={`task-${task.id}`}
                       className={`flex items-start p-4 rounded-lg border ${
                         task.status === 'completed' ? 'bg-gray-50' : 
                         task.status === 'in_progress' ? 'bg-blue-50' : 'bg-white'
