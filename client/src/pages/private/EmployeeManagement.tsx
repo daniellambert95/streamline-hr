@@ -240,21 +240,153 @@ const EmployeeManagement: React.FC = () => {
         {/* Employee Directory Tab */}
         {activeTab === 'directory' && (
           <div className="space-y-6">
-            {/* Search Input */}
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Search employees..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full p-2 border rounded"
-              />
+            {/* Advanced Search and Filter */}
+            <div className="bg-white p-4 rounded-lg shadow">
+              <div className="flex flex-col lg:flex-row gap-4 lg:items-end">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                  <input
+                    type="text"
+                    placeholder="Search employees..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                
+                <div className="w-full lg:w-1/5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    onChange={(e) => {
+                      // Filter by department logic
+                      console.log("Filter by department:", e.target.value);
+                    }}
+                  >
+                    <option value="">All Departments</option>
+                    {departments.map(dept => (
+                      <option key={dept.id} value={dept.id}>{dept.name}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="w-full lg:w-1/5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Team</label>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    onChange={(e) => {
+                      // Filter by team logic
+                      console.log("Filter by team:", e.target.value);
+                    }}
+                  >
+                    <option value="">All Teams</option>
+                    {teams.map(team => (
+                      <option key={team.id} value={team.id}>{team.name}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="w-full lg:w-1/5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select 
+                    className="w-full p-2 border rounded"
+                    onChange={(e) => {
+                      // Filter by status logic
+                      console.log("Filter by status:", e.target.value);
+                    }}
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="onboarding">Onboarding</option>
+                    <option value="on_leave">On Leave</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex justify-between mt-4">
+                <div>
+                  <button 
+                    className="bg-gray-50 text-gray-600 px-3 py-1.5 rounded border hover:bg-gray-100"
+                    onClick={() => {
+                      // Clear filters logic
+                      setQuery('');
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+                
+                <div className="flex gap-2">
+                  <button 
+                    className="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded border border-indigo-200 hover:bg-indigo-100 flex items-center"
+                    onClick={() => {
+                      // Export to CSV logic
+                      console.log("Export to CSV");
+                    }}
+                  >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Export CSV
+                  </button>
+                  
+                  <button 
+                    className="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded border border-indigo-200 hover:bg-indigo-100 flex items-center"
+                    onClick={() => {
+                      // Print view logic
+                      console.log("Print view");
+                    }}
+                  >
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    Print
+                  </button>
+                </div>
+              </div>
             </div>
+            
+            {/* Bulk Actions */}
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2">
+                <button 
+                  className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-200 disabled:opacity-50"
+                  disabled={true}  // Would be enabled when items are selected
+                >
+                  Bulk Edit
+                </button>
+                
+                <button 
+                  className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-200 disabled:opacity-50"
+                  disabled={true}  // Would be enabled when items are selected
+                >
+                  Change Department
+                </button>
+                
+                <button 
+                  className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded hover:bg-gray-200 disabled:opacity-50"
+                  disabled={true}  // Would be enabled when items are selected
+                >
+                  Change Status
+                </button>
+              </div>
+              
+              <div>
+                <span className="text-sm text-gray-500">
+                  Showing {searchEmployees.length} of {searchEmployees.length} employees
+                </span>
+              </div>
+            </div>
+            
             {/* Employee Table */}
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto bg-white rounded-lg shadow">
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
+                    <th className="py-3 px-4 text-left">
+                      <input type="checkbox" className="rounded" />
+                    </th>
                     <th className="py-3 px-4 text-left">Name</th>
                     <th className="py-3 px-4 text-left">Job Title</th>
                     <th className="py-3 px-4 text-left">Department</th>
@@ -267,11 +399,20 @@ const EmployeeManagement: React.FC = () => {
                 <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="py-3 px-4 text-center">Loading...</td>
+                    <td colSpan={8} className="py-3 px-4 text-center">Loading...</td>
+                  </tr>
+                ) : searchEmployees.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-6 px-4 text-center text-gray-500">
+                      No employees found matching your search criteria
+                    </td>
                   </tr>
                 ) : (
                   searchEmployees.map((employee) => (
                     <tr key={employee.id} className="border-t hover:bg-gray-50">
+                      <td className="py-3 px-4">
+                        <input type="checkbox" className="rounded" />
+                      </td>
                       <td className="py-3 px-4">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
@@ -289,23 +430,57 @@ const EmployeeManagement: React.FC = () => {
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                           ${employee.status === 'active' ? 'bg-green-100 text-green-800' : 
+                            employee.status === 'onboarding' ? 'bg-blue-100 text-blue-800' :
+                            employee.status === 'on_leave' ? 'bg-yellow-100 text-yellow-800' :
                             'bg-gray-100 text-gray-800'}`}>
                           {employee.status || 'inactive'}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <button
-                          onClick={() => navigate(`/employee/${employee.id}`)}
-                          className="bg-indigo-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-600"
-                        >
-                          View
-                        </button>
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            onClick={() => navigate(`/employee/${employee.id}`)}
+                            className="bg-indigo-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-600"
+                          >
+                            View
+                          </button>
+                          <button
+                            className="bg-gray-100 text-gray-600 px-3 py-1 rounded-lg text-sm hover:bg-gray-200"
+                            onClick={() => {
+                              // Edit employee logic
+                              console.log("Edit employee:", employee.id);
+                            }}
+                          >
+                            Edit
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
                 )}
                 </tbody>
               </table>
+            </div>
+            
+            {/* Pagination */}
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-500">
+                Showing page 1 of 1
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  className="px-3 py-1 border rounded bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                  disabled={true}
+                >
+                  Previous
+                </button>
+                <button 
+                  className="px-3 py-1 border rounded bg-white text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                  disabled={true}
+                >
+                  Next
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -322,8 +497,31 @@ const EmployeeManagement: React.FC = () => {
 
         {/* Employee Lifecycle Tab */}
         {activeTab === 'lifecycle' && (
-          // Employee Lifecycle content
-          <div>Employee Lifecycle content coming soon</div>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Employee Lifecycle Management</h2>
+              <div className="flex items-center gap-4">
+                <select 
+                  className="border rounded-lg px-3 py-2"
+                  onChange={(e) => {
+                    // Fix: In a real implementation, this would fetch specific employee data
+                    const selectedId = Number(e.target.value);
+                    if (selectedId) {
+                    }
+                  }}
+                >
+                  <option value="">Select Employee</option>
+                  {searchEmployees.map(emp => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.first_name} {emp.last_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {/* // Employee Lifecycle content */}
+            <div className="text-gray-500 text-center">Employee Lifecycle content coming soon</div>
+          </div>
         )}
 
         {/* analytics Tab */}
