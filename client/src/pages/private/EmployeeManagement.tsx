@@ -408,7 +408,7 @@ const EmployeeManagement: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  searchEmployees.map((employee) => (
+                  searchEmployees.map((employee: Employee) => (
                     <tr key={employee.id} className="border-t hover:bg-gray-50">
                       <td className="py-3 px-4">
                         <input type="checkbox" className="rounded" />
@@ -429,11 +429,14 @@ const EmployeeManagement: React.FC = () => {
                       <td className="py-3 px-4">{employee.manager_name || '-'}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${employee.status === 'active' ? 'bg-green-100 text-green-800' : 
-                            employee.status === 'onboarding' ? 'bg-blue-100 text-blue-800' :
-                            employee.status === 'on_leave' ? 'bg-yellow-100 text-yellow-800' :
+                          ${employee.employment_status === 'active' ? 'bg-green-100 text-green-800' : 
+                            employee.employment_status === 'onboarding' ? 'bg-blue-100 text-blue-800' :
+                            employee.employment_status === 'on_leave' ? 'bg-yellow-100 text-yellow-800' :
                             'bg-gray-100 text-gray-800'}`}>
-                          {employee.status || 'inactive'}
+                          {employee.employment_status === 'active' ? 'Active' : 
+                           employee.employment_status === 'onboarding' ? 'Onboarding' :
+                           employee.employment_status === 'on_leave' ? 'On Leave' :
+                           employee.employment_status || 'Inactive'}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-center">

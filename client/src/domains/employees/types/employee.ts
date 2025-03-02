@@ -12,7 +12,7 @@ export interface Employee {
     department_name: string;
     team: string;
     manager: string;
-    status: 'active' | 'inactive' | 'onboarding' | 'on_leave';
+    employment_status: 'active' | 'inactive' | 'onboarding' | 'on_leave';
     role: 'employee' | 'recruiter' | 'admin' | null;
     personal_email?: string;
     date_of_birth?: string;
