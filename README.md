@@ -109,23 +109,32 @@ make populate-db
 streamline-hr/
 ├── client/                   # Frontend React application
 │   ├── src/
-│   │   ├── components/       # Reusable UI components
-│   │   │   ├── employees/    # Employee-related components
-│   │   │   ├── forms/        # Form components
-│   │   │   ├── layout/       # Layout components
-│   │   │   ├── modals/       # Modal components
-│   │   │   └── ui/           # UI components
+│   │   ├── core/             # Core application components
+│   │   │   ├── api/          # API client configuration
+│   │   │   ├── components/   # Shared UI components
+│   │   │   │   ├── common/   # Common UI elements
+│   │   │   │   ├── layout/   # Layout components (Sidebar, Navbar)
+│   │   │   │   └── ui/       # Basic UI components
+│   │   │   └── utils/        # Core utility functions
+│   │   ├── domains/          # Domain-driven design structure
+│   │   │   ├── analytics/    # Analytics domain
+│   │   │   │   ├── components/  # Domain-specific components
+│   │   │   │   ├── services/    # API services for this domain
+│   │   │   │   └── types/       # Type definitions
+│   │   │   ├── auth/         # Authentication domain
+│   │   │   ├── dashboard/    # Dashboard domain
+│   │   │   ├── employees/    # Employee management domain
+│   │   │   ├── organization/ # Organization domain
+│   │   │   ├── payroll/      # Payroll domain
+│   │   │   ├── performance/  # Performance domain
+│   │   │   ├── recruitment/  # Recruitment domain
+│   │   │   └── users/        # User management domain
 │   │   ├── pages/            # Page components
 │   │   │   ├── private/      # Protected routes
 │   │   │   └── public/       # Public routes
-│   │   ├── services/         # API services
-│   │   │   └── api/          # API endpoints and configuration
-│   │   │       └── endpoints/# API endpoint services
-│   │   ├── hooks/            # Custom React hooks
-│   │   ├── context/          # React context providers
-│   │   ├── types/            # TypeScript type definitions
-│   │   ├── utils/            # Utility functions
-│   │   └── assets/           # Static assets
+│   │   ├── index.css         # Global styles
+│   │   ├── App.tsx           # Main application component
+│   │   └── main.tsx          # Application entry point
 │   ├── public/               # Public assets
 │   └── vite.config.ts        # Vite configuration
 │
