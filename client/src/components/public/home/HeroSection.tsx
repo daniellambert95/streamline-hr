@@ -20,18 +20,18 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
       
       <div className="relative max-w-4xl mx-auto text-center mt-4 sm:mt-6 lg:mt-10 z-10">
         {/* Badge with brand colors */}
-        <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 text-primary text-xs sm:text-sm font-medium mb-4 sm:mb-6 shadow-lg">
+        <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 text-primary text-xs sm:text-sm font-medium my-8 sm:mb-6 shadow-lg">
           AI-Powered HR Automation Platform
         </div>
         
         {/* Main Headline with brand colors */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold font-header text-neutral-dark mb-3 sm:mb-4 leading-tight">
+        <h1 className="text-5xl md:text-7xl xl:text-8xl font-bold font-header text-neutral-dark mb-3 sm:mb-4 leading-tight">
           Hire <span className="text-primary font-header">Smarter</span>,<br />
           Manage <span className="text-primary font-header">Better</span>
         </h1>
         
         {/* Description */}
-        <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-10 lg:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0">
+        <p className="text-base sm:text-lg lg:text-xl text-gray-600 my-8 sm:my-10 lg:my-12 max-w-3xl mx-auto leading-relaxed px-2">
           Transform your HR operations with intelligent candidate matching, streamlined employee management, and simplified time tracking.
           <span className='text-primary block font-semibold'>The all in one powerful platform.</span>
         </p>
@@ -61,7 +61,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
         </div>
         
         {/* Feature List */}
-        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-xs sm:text-sm text-gray-500 justify-center px-4 sm:px-0">
+        <div className="flex  sm:flex-row items-center gap-4 text-xs sm:text-sm text-gray-500 justify-center px-4 sm:px-0">
           <div className="flex items-center">
             <svg className="w-3 sm:w-4 h-3 sm:h-4 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
