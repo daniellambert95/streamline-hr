@@ -25,7 +25,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
         </div>
         
         {/* Main Headline with brand colors */}
-        <h1 className="text-5xl md:text-7xl xl:text-8xl font-bold font-header text-neutral-dark mb-3 sm:mb-4 leading-tight">
+        <h1 className="text-4xl md:text-7xl xl:text-8xl font-bold font-header text-neutral-dark mb-3 sm:mb-4 leading-tight">
           Hire <span className="text-primary font-header">Smarter</span>,<br />
           Manage <span className="text-primary font-header">Better</span>
         </h1>
