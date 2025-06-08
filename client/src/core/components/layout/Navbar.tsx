@@ -1,17 +1,48 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-function Navbar() {
+interface NavbarProps {
+  onCtaClick?: () => void;
+}
+
+function Navbar({ onCtaClick }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const [docsOpen, setDocsOpen] = useState(false);
+  const location = useLocation();
   
   // Refs and timers for better dropdown control
   const featuresTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const docsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Scroll to top when location changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  // Helper function to check if a route is active
+  const isActiveRoute = (path: string) => {
+    return location.pathname === path;
+  };
+
+  // Helper function to get nav link classes
+  const getNavLinkClasses = (path: string) => {
+    const isActive = isActiveRoute(path);
+    return isActive 
+      ? "text-primary font-semibold text-sm relative group transition-all duration-300"
+      : "text-gray-600 hover:text-primary font-medium text-sm transition-all duration-300 relative group";
+  };
+
+  // Helper function to get underline classes
+  const getUnderlineClasses = (path: string) => {
+    const isActive = isActiveRoute(path);
+    return isActive
+      ? "absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full"
+      : "absolute -bottom-1 left-0 w-0 h-0.5 bg-primary rounded-full group-hover:w-full transition-all duration-300";
   };
 
   // Improved dropdown handlers with delays
@@ -68,26 +99,26 @@ function Navbar() {
           <div className="hidden md:flex items-center space-x-8">
             <Link 
               to="/" 
-              className="text-primary font-semibold text-sm relative group transition-all duration-300"
+              className={getNavLinkClasses("/")}
             >
               Home
-              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full"></span>
+              <span className={getUnderlineClasses("/")}></span>
             </Link>
             
             <Link 
               to="/about" 
-              className="text-gray-600 hover:text-primary font-medium text-sm transition-all duration-300 relative group"
+              className={getNavLinkClasses("/about")}
             >
               About Us
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary rounded-full group-hover:w-full transition-all duration-300"></span>
+              <span className={getUnderlineClasses("/about")}></span>
             </Link>
             
             <Link 
               to="/pricing" 
-              className="text-gray-600 hover:text-primary font-medium text-sm transition-all duration-300 relative group"
+              className={getNavLinkClasses("/pricing")}
             >
               Pricing
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary rounded-full group-hover:w-full transition-all duration-300"></span>
+              <span className={getUnderlineClasses("/pricing")}></span>
             </Link>
             
             {/* Features Dropdown */}
@@ -96,12 +127,12 @@ function Navbar() {
               onMouseEnter={handleFeaturesMouseEnter}
               onMouseLeave={handleFeaturesMouseLeave}
             >
-              <button className="text-gray-600 hover:text-primary font-medium text-sm transition-all duration-300 relative group flex items-center">
+              <button className={`${getNavLinkClasses("/features")} flex items-center`}>
                 Features
                 <svg className="w-4 h-4 ml-1 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary rounded-full group-hover:w-full transition-all duration-300"></span>
+                <span className={getUnderlineClasses("/features")}></span>
               </button>
               
               {featuresOpen && (
@@ -189,12 +220,12 @@ function Navbar() {
               onMouseEnter={handleDocsMouseEnter}
               onMouseLeave={handleDocsMouseLeave}
             >
-              <button className="text-gray-600 hover:text-primary font-medium text-sm transition-all duration-300 relative group flex items-center">
+              <button className={`${getNavLinkClasses("/docs")} flex items-center`}>
                 Docs
                 <svg className="w-4 h-4 ml-1 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                 </svg>
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary rounded-full group-hover:w-full transition-all duration-300"></span>
+                <span className={getUnderlineClasses("/docs")}></span>
               </button>
               
               {docsOpen && (
@@ -277,12 +308,21 @@ function Navbar() {
             >
               Sign In
             </Link>
-            <Link 
-              to="/signup" 
-              className="bg-gradient-to-r from-primary to-purple-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5"
-            >
-              Sign up Free
-            </Link>
+            {onCtaClick ? (
+              <button 
+                onClick={onCtaClick}
+                className="bg-gradient-to-r from-primary to-purple-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5"
+              >
+                Sign up Free
+              </button>
+            ) : (
+              <Link 
+                to="/signup" 
+                className="bg-gradient-to-r from-primary to-purple-600 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5"
+              >
+                Sign up Free
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -310,38 +350,62 @@ function Navbar() {
           <div className="bg-neutral-white/95 backdrop-blur-xl border border-neutral-white/20 rounded-2xl shadow-2xl px-6 pt-4 pb-6 space-y-2">
             <Link 
               to="/" 
-              className="text-primary bg-primary/10 block px-4 py-3 text-base font-semibold transition-all duration-300 rounded-xl transform hover:scale-105 flex items-center"
+              className={`block px-4 py-3 text-base font-semibold transition-all duration-300 rounded-xl transform hover:scale-105 flex items-center ${
+                isActiveRoute("/") 
+                  ? "text-primary bg-primary/10" 
+                  : "text-gray-600 hover:text-primary hover:bg-primary/5"
+              }`}
               onClick={() => setIsOpen(false)}
             >
-              <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+              {isActiveRoute("/") && <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>}
               Home
             </Link>
             <Link 
               to="/about" 
-              className="text-gray-600 hover:text-primary hover:bg-primary/5 block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105"
+              className={`block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105 flex items-center ${
+                isActiveRoute("/about") 
+                  ? "text-primary bg-primary/10" 
+                  : "text-gray-600 hover:text-primary hover:bg-primary/5"
+              }`}
               onClick={() => setIsOpen(false)}
             >
+              {isActiveRoute("/about") && <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>}
               About Us
             </Link>
             <Link 
               to="/pricing" 
-              className="text-gray-600 hover:text-primary hover:bg-primary/5 block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105"
+              className={`block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105 flex items-center ${
+                isActiveRoute("/pricing") 
+                  ? "text-primary bg-primary/10" 
+                  : "text-gray-600 hover:text-primary hover:bg-primary/5"
+              }`}
               onClick={() => setIsOpen(false)}
             >
+              {isActiveRoute("/pricing") && <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>}
               Pricing
             </Link>
             <Link 
               to="/features" 
-              className="text-gray-600 hover:text-primary hover:bg-primary/5 block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105"
+              className={`block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105 flex items-center ${
+                isActiveRoute("/features") 
+                  ? "text-primary bg-primary/10" 
+                  : "text-gray-600 hover:text-primary hover:bg-primary/5"
+              }`}
               onClick={() => setIsOpen(false)}
             >
+              {isActiveRoute("/features") && <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>}
               Features
             </Link>
             <Link 
               to="/docs" 
-              className="text-gray-600 hover:text-primary hover:bg-primary/5 block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105"
+              className={`block px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl transform hover:scale-105 flex items-center ${
+                isActiveRoute("/docs") 
+                  ? "text-primary bg-primary/10" 
+                  : "text-gray-600 hover:text-primary hover:bg-primary/5"
+              }`}
               onClick={() => setIsOpen(false)}
             >
+              {isActiveRoute("/docs") && <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>}
               Docs
             </Link>
             <div className="border-t border-gray-200/50 pt-4 mt-4 space-y-2">
@@ -352,13 +416,25 @@ function Navbar() {
               >
                 Sign In
               </Link>
-              <Link 
-                to="/signup" 
-                className="bg-gradient-to-r from-primary to-purple-600 text-white block px-4 py-3 rounded-xl text-base font-semibold text-center transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5"
-                onClick={() => setIsOpen(false)}
-              >
-                Sign up Free
-              </Link>
+              {onCtaClick ? (
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    onCtaClick();
+                  }}
+                  className="bg-gradient-to-r from-primary to-purple-600 text-white block px-4 py-3 rounded-xl text-base font-semibold text-center transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5 w-full"
+                >
+                  Sign up Free
+                </button>
+              ) : (
+                <Link 
+                  to="/signup" 
+                  className="bg-gradient-to-r from-primary to-purple-600 text-white block px-4 py-3 rounded-xl text-base font-semibold text-center transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-primary/25 hover:-translate-y-0.5"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Sign up Free
+                </Link>
+              )}
             </div>
           </div>
         </div>

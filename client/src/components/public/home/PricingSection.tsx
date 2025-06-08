@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { PRICING_PLANS } from '../../../shared/constants/pricing';
 
-const PricingSection = () => {
+interface PricingSectionProps {
+  onCtaClick: () => void;
+}
+
+const PricingSection = ({ onCtaClick }: PricingSectionProps) => {
   const [isYearly, setIsYearly] = useState(false);
 
   return (
@@ -83,7 +87,10 @@ const PricingSection = () => {
                 <span className="text-gray-600 text-sm sm:text-base">Email Support</span>
               </li>
             </ul>
-            <button className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold text-sm sm:text-base">
+            <button 
+              onClick={onCtaClick}
+              className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold text-sm sm:text-base"
+            >
               Start Free Trial
             </button>
           </div>
@@ -133,7 +140,10 @@ const PricingSection = () => {
                 <span className="text-sm sm:text-base">Priority Support</span>
               </li>
             </ul>
-            <button className="w-full bg-white text-primary py-3 rounded-xl hover:bg-gray-100 transition-all duration-300 font-semibold text-sm sm:text-base">
+            <button 
+              onClick={onCtaClick}
+              className="w-full bg-white text-primary py-3 rounded-xl hover:bg-gray-100 transition-all duration-300 font-semibold text-sm sm:text-base"
+            >
               Start Free Trial
             </button>
           </div>
@@ -172,7 +182,10 @@ const PricingSection = () => {
                 <span className="text-gray-600 text-sm sm:text-base">SLA Guarantee</span>
               </li>
             </ul>
-            <button className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold text-sm sm:text-base">
+            <button 
+              onClick={onCtaClick}
+              className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold text-sm sm:text-base"
+            >
               Contact Sales
             </button>
           </div>

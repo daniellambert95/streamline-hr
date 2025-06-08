@@ -16,7 +16,8 @@ const Applicants = () => {
 
   useEffect(() => {
     // Fetch applicants for a specific job from backend
-    fetch(`http://localhost:3000/api/jobs/${jobId}/applicants`)
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    fetch(`${apiUrl}/api/jobs/${jobId}/applicants`)
       .then((response) => response.json())
       .then((data) => setApplicants(data))
       .catch((error) => console.error('Error fetching applicants:', error));

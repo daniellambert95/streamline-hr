@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
 
-const Footer = () => {
+interface FooterProps {
+  onCtaClick?: () => void;
+}
+
+const Footer = ({ onCtaClick }: FooterProps) => {
   return (
     <footer className="relative bg-gradient-to-br from-primary/10 via-secondary-lavender/20 to-purple-100/50 overflow-hidden">
       {/* Background Elements */}
@@ -26,14 +30,28 @@ const Footer = () => {
               <p className="text-gray-600 mb-6 sm:mb-8 text-base sm:text-lg leading-relaxed">
                 Join thousands of companies streamlining their hiring, employee management, and time tracking with AI-powered automation.
               </p>
-              <button className="group bg-gradient-to-r from-primary to-purple-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 font-bold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-1 w-full sm:w-auto">
-                <span className="flex items-center justify-center">
-                  Start Free Trial
-                  <svg className="w-4 sm:w-5 h-4 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
-              </button>
+              {onCtaClick ? (
+                <button 
+                  onClick={onCtaClick}
+                  className="group bg-gradient-to-r from-primary to-purple-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 font-bold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-1 w-full sm:w-auto"
+                >
+                  <span className="flex items-center justify-center">
+                    Start Free Trial
+                    <svg className="w-4 sm:w-5 h-4 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                </button>
+              ) : (
+                <button className="group bg-gradient-to-r from-primary to-purple-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 font-bold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-1 w-full sm:w-auto">
+                  <span className="flex items-center justify-center">
+                    Start Free Trial
+                    <svg className="w-4 sm:w-5 h-4 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                </button>
+              )}
             </div>
 
             {/* Company Links */}

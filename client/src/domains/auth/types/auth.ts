@@ -1,4 +1,4 @@
-import { UserRole, AuthUser } from '../types/user';
+import { UserRole, AuthUser } from '../../users/types/user';
 
 export interface LoginForm {
   email: string;

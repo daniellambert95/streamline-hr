@@ -41,7 +41,8 @@ const Signup = () => {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:3000/api/auth/google"; // Google OAuth endpoint
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    window.location.href = `${apiUrl}/api/auth/google`;
   };
 
   return (

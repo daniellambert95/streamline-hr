@@ -76,23 +76,6 @@ const TalentPool: React.FC = () => {
     if (!selectedCandidate || !noteContent.trim()) return;
     
     try {
-      // This would be replaced with your actual API call
-      const updatedCandidate = {
-        ...selectedCandidate,
-        notes: [
-          ...(selectedCandidate.notes || []),
-          {
-            id: Date.now().toString(),
-            content: noteContent,
-            created_at: new Date().toISOString(),
-            created_by: "Current User" // Replace with actual user info
-          }
-        ]
-      };
-      
-      // Update candidate with new note
-    //   await applicantService.update(selectedCandidate.id, updatedCandidate);
-      
       // Refresh candidates
       await fetchCandidates();
       

@@ -1,6 +1,10 @@
 import { HiPlay } from 'react-icons/hi2';
 
-const FinalCtaSection = () => {
+interface FinalCtaSectionProps {
+  onCtaClick: () => void;
+}
+
+const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
   return (
     <section className="relative py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 via-neutral-white to-purple-50/30 overflow-hidden">
       {/* Background Elements */}
@@ -36,7 +40,10 @@ const FinalCtaSection = () => {
         
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-0">
-          <button className="group bg-gradient-to-r from-primary to-purple-800 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 font-bold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-2 w-full sm:w-auto sm:min-w-[200px]">
+          <button 
+            onClick={onCtaClick}
+            className="group bg-gradient-to-r from-primary to-purple-800 text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 font-bold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-2 w-full sm:w-auto sm:min-w-[200px]"
+          >
             <span className="flex items-center justify-center">
               Start Your Free Trial
               <svg className="w-4 sm:w-5 h-4 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,7 +51,10 @@ const FinalCtaSection = () => {
               </svg>
             </span>
           </button>
-          <button className="group border-2 border-primary/30 text-primary px-8 sm:px-10 py-4 sm:py-5 rounded-2xl backdrop-blur-sm bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 font-bold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-2 w-full sm:w-auto sm:min-w-[200px]">
+          <button 
+            onClick={onCtaClick}
+            className="group border-2 border-primary/30 text-primary px-8 sm:px-10 py-4 sm:py-5 rounded-2xl backdrop-blur-sm bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all duration-300 font-bold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-2 w-full sm:w-auto sm:min-w-[200px]"
+          >
             <span className="flex items-center justify-center">
               <HiPlay className="w-4 sm:w-5 h-4 sm:h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
               Schedule a Demo

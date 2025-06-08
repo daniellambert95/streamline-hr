@@ -293,10 +293,10 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
     
     try {
       const { data } = await taskService.createTaskList({ name: newListName });
-      setTaskLists([...taskLists, data.taskList]);
+      setTaskLists([...taskLists, data]);
       setNewListName('');
       setIsCreatingList(false);
-      setActiveTaskList(data.taskList.id);
+      setActiveTaskList(data.id);
       toast.success('Task list created');
     } catch (error) {
       console.error('Failed to create task list:', error);

@@ -6,7 +6,6 @@ import { JobListing } from "../../domains/recruitment/types/job.ts";
 import { Applicant } from "../../domains/recruitment/types/applicant.ts";
 import NewJobListingModal from '../../domains/recruitment/components/NewJobListingForm.tsx';
 import JobViewModal from '../../domains/recruitment/components/JobViewModal.tsx';
-import VacancyTrends from '../../domains/analytics/components/analytics/VacancyTrends.tsx';
 import { applicantService, jobService } from "../../domains/recruitment/services/recruitment.ts";
 import StatCard from "../../core/components/common/StatCard.tsx";
 

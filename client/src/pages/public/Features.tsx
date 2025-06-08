@@ -1,6 +1,8 @@
-import Footer from '../../components/common/Footer';
+import PublicPageLayout, { useCTA } from '../../core/components/layout/PublicPageLayout';
 
-const Features = () => {
+const FeaturesContent = () => {
+  const { handleCtaClick } = useCTA();
+
   const features = [
     {
       title: "AI-Powered Recruiting",
@@ -78,7 +80,7 @@ const Features = () => {
   ];
 
   return (
-    <div className="font-sans">
+    <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/5 via-neutral-white to-primary/10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0">
@@ -313,18 +315,30 @@ const Features = () => {
             Start your free trial today and discover how StreamlineHR can transform your HR operations.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-primary to-purple-800 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 font-bold text-lg transform hover:scale-105 hover:-translate-y-1">
+            <button 
+              onClick={handleCtaClick}
+              className="bg-gradient-to-r from-primary to-purple-800 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 font-bold text-lg transform hover:scale-105 hover:-translate-y-1"
+            >
               Start Free Trial
             </button>
-            <button className="border-2 border-primary text-primary px-8 py-4 rounded-2xl hover:bg-primary/5 transition-all duration-300 font-bold text-lg">
+            <button 
+              onClick={handleCtaClick}
+              className="border-2 border-primary text-primary px-8 py-4 rounded-2xl hover:bg-primary/5 transition-all duration-300 font-bold text-lg"
+            >
               Schedule Demo
             </button>
           </div>
         </div>
       </section>
+    </>
+  );
+};
 
-      <Footer />
-    </div>
+const Features = () => {
+  return (
+    <PublicPageLayout>
+      <FeaturesContent />
+    </PublicPageLayout>
   );
 };
 

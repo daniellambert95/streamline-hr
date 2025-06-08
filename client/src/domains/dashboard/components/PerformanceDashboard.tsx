@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaStar, FaTarget, FaChartLine, FaTrophy, FaUsers, FaCalendarCheck } from 'react-icons/fa';
+import { FaStar, FaBullseye, FaChartLine, FaTrophy, FaUsers, FaCalendarCheck } from 'react-icons/fa';
 
 interface PerformanceMetric {
   id: string;
@@ -42,7 +42,7 @@ const PerformanceDashboard: React.FC = () => {
       progress: 92,
       trend: 'up',
       color: 'from-blue-500 to-indigo-500',
-      icon: <FaTarget />
+      icon: <FaBullseye />
     },
     {
       id: 'productivity',

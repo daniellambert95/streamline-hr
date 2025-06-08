@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { FaPlus, FaFilter, FaSearch, FaEllipsisV, FaEdit, FaTrash, FaEye, FaCopy } from "react-icons/fa";
+import { FaPlus, FaFilter, FaSearch, FaEdit, FaTrash, FaEye, FaCopy } from "react-icons/fa";
 import { JobListing } from "../../domains/recruitment/types/job";
 import { jobService } from "../../domains/recruitment/services/recruitment";
 import handleApiError from "../../core/utils/handleApiError";

@@ -24,13 +24,17 @@ const roleOptions: UserRole[] = ['employee', 'recruiter', 'manager']; // Excludi
 export const AddEmployeeForm: React.FC<AddEmployeeFormProps> = ({ isOpen, onClose, onSuccess }) => {
   const { user } = useAuth();
 
+  if (!user || !user.company_id) {
+    return null; // Don't render if user or company_id is not available
+  }
+
   const initialFormData: EmployeeFormData = {
     email: '',
     password: generateTemporaryPassword(),
     first_name: '',
     last_name: '',
     role: 'employee',
-    company_id: user.company_id,
+    company_id: user.company_id, // Now TypeScript knows this is not undefined
     job_title: '',
     team_id: null,
     department_id: null,

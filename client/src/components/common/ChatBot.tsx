@@ -80,7 +80,7 @@ const ChatBot = () => {
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={toggleChat}
-          className="bg-gradient-to-r from-primary to-purple-800 rounded-full p-4 shadow-lg hover:shadow-xl text-white transition-all duration-300 transform hover:scale-105 hover:-translate-y-1"
+          className="bg-white rounded-full p-3 shadow-lg hover:shadow-xl text-secondary-navy transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center gap-2"
         >
           {isOpen ? (
             /* Close Icon */
@@ -149,7 +149,7 @@ const ChatBot = () => {
                     />
                     <button
                       onClick={handleEmailSubmit}
-                      className="bg-gradient-to-r from-primary to-purple-800 text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105 text-sm font-medium"
+                      className="bg-neutral-white border-2 border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary/5 transition-all duration-300 transform hover:scale-[1.02] text-sm font-medium"
                     >
                       Notify Me
                     </button>
@@ -171,7 +171,7 @@ const ChatBot = () => {
                 />
                 <button
                   onClick={sendMessage}
-                  className="bg-gradient-to-r from-primary to-purple-800 text-white px-4 py-2 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                  className="bg-neutral-white border-2 border-primary text-primary px-4 py-2 rounded-xl hover:bg-primary/5 transition-all duration-300 transform hover:scale-[1.02]"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

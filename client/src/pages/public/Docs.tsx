@@ -1,7 +1,9 @@
-import Footer from '../../components/common/Footer';
+import PublicPageLayout, { useCTA } from '../../core/components/layout/PublicPageLayout';
 import { Link } from 'react-router-dom';
 
-const Docs = () => {
+const DocsContent = () => {
+  const { handleCtaClick } = useCTA();
+
   const docSections = [
     {
       title: "Getting Started",
@@ -41,7 +43,7 @@ const Docs = () => {
   ];
 
   return (
-    <div className="font-sans">
+    <>
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary/5 via-neutral-white to-primary/10 pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0">
@@ -196,14 +198,14 @@ const Docs = () => {
           </p>
           
           <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
-            <Link 
-              to="/support"
+            <button 
+              onClick={handleCtaClick}
               className="bg-gradient-to-r from-primary to-purple-800 text-white p-6 rounded-2xl hover:shadow-xl transition-all duration-300 transform hover:scale-105"
             >
               <div className="text-2xl mb-3">💬</div>
               <h3 className="text-lg font-semibold mb-2">Contact Support</h3>
               <p className="text-primary-100 text-sm">Get help from our expert team</p>
-            </Link>
+            </button>
             
             <Link 
               to="/community"
@@ -216,9 +218,15 @@ const Docs = () => {
           </div>
         </div>
       </section>
+    </>
+  );
+};
 
-      <Footer />
-    </div>
+const Docs = () => {
+  return (
+    <PublicPageLayout>
+      <DocsContent />
+    </PublicPageLayout>
   );
 };
 

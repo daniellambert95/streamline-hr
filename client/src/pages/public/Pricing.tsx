@@ -1,9 +1,19 @@
 import { useState } from 'react';
 import { PRICING_PLANS, PRICING_FEATURES } from '../../shared/constants/pricing';
 import Footer from '../../components/common/Footer';
+import EmailSignupPopup from '../../components/common/EmailSignupPopup';
 
 const Pricing = () => {
   const [isYearly, setIsYearly] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const handleCtaClick = () => {
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
 
   return (
     <div className="font-sans">
@@ -89,7 +99,10 @@ const Pricing = () => {
                   </li>
                 ))}
               </ul>
-              <button className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold">
+              <button 
+                onClick={handleCtaClick}
+                className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold"
+              >
                 Start Free Trial
               </button>
             </div>
@@ -125,7 +138,10 @@ const Pricing = () => {
                   </li>
                 ))}
               </ul>
-              <button className="w-full bg-white text-primary py-3 rounded-xl hover:bg-gray-100 transition-all duration-300 font-semibold">
+              <button 
+                onClick={handleCtaClick}
+                className="w-full bg-white text-primary py-3 rounded-xl hover:bg-gray-100 transition-all duration-300 font-semibold"
+              >
                 Start Free Trial
               </button>
             </div>
@@ -148,7 +164,10 @@ const Pricing = () => {
                   </li>
                 ))}
               </ul>
-              <button className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold">
+              <button 
+                onClick={handleCtaClick}
+                className="w-full border-2 border-primary text-primary py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 font-semibold"
+              >
                 Contact Sales
               </button>
             </div>
@@ -260,7 +279,10 @@ const Pricing = () => {
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Start your {PRICING_FEATURES.trialDays}-day free trial today. No credit card required.
           </p>
-          <button className="bg-gradient-to-r from-primary to-purple-800 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 font-bold text-lg transform hover:scale-105 hover:-translate-y-1">
+          <button 
+            onClick={handleCtaClick}
+            className="bg-gradient-to-r from-primary to-purple-800 text-white px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 font-bold text-lg transform hover:scale-105 hover:-translate-y-1"
+          >
             Start Free Trial
           </button>
         </div>
@@ -281,7 +303,8 @@ const Pricing = () => {
         `
       }} />
 
-      <Footer />
+      <Footer onCtaClick={handleCtaClick} />
+      <EmailSignupPopup isOpen={isPopupOpen} onClose={closePopup} />
     </div>
   );
 };

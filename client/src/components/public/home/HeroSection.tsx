@@ -1,6 +1,10 @@
 import { HiPlay } from 'react-icons/hi2';
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  onCtaClick: () => void;
+}
+
+const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-neutral-white to-primary/10 pt-24 lg:pt-24 pb-8 sm:pb-12 lg:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Modern Background Elements */}
@@ -12,18 +16,11 @@ const HeroSection = () => {
         
         {/* Grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(rgba(87,41,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(87,41,255,0.03)_1px,transparent_1px)] bg-[size:30px_30px] sm:bg-[size:50px_50px]"></div>
-        
-        {/* Floating particles */}
-        <div className="absolute top-1/4 left-1/3 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-primary/30 rounded-full animate-pulse"></div>
-        <div className="absolute top-1/3 right-1/4 w-1 sm:w-1.5 h-1 sm:h-1.5 bg-secondary-lavender/60 rounded-full animate-pulse delay-300"></div>
-        <div className="absolute bottom-1/3 left-1/2 w-1.5 sm:w-2 h-1.5 sm:h-2 bg-primary/30 rounded-full animate-pulse delay-700"></div>
-        <div className="absolute top-2/3 right-1/3 w-1 sm:w-1.5 h-1 sm:h-1.5 bg-accent-blue/50 rounded-full animate-pulse delay-500"></div>
       </div>
       
       <div className="relative max-w-4xl mx-auto text-center mt-4 sm:mt-6 lg:mt-10 z-10">
         {/* Badge with brand colors */}
         <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 text-primary text-xs sm:text-sm font-medium mb-4 sm:mb-6 shadow-lg">
-          <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-primary rounded-full mr-2 animate-pulse"></span>
           AI-Powered HR Automation Platform
         </div>
         
@@ -34,13 +31,17 @@ const HeroSection = () => {
         </h1>
         
         {/* Description */}
-        <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-10 lg:mb-12 max-w-2xl mx-auto leading-relaxed px-2 sm:px-0">
-          Transform your HR operations with AI that <span className="text-primary font-semibold">automatically matches candidates</span>, streamlines employee management, and simplifies time tracking—all in one intelligent platform.
+        <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-10 lg:mb-12 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0">
+          Transform your HR operations with intelligent candidate matching, streamlined employee management, and simplified time tracking.
+          <span className='text-primary block font-semibold'>The all in one powerful platform.</span>
         </p>
         
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-0">
-          <button className="group bg-gradient-to-r from-primary to-purple-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-1 w-full sm:w-auto">
+          <button 
+            onClick={onCtaClick}
+            className="group bg-gradient-to-r from-primary to-purple-800 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold text-base sm:text-lg transform hover:scale-105 hover:-translate-y-1 w-full sm:w-auto"
+          >
             <span className="flex items-center justify-center">
               Start Free Trial
               <svg className="w-4 sm:w-5 h-4 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -48,7 +49,10 @@ const HeroSection = () => {
               </svg>
             </span>
           </button>
-          <button className="btn-outline group px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg bg-neutral-white/70 backdrop-blur-sm transform hover:scale-105 w-full sm:w-auto">
+          <button 
+            onClick={onCtaClick}
+            className="btn-outline group px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg bg-neutral-white/70 backdrop-blur-sm transform hover:scale-105 w-full sm:w-auto"
+          >
             <span className="flex items-center justify-center">
               <HiPlay className="w-4 sm:w-5 h-4 sm:h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
               Watch Demo
