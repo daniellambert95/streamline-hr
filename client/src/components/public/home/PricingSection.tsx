@@ -9,7 +9,7 @@ const PricingSection = ({ onCtaClick }: PricingSectionProps) => {
   const [isYearly, setIsYearly] = useState(false);
 
   return (
-    <section className="pb-16 sm:pb-20 lg:pb-24 px-4 sm:px-6 lg:px-8 bg-neutral-white">
+    <section className="py-16 sm:pb-20 lg:pb-24 px-4 sm:px-6 lg:px-8 bg-neutral-white">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <div className="text-xs sm:text-sm font-semibold text-primary mb-3 sm:mb-4">PRICING</div>
