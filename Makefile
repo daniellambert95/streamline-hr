@@ -73,6 +73,6 @@ db-setup:
 	./setup-db.sh 
 
 # Populate the database with sample data
-populate-db.sh:
+populate-db:
 	chmod +x populate-db.sh
 	./populate-db.sh 

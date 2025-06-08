@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import TaskList from '../../domains/dashboard/components/TaskList';
+import { taskService } from '../../domains/users/services/tasks';
 import { toast } from 'react-hot-toast';
 
 const Tasks: React.FC = () => {
@@ -34,7 +35,7 @@ const Tasks: React.FC = () => {
         </button>
       </div>
 
-      <TaskList showFullFeatures={true} />
+      <TaskList onTaskClick={() => {}} onExpandClick={() => {}} />
 
       {/* New Task List Modal */}
       {isNewListModalOpen && (

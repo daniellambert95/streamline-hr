@@ -1,0 +1,16 @@
+Add Esignature funnctioanlity to the project
+ - Users can upload documents
+ - Users can send documents for signature
+ - Users can sign documents
+ - Users can view documents
+ - Users can track document status
+ - Users can manage document templates
+ - Users can manage document workflows
+ - Users can manage document recipients
+
+// Esignature
+- Add esignature domain
+- Add esignature components
+- Add esignature services
+- Add esignature types
+- Add esignature utils

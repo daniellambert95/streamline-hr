@@ -5,18 +5,33 @@ export interface ApplicantNote {
 }
 
 export interface Applicant {
-  id: number;
+  id: number | string;
   first_name: string;
   last_name: string;
   email: string;
-  resume_path: string;
-  cover_letter_path: string;
-  linkedin_url: string;
-  status: 'pending' | 'under_review' | 'interviewing' | 'accepted' | 'rejected';
+  phone?: string;
+  status: string;
   applied_date: string;
-  job_listing_id: number;
-  job_title: string;
-  notes: ApplicantNote[];
+  job_listing_id: number | string;
+  job_title?: string;
+  resume_path?: string;
+  cover_letter_path?: string;
+  location?: string;
+  skills?: string[];
+  notes?: {
+    id: string;
+    content: string;
+    created_at: string;
+    created_by: string;
+  }[];
+  interviews?: {
+    id: string;
+    type: string;
+    date: string;
+    interviewer?: string;
+    status: string;
+    feedback?: string;
+  }[];
 }
 
 export interface ApplicantActivity {

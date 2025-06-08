@@ -1,0 +1,18 @@
+🎯 Primary Brand
+•	Electric Indigo — #5729FF (Used for primary buttons, links, highlights.)
+
+⚪️ Neutrals (for layout, text, backgrounds)
+•	Light Gray — #F5F7FA (main background)
+•	Cool Gray — #D1D5DB (borders, input fields)
+•	Charcoal — #2E2E2E (main text)
+•	White — #FFFFFF (cards, modals, UI surfaces)
+
+🔵 Accent Colors (used sparingly to highlight info/status)
+•	Sky Blue — #3A8DFF (info alerts, secondary buttons)
+•	Mint Green — #4ADE80 (success states)
+•	Sunset Orange — #FB923C (warnings/attention)
+•	Rose Red — #EF4444 (errors)
+
+🎨 Optional Secondary Support
+•	Lavender — #BFA8FF (soft backgrounds or tooltips)
+•	Deep Navy — #1E1B4B (headers, navigation)

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaTimes, FaTrash, FaPaperPlane, FaPlus, FaSearch, FaEnvelope, FaEnvelopeOpen, 
-  FaComments, FaReply, FaArrowLeft, FaInbox, FaStar,FaExclamationCircle } from 'react-icons/fa';
+  FaComments, FaReply, FaArrowLeft, FaInbox, FaStar, FaExclamationCircle } from 'react-icons/fa';
 import { Message } from '../types/message.types';
 import api from '../../../core/api/apiClient';
 import { toast } from 'react-hot-toast';
+import { useSidebar } from '../../../core/context/SidebarContext';
 
 interface MessageModalProps {
   isOpen: boolean;
@@ -416,13 +417,29 @@ const MessageModal: React.FC<MessageModalProps> = ({
     }
   };
 
+  const { isSidebarCollapsed } = useSidebar();
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 modal-overlay"
-    style={{ margin: 0 }}
-    onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 modal-overlay"
+      style={{ 
+        margin: 0,
+        display: 'grid',
+        placeItems: 'center',
+        paddingLeft: isSidebarCollapsed ? '5rem' : '17rem', // Responsive to sidebar state
+        paddingRight: '1rem',
+        paddingTop: '2rem',
+        paddingBottom: '2rem'
+      }}
+      onClick={onClose}>
+      <div 
+        className="bg-white rounded-xl shadow-xl w-full max-h-[90vh] overflow-hidden"
+        style={{
+          maxWidth: isSidebarCollapsed ? 'calc(100vw - 6rem)' : 'calc(100vw - 18rem)' // Responsive to sidebar state
+        }}
+        onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center">
             <FaComments className="text-indigo-600 mr-2 text-xl" />

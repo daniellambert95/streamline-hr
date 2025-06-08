@@ -1,382 +1,445 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import handleApiError from "../../core/utils/handleApiError.ts";
-import { JobListing } from "../../domains/recruitment/types/job.ts";
-import { Applicant } from "../../domains/recruitment/types/applicant.ts";
-import NewJobListingModal from '../../domains/recruitment/components/NewJobListingForm.tsx';
-import VacancyTrends from '../../domains/analytics/components/analytics/VacancyTrends.tsx';
-import { applicantService, jobService } from "../../domains/recruitment/services/recruitment.ts";
+import { FaDownload, FaCalendarAlt } from "react-icons/fa";
+import StatCard from "../../core/components/common/StatCard";
+import handleApiError from "../../core/utils/handleApiError";
+import { applicantService, jobService } from "../../domains/recruitment/services/recruitment";
+import { Applicant } from "../../domains/recruitment/types/applicant";
+import { JobListing } from "../../domains/recruitment/types/job";
+
+// Mock data for charts
+const mockTimeToHireData = [
+  { month: "Jan", days: 22 },
+  { month: "Feb", days: 25 },
+  { month: "Mar", days: 18 },
+  { month: "Apr", days: 20 },
+  { month: "May", days: 15 },
+  { month: "Jun", days: 17 },
+];
+
+const mockSourceData = [
+  { source: "LinkedIn", count: 45, percentage: 45 },
+  { source: "Indeed", count: 25, percentage: 25 },
+  { source: "Referrals", count: 15, percentage: 15 },
+  { source: "Company Website", count: 10, percentage: 10 },
+  { source: "Other", count: 5, percentage: 5 },
+];
+
+const mockDiversityData = {
+  gender: { male: 55, female: 40, other: 5 },
+  ethnicity: { white: 60, asian: 20, black: 10, hispanic: 8, other: 2 },
+  age: { "18-24": 15, "25-34": 45, "35-44": 25, "45-54": 10, "55+": 5 },
+};
 
 const TalentInsights: React.FC = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('jobs');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [listings, setListings] = useState<JobListing[]>([]);
   const [applicants, setApplicants] = useState<Applicant[]>([]);
-
-  const fetchListings = async () => {
-    try {
-      const { data } = await jobService.getAll();
-      setListings(data);
-    } catch (error) {
-      handleApiError(error);
-    }
-  };
-
-  const fetchApplicants = async () => {
-    try {
-      const response = await applicantService.getAll();
-      setApplicants(response.data);
-    } catch (error) {
-      handleApiError(error);
-    }
-  };
-
+  const [jobs, setJobs] = useState<JobListing[]>([]);
+  const [timeRange, setTimeRange] = useState("last30days");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchListings();
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [applicantsResponse, jobsResponse] = await Promise.all([
+          applicantService.getAll(),
+          jobService.getAll(),
+        ]);
+        setApplicants(applicantsResponse.data);
+        setJobs(jobsResponse.data);
+      } catch (error) {
+        handleApiError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (activeTab === 'candidates' || activeTab === 'analytics') {
-      fetchApplicants();
-    }
-  }, [activeTab]);
-
-
-  const handleJobCreated = async () => {
-    await fetchListings();
-    setIsModalOpen(false);
-    toast.success('Job listing created successfully');
-  };
+  // Calculate metrics
+  const totalApplicants = applicants.length;
+  const totalJobs = jobs.length;
+  const activeJobs = jobs.filter(job => job.status === "open").length;
+  
+  const hiredApplicants = applicants.filter(app => app.status === "accepted").length;
+  // const rejectedApplicants = applicants.filter(app => app.status === "rejected").length;
+  
+  const hireRate = totalApplicants > 0 ? Math.round((hiredApplicants / totalApplicants) * 100) : 0;
+  
+  // Calculate average time to hire (mock data)
+  const avgTimeToHire = mockTimeToHireData.reduce((sum, item) => sum + item.days, 0) / mockTimeToHireData.length;
 
   return (
-    <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
+    <div className="max-w-full mx-auto bg-gray-50 min-h-screen">
       {/* Header Section */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-700">Talent Insights</h1>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700"
-        >
-          + New Job
-        </button>
+      <div className="bg-white shadow-sm mb-6 px-6 py-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-800">Talent Insights</h1>
+          <div className="flex gap-2">
+            <div className="relative">
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(e.target.value)}
+                className="bg-gray-100 text-gray-700 px-4 py-2 pr-8 rounded-lg border border-gray-200 appearance-none"
+              >
+                <option value="last7days">Last 7 Days</option>
+                <option value="last30days">Last 30 Days</option>
+                <option value="last90days">Last 90 Days</option>
+                <option value="lastYear">Last Year</option>
+                <option value="allTime">All Time</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <FaCalendarAlt className="text-gray-400" />
+              </div>
+            </div>
+            <button
+              onClick={() => alert("Export functionality would be implemented here")}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 flex items-center"
+            >
+              <FaDownload className="mr-2" /> Export Report
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="border-b mt-6">
-        <nav className="flex space-x-6">
-          <button
-            className={`py-2 px-4 font-medium ${
-              activeTab === 'jobs' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-600'
-            }`}
-            onClick={() => setActiveTab('jobs')}
-          >
-            Jobs
-          </button>
-          <button
-            className={`py-2 px-4 font-medium ${
-              activeTab === 'candidates' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-600'
-            }`}
-            onClick={() => setActiveTab('candidates')}
-          >
-            Candidates
-          </button>
-          <button
-            className={`py-2 px-4 font-medium ${
-              activeTab === 'analytics' ? 'border-b-2 border-indigo-600 text-indigo-600' : 'text-gray-600'
-            }`}
-            onClick={() => setActiveTab('analytics')}
-          >
-            Analytics
-          </button>
-        </nav>
-      </div>
-
-      {/* Tab Content */}
-      <div className="mt-6">
-        {activeTab === 'jobs' && (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="py-3 px-4 text-left">Job Title</th>
-                  <th className="py-3 px-4 text-left">Location</th>
-                  <th className="py-3 px-4 text-left">Candidates</th>
-                  <th className="py-3 px-4 text-left">Status</th>
-                  <th className="py-3 px-4 text-left">Created On</th>
-                  <th className="py-3 px-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {listings.map((job, _index) => (
-                  <tr key={job.id} className="border-t">
-                    <td className="py-3 px-4">{job.title}</td>
-                    <td className="py-3 px-4">{job.location}</td>
-                    <td className="py-3 px-4">
-                      <span className="bg-gray-200 px-2 py-1 rounded-full text-sm">
-                        {job.candidates_count}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 rounded-full text-sm ${
-                        job.status === 'open' ? 'bg-green-200 text-green-800' :
-                        job.status === 'closed' ? 'bg-red-200 text-red-800' :
-                        'bg-yellow-200 text-yellow-800'
-                      }`}>
-                        {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">
-                      {new Date(job.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 mr-2"
-                        onClick={() => navigate(`/job/${job.id}`)}
-                      >
-                        View
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      ) : (
+        <>
+          {/* Key Metrics */}
+          <div className="bg-white shadow-sm mb-6 p-6 mx-6 rounded-lg">
+            <h2 className="text-lg font-semibold mb-4">Key Recruitment Metrics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <StatCard
+                title="Total Applicants"
+                value={totalApplicants.toString()}
+                subValue={`${applicants.filter(a => {
+                  const date = new Date(a.applied_date);
+                  const now = new Date();
+                  const thirtyDaysAgo = new Date(now.setDate(now.getDate() - 30));
+                  return date >= thirtyDaysAgo;
+                }).length} in last 30 days`}
+                icon="users"
+              />
+              <StatCard
+                title="Hire Rate"
+                value={`${hireRate}%`}
+                subValue={`${hiredApplicants} hired of ${totalApplicants}`}
+                icon="chart"
+              />
+              <StatCard
+                title="Active Jobs"
+                value={activeJobs.toString()}
+                subValue={`${totalJobs} total jobs`}
+                icon="briefcase"
+              />
+              <StatCard
+                title="Avg. Time to Hire"
+                value={`${Math.round(avgTimeToHire)} days`}
+                subValue="From application to offer"
+                icon="clock"
+              />
+            </div>
           </div>
-        )}
 
-        {activeTab === 'candidates' && (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="py-3 px-4 text-left">Name</th>
-                  <th className="py-3 px-4 text-left">Position</th>
-                  <th className="py-3 px-4 text-left">Status</th>
-                  <th className="py-3 px-4 text-left">Applied Date</th>
-                  <th className="py-3 px-4 text-left">Latest Note</th>
-                  <th className="py-3 px-4 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applicants.map((applicant) => (
-                  <tr key={applicant.id} className="border-t hover:bg-gray-50">
-                    <td className="py-3 px-4">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">
-                          {applicant.first_name} {applicant.last_name}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          {applicant.email}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="text-sm text-gray-900">{applicant.job_title}</div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        ${applicant.status === 'accepted' ? 'bg-green-100 text-green-800' : 
-                          applicant.status === 'rejected' ? 'bg-red-100 text-red-800' : 
-                          applicant.status === 'interviewing' ? 'bg-blue-100 text-blue-800' : 
-                          'bg-yellow-100 text-yellow-800'}`}>
-                        {applicant.status.replace('_', ' ').charAt(0).toUpperCase() + applicant.status.slice(1)}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-sm text-gray-500">
-                      {new Date(applicant.applied_date).toLocaleDateString()}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="text-sm text-gray-900">
-                        {applicant.notes && applicant.notes.length > 0 ? (
-                          <div className="group relative">
-                            <div className="truncate max-w-xs">
-                              {applicant.notes[applicant.notes.length - 1].content}
-                            </div>
-                            <div className="hidden group-hover:block absolute z-10 bg-gray-900 text-white p-2 rounded shadow-lg -left-1 transform -translate-x-1/2 mt-1">
-                              {applicant.notes.map((note, _index) => (
-                                <div key={note.id} className="mb-2 last:mb-0">
-                                  <div className="text-xs text-gray-400">
-                                    {new Date(note.created_at).toLocaleDateString()}
-                                  </div>
-                                  <div className="text-sm">{note.content}</div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-gray-400">No notes</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <div className="flex justify-center space-x-2">
-                        {applicant.resume_path && (
-                          <button 
-                            onClick={() => window.open(applicant.resume_path, '_blank')}
-                            className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600"
-                          >
-                            Resume
-                          </button>
-                        )}
-                        <button
-                          onClick={() => navigate(`/applicants/${applicant.id}`)}
-                          className="bg-indigo-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-indigo-600"
-                        >
-                          View
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {activeTab === 'analytics' && (
-          <div className="space-y-8">
-            {/* Key Metrics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Total Active Jobs</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">
-                      {listings.filter(job => job.status === 'open').length}
-                    </p>
-                  </div>
-                  <div className="bg-blue-50 rounded-full p-3">
-                    <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </div>
+          {/* Recruitment Funnel */}
+          <div className="bg-white shadow-sm mb-6 p-6 mx-6 rounded-lg">
+            <h2 className="text-lg font-semibold mb-4">Recruitment Funnel</h2>
+            <div className="relative pt-1">
+              <div className="flex mb-2 items-center justify-between">
+                <div>
+                  <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
+                    Funnel Conversion
+                  </span>
                 </div>
-                <div className="mt-2">
-                  <p className="text-green-600 text-sm flex items-center">
-                    <span className="font-medium">Active Listings</span>
-                  </p>
+                <div className="text-right">
+                  <span className="text-xs font-semibold inline-block text-indigo-600">
+                    {hireRate}%
+                  </span>
                 </div>
               </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Total Candidates</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">
-                      {applicants.length}
-                    </p>
+              <div className="flex h-4 mb-4 overflow-hidden rounded-full bg-gray-200">
+                <div className="flex flex-col justify-center rounded-full overflow-hidden bg-yellow-500 text-xs text-white text-center whitespace-nowrap transition duration-500 w-full" style={{ width: "100%" }}>
+                  <div className="flex">
+                    <div className="bg-yellow-500 h-4" style={{ width: "100%" }} title="Applications"></div>
+                    <div className="bg-blue-500 h-4" style={{ width: `${applicants.filter(a => a.status === 'interviewing').length / totalApplicants * 100}%` }} title="Interviews"></div>
+                    <div className="bg-green-500 h-4" style={{ width: `${hiredApplicants / totalApplicants * 100}%` }} title="Hired"></div>
                   </div>
-                  <div className="bg-indigo-50 rounded-full p-3">
-                    <svg className="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <p className="text-blue-600 text-sm flex items-center">
-                    <span className="font-medium">Across All Jobs</span>
-                  </p>
                 </div>
               </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Interview Stage</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">
-                      {applicants.filter(a => a.status === 'interviewing').length}
-                    </p>
-                  </div>
-                  <div className="bg-yellow-50 rounded-full p-3">
-                    <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15l.007-7.007M7 10l.011.011M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <p className="text-yellow-600 text-sm flex items-center">
-                    <span className="font-medium">Currently Interviewing</span>
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Acceptance Rate</p>
-                    <p className="text-2xl font-bold text-gray-900 mt-2">
-                      {applicants.length > 0 
-                        ? Math.round((applicants.filter(a => a.status === 'accepted').length / applicants.length) * 100)
-                        : 0}%
-                    </p>
-                  </div>
-                  <div className="bg-green-50 rounded-full p-3">
-                    <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15l.007-7.007M7 10l.011.011M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <p className="text-indigo-600 text-sm flex items-center">
-                    <span className="font-medium">Overall Success Rate</span>
-                  </p>
-                </div>
+              <div className="flex justify-between text-xs text-gray-600">
+                <span>Applications ({totalApplicants})</span>
+                <span>Interviews ({applicants.filter(a => a.status === 'interviewing').length})</span>
+                <span>Hired ({hiredApplicants})</span>
               </div>
             </div>
 
-            {/* Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Vacancy Trends Chart */}
-              {/* <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100"> */}
-                {/* <h3 className="text-lg font-semibold mb-6">Vacancy & Candidate Trends</h3> */}
-                <div className="h-80">
-                  <VacancyTrends />
-                </div>
-              {/* </div> */}
-
-              {/* Status Distribution */}
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="text-lg font-semibold mb-6">Application Status Distribution</h3>
-                <div className="space-y-4">
-                  {['pending', 'under_review', 'interviewing', 'accepted', 'rejected'].map(status => {
-                    const count = applicants.filter(a => a.status === status).length;
-                    const percentage = applicants.length > 0 ? (count / applicants.length) * 100 : 0;
-                    return (
-                      <div key={status} className="relative">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="capitalize font-medium">{status.replace('_', ' ')}</span>
-                          <span className="text-gray-600">{count} ({Math.round(percentage)}%)</span>
-                        </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-2 rounded-full transition-all duration-500 ${
-                              status === 'accepted' ? 'bg-green-500' :
-                              status === 'rejected' ? 'bg-red-500' :
-                              status === 'interviewing' ? 'bg-blue-500' :
-                              'bg-yellow-500'
-                            }`}
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Application Sources</h3>
+                <div className="space-y-2">
+                  {mockSourceData.map((source, index) => (
+                    <div key={index}>
+                      <div className="flex justify-between text-sm">
+                        <span>{source.source}</span>
+                        <span>{source.count} ({source.percentage}%)</span>
                       </div>
-                    );
-                  })}
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                        <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: `${source.percentage}%` }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Time to Hire Trend</h3>
+                <div className="h-48 flex items-end justify-between">
+                  {mockTimeToHireData.map((item, index) => (
+                    <div key={index} className="flex flex-col items-center">
+                      <div className="bg-indigo-600 w-8 rounded-t" style={{ height: `${(item.days / 30) * 100}%` }}></div>
+                      <div className="text-xs mt-1">{item.month}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Top Skills in Demand</h3>
+                <div className="space-y-2">
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>JavaScript</span>
+                      <span>78%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: "78%" }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>React</span>
+                      <span>65%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: "65%" }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>TypeScript</span>
+                      <span>52%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: "52%" }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>Node.js</span>
+                      <span>48%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: "48%" }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>Python</span>
+                      <span>35%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-indigo-600 h-2.5 rounded-full" style={{ width: "35%" }}></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
 
-      <NewJobListingModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={handleJobCreated} 
-      />
+          {/* Diversity Metrics */}
+          <div className="bg-white shadow-sm mb-6 p-6 mx-6 rounded-lg">
+            <h2 className="text-lg font-semibold mb-4">Diversity & Inclusion Metrics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Gender Distribution</h3>
+                <div className="space-y-2 mt-4">
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>Male</span>
+                      <span>{mockDiversityData.gender.male}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-blue-500 h-2.5 rounded-full" style={{ width: `${mockDiversityData.gender.male}%` }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>Female</span>
+                      <span>{mockDiversityData.gender.female}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-pink-500 h-2.5 rounded-full" style={{ width: `${mockDiversityData.gender.female}%` }}></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm">
+                      <span>Other</span>
+                      <span>{mockDiversityData.gender.other}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                      <div className="bg-purple-500 h-2.5 rounded-full" style={{ width: `${mockDiversityData.gender.other}%` }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Ethnicity Distribution</h3>
+                <div className="space-y-2 mt-4">
+                  {Object.entries(mockDiversityData.ethnicity).map(([key, value], index) => (
+                    <div key={index}>
+                      <div className="flex justify-between text-sm">
+                        <span>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                        <span>{value}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                        <div className={`bg-indigo-${300 + index * 100} h-2.5 rounded-full`} style={{ width: `${value}%` }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="font-medium text-gray-900 mb-2">Age Distribution</h3>
+                <div className="space-y-2 mt-4">
+                  {Object.entries(mockDiversityData.age).map(([key, value], index) => (
+                    <div key={index}>
+                      <div className="flex justify-between text-sm">
+                        <span>{key}</span>
+                        <span>{value}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+                        <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${value}%`, opacity: 0.4 + (index * 0.15) }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recruiter Performance */}
+          <div className="bg-white shadow-sm mb-6 p-6 mx-6 rounded-lg">
+            <h2 className="text-lg font-semibold mb-4">Recruiter Performance</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Recruiter
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Positions Filled
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Avg. Time to Fill
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Interviews Conducted
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Offer Acceptance Rate
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                          <span className="text-indigo-800 font-medium">JD</span>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">John Doe</div>
+                          <div className="text-sm text-gray-500">Technical Recruiter</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">12</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">18 days</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">45</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">85%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center">
+                          <span className="text-pink-800 font-medium">JS</span>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">Jane Smith</div>
+                          <div className="text-sm text-gray-500">Senior Recruiter</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">15</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">15 days</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">52</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">92%</div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                          <span className="text-green-800 font-medium">RJ</span>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">Robert Johnson</div>
+                          <div className="text-sm text-gray-500">HR Specialist</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">8</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">22 days</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">30</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">78%</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default TalentInsights;
+export default TalentInsights; 

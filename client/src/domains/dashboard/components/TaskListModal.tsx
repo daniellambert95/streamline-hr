@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus, FaTimes, FaCheck, FaTrash, FaCalendar, FaFlag, FaEdit, FaSave, FaTasks, FaSpinner, FaExpand, FaSort } from 'react-icons/fa';
+import { FaPlus, FaTimes, FaCheck, FaTrash, FaCalendar, FaFlag, FaEdit, FaSave, FaTasks, FaSpinner, FaSort } from 'react-icons/fa';
 import { Task, TaskList as TaskListType } from '../../users/types/task.types';
 import { taskService } from '../../users/services/tasks';
 import { toast } from 'react-hot-toast';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import { useSidebar } from '../../../core/context/SidebarContext';
 
 interface TaskListModalProps {
   isOpen: boolean;
@@ -28,6 +29,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
   const [pendingTasksCount, setPendingTasksCount] = useState(0);
   const [newTaskStatus, setNewTaskStatus] = useState<'pending' | 'in_progress' | 'completed'>('pending');
   const [sortOrder, setSortOrder] = useState<string>('default');
+  const { isSidebarCollapsed } = useSidebar();
 
   useEffect(() => {
     if (isOpen) {
@@ -373,8 +375,24 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center ${isOpen ? '' : 'hidden'}`} onClick={onClose}>
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-hidden" onClick={e => e.stopPropagation()}>
+    <div 
+      className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50"
+      style={{ 
+        margin: 0,
+        display: 'grid',
+        placeItems: 'center',
+        paddingLeft: isSidebarCollapsed ? '5rem' : '17rem', // Responsive to sidebar state
+        paddingRight: '1rem',
+        paddingTop: '2rem',
+        paddingBottom: '2rem'
+      }}
+      onClick={onClose}>
+      <div 
+        className="bg-white rounded-xl shadow-xl w-full max-h-[90vh] overflow-hidden"
+        style={{
+          maxWidth: isSidebarCollapsed ? 'calc(100vw - 6rem)' : 'calc(100vw - 18rem)' // Responsive to sidebar state
+        }}
+        onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center">
             <FaTasks className="text-indigo-600 mr-2 text-xl" />

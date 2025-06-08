@@ -6,7 +6,7 @@ import danielImage from "../../assets/daniel.png";
 import VacancyTrends from "../../domains/analytics/components/analytics/VacancyTrends";
 import CalanderWidget from "../../domains/dashboard/components/CalanderWidget";
 import { getGreeting } from '../../core/utils/greetingUtils';
-import { FaBell, FaComments, FaEnvelope, FaEnvelopeOpen, FaPlus, } from 'react-icons/fa';
+import { FaBell, FaComments, FaEnvelope, FaEnvelopeOpen, FaPlus, FaUsers } from 'react-icons/fa';
 import TaskList from "../../domains/dashboard/components/TaskList";
 import { Notification } from "../../domains/users/types/notification.types";
 import { Message } from "../../domains/users/types/message.types";
@@ -14,6 +14,12 @@ import NotificationModal from "../../domains/users/components/NotificationModal"
 import MessageModal from "../../domains/users/components/MessageModal";
 import TaskListModal from '../../domains/dashboard/components/TaskListModal';
 import { toast } from 'react-hot-toast';
+
+// Import new enhanced components
+import EnhancedMetricsCards from "../../domains/dashboard/components/EnhancedMetricsCards";
+import QuickActionsPanel from "../../domains/dashboard/components/QuickActionsPanel";
+import SmartInsights from "../../domains/dashboard/components/SmartInsights";
+import HiringPipeline from "../../domains/dashboard/components/HiringPipeline";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -43,6 +49,7 @@ const Dashboard: React.FC = () => {
   // Add these new state variables after the existing modal state variables (around line 40)
   const [selectedNotificationId, setSelectedNotificationId] = useState<number | undefined>(undefined);
   const [selectedMessageId, setSelectedMessageId] = useState<number | undefined>(undefined);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | undefined>(undefined);
 
   // Add this state variable with your other state declarations
   const [isComposingMessage, setIsComposingMessage] = useState(false);
@@ -141,6 +148,15 @@ const Dashboard: React.FC = () => {
     setActiveDropdown(null);
   };
 
+  const handleTaskClick = (taskId: number) => {
+    setSelectedTaskId(taskId);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleTaskExpandClick = () => {
+    setIsTaskModalOpen(true);
+  };
+
   const handleMarkNotificationAsRead = async (notificationId: number) => {
     try {
       await api.put(`/api/v1/users/notifications/${notificationId}/read`);
@@ -203,462 +219,480 @@ const Dashboard: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">Loading...</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-purple-50 to-indigo-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading your dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="font-sans px-6 pb-4 bg-gray-100 min-h-screen space-y-8">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">
-          {getGreeting()}, <span className="text-indigo-600">{user.first_name}</span> 👋
-        </h1>
-  
-        {/* User Profile Section with Notifications */}
-        <div className="flex items-center gap-4">
-          {/* Notification Icons */}
-          <div className="flex items-center gap-4">
-            {/* Messages Dropdown */}
-            <div 
-              ref={messagesRef}
-              className="relative"
-              onMouseEnter={() => handleDropdownMouseEnter('messages')}
-              onMouseLeave={handleDropdownMouseLeave}
-            >
-              <button 
-                onClick={handleMessageClick}
-                className="relative p-2 hover:bg-gray-100 rounded-full"
-              >
-                <FaComments className="text-gray-600 text-xl" />
-                {unreadMessagesCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadMessagesCount}
-                  </span>
-                )}
-              </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 font-sans">
+      {/* Enhanced Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-purple-400/10 to-pink-400/10 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(99,102,241,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(99,102,241,0.02)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+      </div>
 
-              {/* Messages Dropdown Content */}
-              {activeDropdown === 'messages' && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-10 overflow-hidden">
-                  <div className="p-3 border-b flex justify-between items-center">
-                    <h3 className="font-medium">Messages</h3>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsComposingMessage(true);
-                        setActiveDropdown(null);
-                      }}
-                      className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
-                    >
-                      <FaPlus size={10} /> New Message
-                    </button>
+      <div className="relative z-10 p-6 space-y-6">
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-6">
+          <div>
+            <h1 className="text-4xl lg:text-5xl font-bold mb-2">
+              {getGreeting()}, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">{user.first_name}</span> 👋
+            </h1>
+            <p className="text-gray-600 text-lg">Welcome back to your HR dashboard</p>
+          </div>
+    
+          {/* User Profile Section with Notifications */}
+          <div className="flex items-center gap-6">
+            {/* Notification Icons */}
+            <div className="flex items-center gap-4">
+              {/* Messages Dropdown */}
+              <div 
+                ref={messagesRef}
+                className="relative"
+                onMouseEnter={() => handleDropdownMouseEnter('messages')}
+                onMouseLeave={handleDropdownMouseLeave}
+              >
+                <button 
+                  onClick={handleMessageClick}
+                  className="relative p-3 hover:bg-white/80 rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl hover:bg-white/90 transition-all duration-300"
+                >
+                  <FaComments className="text-gray-700 text-xl" />
+                  {unreadMessagesCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-medium shadow-lg">
+                      {unreadMessagesCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Messages Dropdown Content */}
+                {activeDropdown === 'messages' && (
+                  <div className="absolute right-0 mt-4 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl z-10 overflow-hidden border border-white/20">
+                    <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-indigo-50 to-purple-50">
+                      <h3 className="font-semibold text-gray-800">Messages</h3>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsComposingMessage(true);
+                          setActiveDropdown(null);
+                        }}
+                        className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-indigo-100 transition-colors"
+                      >
+                        <FaPlus size={10} /> New Message
+                      </button>
+                    </div>
+                    
+                    <div className="max-h-96 overflow-y-auto">
+                      {messages.length > 0 ? (
+                        messages.map(message => (
+                          <div 
+                            key={message.id}
+                            className={`p-4 border-b border-gray-50 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 cursor-pointer transition-all duration-200 ${!message.is_read ? 'bg-indigo-50/50' : ''}`}
+                            onClick={() => handleMessageItemClick(message.id)}
+                          >
+                            <div className="flex items-start">
+                              <div className="flex-1">
+                                <div className="flex justify-between items-start mb-1">
+                                  <span className="text-sm font-semibold text-gray-800">
+                                    {message.sender_first_name} {message.sender_last_name}
+                                  </span>
+                                  <span className="text-xs text-gray-500">
+                                    {new Date(message.sent_at).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <p className="text-sm font-medium text-gray-700 mb-1">{message.subject}</p>
+                                <p className="text-xs text-gray-500 truncate max-w-[200px]">{message.content}</p>
+                              </div>
+                              <div className="flex space-x-1 ml-3">
+                                {message.is_read ? (
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMarkMessageAsUnread(message.id);
+                                    }}
+                                    className="text-gray-400 hover:text-gray-600 p-1 rounded transition-colors"
+                                    title="Mark as unread"
+                                  >
+                                    <FaEnvelope size={12} />
+                                  </button>
+                                ) : (
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMarkMessageAsRead(message.id);
+                                    }}
+                                    className="text-indigo-400 hover:text-indigo-600 p-1 rounded transition-colors"
+                                    title="Mark as read"
+                                  >
+                                    <FaEnvelopeOpen size={12} />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-6 text-center text-gray-500">
+                          <FaComments className="mx-auto mb-2 text-2xl text-gray-300" />
+                          <p>No messages</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="p-4 text-center border-t border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+                      <button 
+                        onClick={handleMessageClick}
+                        className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold hover:underline transition-colors"
+                      >
+                        View All Messages
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="max-h-96 overflow-y-auto">
-                    {messages.length > 0 ? (
-                      messages.map(message => (
-                        <div 
-                          key={message.id}
-                          className={`p-3 border-b hover:bg-gray-50 cursor-pointer ${!message.is_read ? 'bg-blue-50' : ''}`}
-                          onClick={() => handleMessageItemClick(message.id)}
+                )}
+              </div>
+              
+              {/* Notifications Dropdown */}
+              <div 
+                ref={notificationsRef}
+                className="relative"
+                onMouseEnter={() => handleDropdownMouseEnter('notifications')}
+                onMouseLeave={handleDropdownMouseLeave}
+              >
+                <button 
+                  onClick={handleNotificationClick}
+                  className="relative p-3 hover:bg-white/80 rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl hover:bg-white/90 transition-all duration-300"
+                >
+                  <FaBell className="text-gray-700 text-xl" />
+                  {unreadNotificationsCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-medium shadow-lg">
+                      {unreadNotificationsCount}
+                    </span>
+                  )}
+                </button>
+                
+                {/* Notifications Dropdown Content */}
+                {activeDropdown === 'notifications' && (
+                  <div className="absolute right-0 mt-4 w-80 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl z-10 overflow-hidden border border-white/20">
+                    <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-indigo-50 to-purple-50">
+                      <h3 className="font-semibold text-gray-800">Notifications</h3>
+                      {unreadNotificationsCount > 0 && (
+                        <button 
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            try {
+                              await api.put('/api/v1/users/notifications/read-all');
+                              fetchUserData();
+                              toast.success('All notifications marked as read');
+                            } catch (error) {
+                              toast.error('Failed to update notifications');
+                            }
+                          }}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 px-2 py-1 rounded-lg hover:bg-indigo-100 transition-colors"
                         >
-                          <div className="flex items-start">
-                            <div className="flex-1">
-                              <div className="flex justify-between">
-                                <span className="text-sm font-medium">
-                                  {message.sender_first_name} {message.sender_last_name}
-                                </span>
-                                <span className="text-xs text-gray-500">
-                                  {new Date(message.sent_at).toLocaleDateString()}
+                          Mark all as read
+                        </button>
+                      )}
+                    </div>
+                    
+                    <div className="max-h-96 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map(notification => (
+                          <div 
+                            key={notification.id}
+                            className={`p-4 border-b border-gray-50 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 cursor-pointer transition-all duration-200 ${!notification.is_read ? 'bg-indigo-50/50' : ''}`}
+                            onClick={() => handleNotificationItemClick(notification.id)}
+                          >
+                            <div className="flex items-start">
+                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mr-3 shadow-sm
+                                ${notification.type === 'application' ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 
+                                  notification.type === 'meeting' ? 'bg-gradient-to-r from-blue-400 to-indigo-500' : 
+                                  'bg-gradient-to-r from-yellow-400 to-orange-500'}`}>
+                                <span className="text-white text-lg">
+                                  {notification.type === 'application' ? '👤' : 
+                                   notification.type === 'meeting' ? '📅' : '📝'}
                                 </span>
                               </div>
-                              <p className="text-sm font-medium">{message.subject}</p>
-                              <p className="text-xs text-gray-500 truncate max-w-[200px]">{message.content}</p>
-                            </div>
-                            <div className="flex space-x-1 ml-2">
-                              {message.is_read ? (
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMarkMessageAsUnread(message.id);
-                                  }}
-                                  className="text-gray-400 hover:text-gray-600 p-1"
-                                  title="Mark as unread"
-                                >
-                                  <FaEnvelope size={12} />
-                                </button>
-                              ) : (
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMarkMessageAsRead(message.id);
-                                  }}
-                                  className="text-blue-400 hover:text-blue-600 p-1"
-                                  title="Mark as read"
-                                >
-                                  <FaEnvelopeOpen size={12} />
-                                </button>
-                              )}
+                              <div className="flex-1">
+                                <p className="text-sm text-gray-800 truncate max-w-[200px] font-medium">{notification.message}</p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {new Date(notification.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="flex space-x-1 ml-3">
+                                {notification.is_read ? (
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMarkNotificationAsUnread(notification.id);
+                                    }}
+                                    className="text-gray-400 hover:text-gray-600 p-1 rounded transition-colors"
+                                    title="Mark as unread"
+                                  >
+                                    <FaEnvelope size={12} />
+                                  </button>
+                                ) : (
+                                  <button 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleMarkNotificationAsRead(notification.id);
+                                    }}
+                                    className="text-indigo-400 hover:text-indigo-600 p-1 rounded transition-colors"
+                                    title="Mark as read"
+                                  >
+                                    <FaEnvelopeOpen size={12} />
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
+                        ))
+                      ) : (
+                        <div className="p-6 text-center text-gray-500">
+                          <FaBell className="mx-auto mb-2 text-2xl text-gray-300" />
+                          <p>No notifications</p>
                         </div>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center text-gray-500">
-                        No messages
-                      </div>
-                    )}
+                      )}
+                    </div>
+                    
+                    <div className="p-4 text-center border-t border-gray-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+                      <button 
+                        onClick={handleNotificationClick}
+                        className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold hover:underline transition-colors"
+                      >
+                        View All Notifications
+                      </button>
+                    </div>
                   </div>
-                  
-                  <div className="p-3 text-center border-t">
-                    <button 
-                      onClick={handleMessageClick}
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                    >
-                      View All Messages
-                    </button>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
             
-            {/* Notifications Dropdown */}
-            <div 
-              ref={notificationsRef}
-              className="relative"
-              onMouseEnter={() => handleDropdownMouseEnter('notifications')}
-              onMouseLeave={handleDropdownMouseLeave}
-            >
-              <button 
-                onClick={handleNotificationClick}
-                className="relative p-2 hover:bg-gray-100 rounded-full"
-              >
-                <FaBell className="text-gray-600 text-xl" />
-                {unreadNotificationsCount > 0 && (
-                  <span className="absolute top-0 right-0 bg-indigo-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {unreadNotificationsCount}
-                  </span>
-                )}
+            {/* Profile Link */}
+            <Link to="/profile" className="flex items-center gap-4 p-4 border border-white/20 rounded-2xl shadow-lg bg-white/80 backdrop-blur-sm cursor-pointer hover:shadow-xl hover:bg-white/90 transition-all duration-300">
+              <div>
+                <p className="text-sm font-bold text-gray-800">
+                  {user.first_name} {user.last_name}
+                </p>
+                <p className="text-sm text-gray-600">{user.company_name}</p>
+              </div>
+              <img src={danielImage} alt="User" className="ml-4 w-12 h-12 rounded-xl object-cover shadow-md" />
+            </Link>
+          </div>
+        </div>
+
+        {/* Enhanced Metrics Cards Section */}
+        <EnhancedMetricsCards />
+
+        {/* Quick Actions Panel */}
+        <QuickActionsPanel />
+
+        {/* Smart Insights */}
+        <SmartInsights />
+
+        {/* Enhanced Dashboard Widgets Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Calendar takes up 2 columns, Tasks takes 1 column */}
+          <div className="lg:col-span-2">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+              <CalanderWidget />
+            </div>
+          </div>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+            <TaskList onTaskClick={handleTaskClick} onExpandClick={handleTaskExpandClick} />
+          </div>
+        </div>
+
+        {/* Hiring Pipeline Section */}
+        <HiringPipeline />
+
+        {/* Analytics Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+            <CalanderWidget />
+          </div>
+          <div className="lg:col-span-2">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 overflow-hidden">
+              <VacancyTrends />
+            </div>
+          </div>
+        </div>
+
+        {/* Upcoming Interview Section */}
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-white/20 space-y-6">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+              <span className="text-white text-sm">📅</span>
+            </div>
+            Upcoming Interview
+          </h2>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex items-center space-x-4">
+              <img src={danielImage} alt="Candidate" className="w-16 h-16 rounded-xl object-cover shadow-lg" />
+              <div>
+                <p className="text-xl font-bold text-gray-800">James Hatt</p>
+                <p className="text-sm text-gray-600 bg-indigo-50 px-3 py-1 rounded-full inline-block">Lead Designer</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-6">
+              <div className="text-center lg:text-right">
+                <p className="text-sm text-gray-600 font-medium">Interview Time</p>
+                <p className="text-lg font-bold text-gray-800">11:30 AM - 12:45 PM</p>
+              </div>
+              <button className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105">
+                View Details
               </button>
-              
-              {/* Notifications Dropdown Content */}
-              {activeDropdown === 'notifications' && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl z-10 overflow-hidden">
-                  <div className="p-3 border-b flex justify-between items-center">
-                    <h3 className="font-medium">Notifications</h3>
-                    {unreadNotificationsCount > 0 && (
-                      <button 
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          try {
-                            await api.put('/api/v1/users/notifications/read-all');
-                            fetchUserData();
-                            toast.success('All notifications marked as read');
-                          } catch (error) {
-                            toast.error('Failed to update notifications');
-                          }
-                        }}
-                        className="text-xs text-indigo-600 hover:text-indigo-800"
-                      >
-                        Mark all as read
-                      </button>
-                    )}
-                  </div>
-                  
-                  <div className="max-h-96 overflow-y-auto">
-                    {notifications.length > 0 ? (
-                      notifications.map(notification => (
-                        <div 
-                          key={notification.id}
-                          className={`p-3 border-b hover:bg-gray-50 cursor-pointer ${!notification.is_read ? 'bg-blue-50' : ''}`}
-                          onClick={() => handleNotificationItemClick(notification.id)}
-                        >
-                          <div className="flex items-start">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center mr-2 
-                              ${notification.type === 'application' ? 'bg-green-100 text-green-600' : 
-                                notification.type === 'meeting' ? 'bg-blue-100 text-blue-600' : 
-                                'bg-yellow-100 text-yellow-600'}`}>
-                              {notification.type === 'application' ? '👤' : 
-                               notification.type === 'meeting' ? '📅' : '📝'}
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-sm truncate max-w-[200px]">{notification.message}</p>
-                              <p className="text-xs text-gray-500 mt-1">
-                                {new Date(notification.created_at).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div className="flex space-x-1 ml-2">
-                              {notification.is_read ? (
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMarkNotificationAsUnread(notification.id);
-                                  }}
-                                  className="text-gray-400 hover:text-gray-600 p-1"
-                                  title="Mark as unread"
-                                >
-                                  <FaEnvelope size={12} />
-                                </button>
-                              ) : (
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMarkNotificationAsRead(notification.id);
-                                  }}
-                                  className="text-blue-400 hover:text-blue-600 p-1"
-                                  title="Mark as read"
-                                >
-                                  <FaEnvelopeOpen size={12} />
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="p-4 text-center text-gray-500">
-                        No notifications
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="p-3 text-center border-t">
-                    <button 
-                      onClick={handleNotificationClick}
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
-                    >
-                      View All Notifications
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
-          
-          {/* Profile Link */}
-          <Link to="/profile" className="flex items-center gap-4 p-4 border rounded-lg shadow bg-white cursor-pointer hover:shadow-lg transition">
-            <div>
-              <p className="text-sm font-semibold">
-                {user.first_name} {user.last_name}
-              </p>
-              {/* <p className="text-sm text-gray-500">{user.email}</p> */}
-              <p className="text-sm text-gray-500">{user.company_name}</p>
+        </div>
+
+        {/* Recent Candidates Table */}
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg border border-white/20">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
+              <FaUsers className="text-white text-sm" />
             </div>
-            <img src={danielImage} alt="User" className="ml-12 w-12 h-12 rounded-full" />
-          </Link>
-
-        </div>
-      </div>
-
-      {/* Other Dashboard Components */}
-      {/* Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-500">Total Employees</p>
-          <p className="text-3xl font-bold">418</p>
-          <p className="text-green-600 text-sm">+7% last month</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-500">New Employees</p>
-          <p className="text-3xl font-bold">21</p>
-          <p className="text-green-600 text-sm">+2% last month</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-500">Resigned Employees</p>
-          <p className="text-3xl font-bold">14</p>
-          <p className="text-green-600 text-sm">+4% last month</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-sm text-gray-500">Employees On Leave</p>
-          <p className="text-3xl font-bold">4</p>
-          <p className="text-green-600 text-sm">-15% less than last usual</p>
-        </div>
-      </div>
-
-      {/* Analytics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Calendar takes up 2 columns, Tasks takes 1 column */}
-        <div className="md:col-span-2">
-          <CalanderWidget />
-        </div>
-        <TaskList />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <CalanderWidget />
-        <div className="col-span-1 md:col-span-2">
-          <VacancyTrends />
-        </div>
-      </div>
-
-      {/* Upcoming Interview Section */}
-      <div className="bg-white p-6 rounded-lg shadow space-y-4">
-        <h2 className="text-lg font-bold">Upcoming Interview</h2>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <img src={danielImage} alt="Candidate" className="w-12 h-12 rounded-full" />
-            <div>
-              <p className="font-semibold">James Hatt</p>
-              <p className="text-sm text-gray-500">Lead Designer</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            <div>
-              <p className="text-sm text-gray-500">Time</p>
-              <p>11:30 AM - 12:45 AM</p>
-            </div>
-            <button className="bg-indigo-500 text-white px-4 py-2 rounded-md">
-              View Details
-            </button>
-          </div>
-        </div>
-      </div>
-      {/* Candidate Table */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-lg font-bold mb-4">Candidates</h2>
-        <table className="w-full table-auto border-collapse">
-          <thead>
-            <tr className="text-left text-indigo-600 text-sm">
-              <th className="py-2">Candidate Name</th>
-              <th className="py-2">Title</th>
-              <th className="py-2">Email</th>
-              <th className="py-2">Created At</th>
-              <th className="py-2">LinkedIn</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700">
-            {[
-              {
-                id: 1,
-                first_name: "Kevin",
-                last_name: "Michel",
-                email: "kevmichel@gmail.com",
-                title: "Sr. Developer",
-                created_at: "2023-01-01T12:00:00Z",
-                linkedin_url_path: "https://linkedin.com/in/kevinmichel",
-              },
-              {
-                id: 2,
-                first_name: "Tanisha",
-                last_name: "Combs",
-                email: "tanicom@gmail.com",
-                title: "Jr. UX Designer",
-                created_at: "2023-01-02T12:00:00Z",
-                linkedin_url_path: "https://linkedin.com/in/tanishacombs",
-              },
-              {
-                id: 3,
-                first_name: "Aron",
-                last_name: "Armstrong",
-                email: "armsaron@gmail.com",
-                title: "Mid. QA Automation",
-                created_at: "2023-01-03T12:00:00Z",
-                linkedin_url_path: "https://linkedin.com/in/aronarmstrong",
-              },
-              {
-                id: 4,
-                first_name: "Josh",
-                last_name: "Wiggins",
-                email: "wiggijo@gmail.com",
-                title: "Sr. Analytics",
-                created_at: "2023-01-04T12:00:00Z",
-                linkedin_url_path: "https://linkedin.com/in/joshwiggins",
-              },
-              {
-                id: 5,
-                first_name: "Sumaya",
-                last_name: "Oneill",
-                email: "sumone@gmail.com",
-                title: "Sr. Copywriter",
-                created_at: "2023-01-05T12:00:00Z",
-                linkedin_url_path: "https://linkedin.com/in/sumayaoneill",
-              },
-            ].map((candidate, index) => (
-              <tr
-                key={candidate.id}
-                className={index % 2 === 0 ? "bg-white" : "bg-indigo-100"}
-              >
-                <td className="py-2 px-4">
-                  {candidate.first_name} {candidate.last_name}
-                </td>
-                <td className="py-2 px-4">{candidate.title}</td>
-                <td className="py-2 px-4">{candidate.email}</td>
-                <td className="py-2 px-4">
-                  {new Date(candidate.created_at).toLocaleDateString()}
-                </td>
-                <td className="py-2 px-4">
-                  <a
-                    href={candidate.linkedin_url_path}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+            Recent Candidates
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full table-auto">
+              <thead>
+                <tr className="text-left text-gray-700 text-sm font-semibold border-b border-gray-200">
+                  <th className="py-4 px-2">Candidate Name</th>
+                  <th className="py-4 px-2">Title</th>
+                  <th className="py-4 px-2">Email</th>
+                  <th className="py-4 px-2">Created At</th>
+                  <th className="py-4 px-2">LinkedIn</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-700">
+                {[
+                  {
+                    id: 1,
+                    first_name: "Kevin",
+                    last_name: "Michel",
+                    email: "kevmichel@gmail.com",
+                    title: "Sr. Developer",
+                    created_at: "2025-01-01T12:00:00Z",
+                    linkedin_url_path: "https://linkedin.com/in/kevinmichel",
+                  },
+                  {
+                    id: 2,
+                    first_name: "Tanisha",
+                    last_name: "Combs",
+                    email: "tanicom@gmail.com",
+                    title: "Jr. UX Designer",
+                    created_at: "2025-01-02T12:00:00Z",
+                    linkedin_url_path: "https://linkedin.com/in/tanishacombs",
+                  },
+                  {
+                    id: 3,
+                    first_name: "Aron",
+                    last_name: "Armstrong",
+                    email: "armsaron@gmail.com",
+                    title: "Mid. QA Automation",
+                    created_at: "2025-01-03T12:00:00Z",
+                    linkedin_url_path: "https://linkedin.com/in/aronarmstrong",
+                  },
+                  {
+                    id: 4,
+                    first_name: "Josh",
+                    last_name: "Wiggins",
+                    email: "wiggijo@gmail.com",
+                    title: "Sr. Analytics",
+                    created_at: "2025-01-04T12:00:00Z",
+                    linkedin_url_path: "https://linkedin.com/in/joshwiggins",
+                  },
+                  {
+                    id: 5,
+                    first_name: "Sumaya",
+                    last_name: "Oneill",
+                    email: "sumone@gmail.com",
+                    title: "Sr. Copywriter",
+                    created_at: "2025-01-05T12:00:00Z",
+                    linkedin_url_path: "https://linkedin.com/in/sumayaoneill",
+                  },
+                ].map((candidate, index) => (
+                  <tr
+                    key={candidate.id}
+                    className={`transition-colors duration-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 ${
+                      index % 2 === 0 ? "bg-white/50" : "bg-gray-50/50"
+                    } border-b border-gray-100`}
                   >
-                    LinkedIn
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    <td className="py-4 px-2 font-semibold text-gray-800">
+                      {candidate.first_name} {candidate.last_name}
+                    </td>
+                    <td className="py-4 px-2">
+                      <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
+                        {candidate.title}
+                      </span>
+                    </td>
+                    <td className="py-4 px-2 text-gray-600">{candidate.email}</td>
+                    <td className="py-4 px-2 text-gray-600">
+                      {new Date(candidate.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="py-4 px-2">
+                      <a
+                        href={candidate.linkedin_url_path}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 text-sm font-medium"
+                      >
+                        LinkedIn
+                      </a>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Modals */}
+        {isNotificationModalOpen && (
+          <NotificationModal 
+            isOpen={isNotificationModalOpen} 
+            onClose={() => {
+              setIsNotificationModalOpen(false);
+              setSelectedNotificationId(undefined);
+            }} 
+            onUpdate={fetchUserData}
+            initialNotificationId={selectedNotificationId}
+          />
+        )}
+        
+        {isMessageModalOpen && (
+          <MessageModal 
+            isOpen={isMessageModalOpen} 
+            onClose={() => {
+              setIsMessageModalOpen(false);
+              setSelectedMessageId(undefined);
+              setIsComposingMessage(false);
+            }} 
+            onUpdate={fetchUserData}
+            initialMessageId={selectedMessageId}
+            isComposing={isComposingMessage}
+            setIsComposing={setIsComposingMessage}
+          />
+        )}
+
+        {isTaskModalOpen && (
+          <TaskListModal 
+            isOpen={isTaskModalOpen} 
+            onClose={() => {
+              setIsTaskModalOpen(false);
+              setSelectedTaskId(undefined);
+            }} 
+            selectedTaskId={selectedTaskId}
+          />
+        )}
       </div>
-
-      {/* Modals */}
-      {isNotificationModalOpen && (
-        <NotificationModal 
-          isOpen={isNotificationModalOpen} 
-          onClose={() => {
-            setIsNotificationModalOpen(false);
-            setSelectedNotificationId(undefined);
-          }} 
-          onUpdate={fetchUserData}
-          initialNotificationId={selectedNotificationId}
-        />
-      )}
-      
-      {isMessageModalOpen && (
-        <MessageModal 
-          isOpen={isMessageModalOpen} 
-          onClose={() => {
-            setIsMessageModalOpen(false);
-            setSelectedMessageId(undefined);
-            setIsComposingMessage(false);
-          }} 
-          onUpdate={fetchUserData}
-          initialMessageId={selectedMessageId}
-          isComposing={isComposingMessage}
-          setIsComposing={setIsComposingMessage}
-        />
-      )}
-
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">Tasks</h2>
-        <button 
-          onClick={() => setIsTaskModalOpen(true)}
-          className="text-sm text-indigo-600 hover:text-indigo-800"
-        >
-          View All
-        </button>
-      </div>
-
-      {isTaskModalOpen && (
-        <TaskListModal 
-          isOpen={isTaskModalOpen} 
-          onClose={() => setIsTaskModalOpen(false)} 
-        />
-      )}
     </div>
   );
 };
-
-// Helper component for displaying info items
-const InfoItem = ({ label, value }: { label: string; value?: string }) => (
-  <div>
-    <h3 className="text-gray-600">{label}</h3>
-    <p className="font-medium">{value || 'N/A'}</p>
-  </div>
-);
 
 export default Dashboard;
