@@ -2,7 +2,7 @@ import { VelocityScroll } from '@/components/magicui/scroll-based-velocity';
 
 const VelocityScrollSection = () => {
   return (
-    <section className="py-6 sm:py-8 md:py-12 lg:py-16 bg-neutral-white">
+    <section className="py-16 mb-16 bg-neutral-white">
       {/* Simple but effective container approach */}
       <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden">
         <div className="relative h-auto">
