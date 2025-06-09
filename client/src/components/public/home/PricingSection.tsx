@@ -17,29 +17,33 @@ const PricingSection = ({ onCtaClick }: PricingSectionProps) => {
           <p className="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8">Choose the plan that fits your team size and needs</p>
           
           {/* Pricing Toggle */}
-          <div className="flex items-center justify-center mb-8 sm:mb-12">
-            <span className={`text-sm font-medium mr-3 ${!isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
-              Monthly
-            </span>
-            <button
-              onClick={() => setIsYearly(!isYearly)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                isYearly ? 'bg-primary' : 'bg-gray-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  isYearly ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-            <span className={`text-sm font-medium ml-3 ${isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
-              Yearly
-            </span>
-            {isYearly && (
-              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/20 text-accent-green">
-                Save 20%
+          <div className="flex items-center justify-center mb-8 sm:mb-12 relative">
+            <div className="flex items-center">
+              <span className={`text-sm font-medium mr-3 ${!isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
+                Monthly
               </span>
+              <button
+                onClick={() => setIsYearly(!isYearly)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                  isYearly ? 'bg-primary' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    isYearly ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+              <span className={`text-sm font-medium ml-3 ${isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
+                Yearly
+              </span>
+            </div>
+            {isYearly && (
+              <div className="absolute left-1/2 transform translate-x-24">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/20 text-accent-green">
+                  Save 20%
+                </span>
+              </div>
             )}
           </div>
         </div>
@@ -78,7 +82,7 @@ const PricingSection = ({ onCtaClick }: PricingSectionProps) => {
                 <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-green mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                 </svg>
-                <span className="text-gray-600 text-sm sm:text-base">Time Tracking</span>
+                <span className="text-gray-600 text-sm sm:text-base">Time Management</span>
               </li>
               <li className="flex items-center">
                 <svg className="w-4 sm:w-5 h-4 sm:h-5 text-accent-green mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -46,29 +46,33 @@ const Pricing = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-neutral-white">
         <div className="max-w-7xl mx-auto">
           {/* Pricing Toggle */}
-          <div className="flex items-center justify-center mb-12">
-            <span className={`text-sm font-medium mr-3 ${!isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
-              Monthly
-            </span>
-            <button
-              onClick={() => setIsYearly(!isYearly)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                isYearly ? 'bg-primary' : 'bg-gray-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  isYearly ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
-            <span className={`text-sm font-medium ml-3 ${isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
-              Yearly
-            </span>
-            {isYearly && (
-              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/20 text-accent-green">
-                Save {PRICING_FEATURES.discountPercentage}%
+          <div className="flex items-center justify-center mb-12 relative">
+            <div className="flex items-center">
+              <span className={`text-sm font-medium mr-3 ${!isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
+                Monthly
               </span>
+              <button
+                onClick={() => setIsYearly(!isYearly)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                  isYearly ? 'bg-primary' : 'bg-gray-200'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    isYearly ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+              <span className={`text-sm font-medium ml-3 ${isYearly ? 'text-neutral-dark' : 'text-gray-500'}`}>
+                Yearly
+              </span>
+            </div>
+            {isYearly && (
+              <div className="absolute left-1/2 transform translate-x-24">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/20 text-accent-green">
+                  Save {PRICING_FEATURES.discountPercentage}%
+                </span>
+              </div>
             )}
           </div>
 
