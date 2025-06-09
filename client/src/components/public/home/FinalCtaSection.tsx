@@ -20,7 +20,7 @@ const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
       <div className="relative max-w-5xl mx-auto text-center z-10">
         {/* Badge */}
         <div className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 text-primary text-xs sm:text-sm font-medium mb-6 sm:mb-8 shadow-lg">
-          <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-accent-green rounded-full mr-2 animate-pulse"></span>
+          <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 bg-primary rounded-full mr-2 animate-pulse"></span>
           Transform Your HR Today
         </div>
 
@@ -65,7 +65,7 @@ const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
         {/* Feature List */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto mb-8 sm:mb-10 lg:mb-12 px-4 sm:px-0">
           <div className="flex items-center justify-center sm:justify-start">
-            <div className="w-5 sm:w-6 h-5 sm:h-6 bg-accent-green rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+            <div className="w-5 sm:w-6 h-5 sm:h-6 bg-secondary-lavender rounded-full flex items-center justify-center mr-3 flex-shrink-0">
               <svg className="w-3 sm:w-4 h-3 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
@@ -73,7 +73,7 @@ const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
             <span className="text-gray-600 font-medium text-sm sm:text-base">14-day free trial</span>
           </div>
           <div className="flex items-center justify-center sm:justify-start">
-            <div className="w-5 sm:w-6 h-5 sm:h-6 bg-accent-green rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+            <div className="w-5 sm:w-6 h-5 sm:h-6 bg-secondary-lavender rounded-full flex items-center justify-center mr-3 flex-shrink-0">
               <svg className="w-3 sm:w-4 h-3 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
@@ -81,7 +81,7 @@ const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
             <span className="text-gray-600 font-medium text-sm sm:text-base">No setup fees</span>
           </div>
           <div className="flex items-center justify-center sm:justify-start">
-            <div className="w-5 sm:w-6 h-5 sm:h-6 bg-accent-green rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+            <div className="w-5 sm:w-6 h-5 sm:h-6 bg-secondary-lavender rounded-full flex items-center justify-center mr-3 flex-shrink-0">
               <svg className="w-3 sm:w-4 h-3 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>

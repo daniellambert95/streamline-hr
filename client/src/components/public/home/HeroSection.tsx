@@ -8,7 +8,7 @@ interface HeroSectionProps {
 
 const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-neutral-white to-primary/10 pt-24 lg:pt-24 pb-8 sm:pb-12 lg:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-neutral-white to-primary/10 pt-16 pb-8 sm:pb-12 lg:pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
       {/* Modern Background Elements */}
       <div className="absolute inset-0">
         {/* Gradient orbs */}
@@ -114,15 +114,25 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                     </div>
                     <div className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-lg">
                       <div className="text-xs font-semibold text-neutral-dark">Time Saved</div>
-                      <div className="text-xs text-accent-green">15hrs/week</div>
+                      <div className="text-xs text-primary">15hrs/week</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Animated Border Beam */}
+            {/* Animated Border Beam - Responsive */}
+            {/* Mobile BorderBeam */}
             <BorderBeam 
+              className="block md:hidden"
+              size={150}
+              duration={8} 
+              colorFrom="#5729FF" 
+              colorTo="#BFA8FF"
+            />
+            {/* Desktop BorderBeam */}
+            <BorderBeam 
+              className="hidden md:block"
               size={500}
               duration={7} 
               colorFrom="#5729FF" 
@@ -229,7 +239,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                   </div>
                 </div>
                 <div className="flex items-center text-xs text-gray-600">
-                  <div className="w-2 h-2 bg-accent-green rounded-full mr-2 animate-pulse"></div>
+                  <div className="w-2 h-2 bg-accent-primary rounded-full mr-2 animate-pulse"></div>
                   <span>5 pending reviews</span>
                 </div>
               </div>
@@ -247,7 +257,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                   </div>
                 </div>
                 <div className="w-full bg-neutral-medium/30 h-2 rounded-full overflow-hidden">
-                  <div className="bg-gradient-to-r from-accent-orange to-accent-orange/80 h-2 rounded-full transition-all duration-1000" style={{width: '75%'}}></div>
+                  <div className="bg-gradient-to-r from-primary to-primary/80 h-2 rounded-full transition-all duration-1000" style={{width: '75%'}}></div>
                 </div>
               </div>
 
@@ -304,7 +314,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="w-1.5 h-1.5 bg-accent-green rounded-full mr-1 animate-pulse"></div>
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full mr-1 animate-pulse"></div>
                     <span className="text-xs text-gray-600">5 pending</span>
                   </div>
                 </div>
@@ -324,7 +334,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                     </div>
                   </div>
                   <div className="w-full bg-neutral-medium/30 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-gradient-to-r from-accent-orange to-accent-orange/80 h-1.5 rounded-full transition-all duration-1000" style={{width: '75%'}}></div>
+                    <div className="bg-gradient-to-r from-primary to-primary/80 h-1.5 rounded-full transition-all duration-1000" style={{width: '75%'}}></div>
                   </div>
                 </div>
 
@@ -341,7 +351,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                     </div>
                   </div>
                   <div className="w-full bg-neutral-medium/30 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-gradient-to-r from-secondary-lavender to-secondary-lavender/80 h-1.5 rounded-full transition-all duration-1000" style={{width: '94%'}}></div>
+                    <div className="bg-gradient-to-r from-primary to-primary/80 h-1.5 rounded-full transition-all duration-1000" style={{width: '94%'}}></div>
                   </div>
                 </div>
               </div>
