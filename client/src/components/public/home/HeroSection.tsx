@@ -27,7 +27,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
         </div>
         
         {/* Main Headline with brand colors */}
-        <h1 className="text-[44px] md:text-[72px] xl:text-[96px] font-bold font-header text-neutral-dark mb-3 sm:mb-4">
+        <h1 className="text-[44px] md:text-7xl xl:text-8xl font-bold font-header text-neutral-dark mb-3 sm:mb-4">
           Hire <AuroraText>Smarter</AuroraText>,<br />
           Manage <AuroraText>Better</AuroraText>
         </h1>
