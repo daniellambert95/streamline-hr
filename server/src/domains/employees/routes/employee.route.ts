@@ -22,11 +22,14 @@ export const createEmployeeRouter = () => {
   // Recruiter routes (View access, limited edit)
   router.post('/hr/create-employee', [authenticateJWT, checkRole(['recruiter', 'admin'])], employeeController.createEmployee);
 
-  // Employee routes (Self-service)
+  // Employee routes (Self-service) - specific routes first
   router.get('/profile', authenticateJWT, employeeController.getOwnProfile);
   router.put('/profile', authenticateJWT, employeeController.updateOwnProfile);
   router.get('/', authenticateJWT, employeeController.getAllEmployees);
-  router.get('/employees/:id', authenticateJWT, employeeController.getEmployeeById);
+
+  // General employee routes with ID parameter - MUST come after specific routes
+  router.get('/:id', authenticateJWT, employeeController.getEmployeeById);
+  router.put('/:id', [authenticateJWT, checkRole(['admin', 'manager', 'recruiter'])], employeeController.updateEmployee);
 
   return router;
 }; 

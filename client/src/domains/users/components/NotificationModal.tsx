@@ -54,31 +54,31 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
     {
       id: 'all',
       name: 'All Notifications',
-      icon: <FaBell className="text-indigo-600" />,
+      icon: <FaBell className="text-primary" />,
       filter: () => true // All notifications
     },
     {
       id: 'unread',
       name: 'Unread',
-      icon: <FaRegCircle className="text-blue-600" />,
+      icon: <FaRegCircle className="text-accent-blue" />,
       filter: (notification) => !notification.is_read
     },
     {
       id: 'read',
       name: 'Read',
-      icon: <FaCheckCircle className="text-green-600" />,
+      icon: <FaCheckCircle className="text-accent-green" />,
       filter: (notification) => notification.is_read
     },
     {
       id: 'reminders',
       name: 'Reminders',
-      icon: <FaClock className="text-orange-500" />,
+      icon: <FaClock className="text-accent-orange" />,
       filter: (notification) => notification.is_reminder
     },
     {
       id: 'external',
       name: 'External Delivery',
-      icon: <FaExternalLinkAlt className="text-purple-600" />,
+      icon: <FaExternalLinkAlt className="text-secondary-lavender" />,
       filter: (notification) => !!notification.external_delivery && 
         (notification.external_delivery?.slack === true || notification.external_delivery?.email === true)
     } 
@@ -281,10 +281,10 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center">
-            <FaBell className="text-indigo-600 mr-2 text-xl" />
+            <FaBell className="text-primary mr-2 text-xl" />
             <h2 className="text-xl font-semibold">Notifications</h2>
             {unreadCount > 0 && (
-              <span className="ml-2 bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+              <span className="ml-2 bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                 {unreadCount} unread
               </span>
             )}
@@ -304,7 +304,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               <h3 className="font-medium">Filters</h3>
               <button
                 onClick={() => setIsCreatingReminder(!isCreatingReminder)}
-                className="text-indigo-600 hover:text-indigo-800"
+                className="text-primary hover:text-primary-800"
                 title="Create Reminder"
               >
                 {isCreatingReminder ? 'Cancel' : <FaPlus />}
@@ -322,7 +322,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                         onClick={() => setActiveFilter(filter.id)}
                         className={`flex items-center justify-between w-full px-3 py-2 rounded-lg transition-colors ${
                           activeFilter === filter.id 
-                            ? 'bg-indigo-100 text-indigo-800' 
+                            ? 'bg-primary-100 text-primary-800' 
                             : 'hover:bg-gray-100'
                         }`}
                       >
@@ -332,7 +332,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                         </div>
                         {count > 0 && (
                           <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            filter.id === 'unread' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                            filter.id === 'unread' ? 'bg-accent-blue/20 text-accent-blue' : 'bg-gray-100 text-gray-800'
                           }`}>
                             {count}
                           </span>
@@ -348,7 +348,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             <div className="px-2 mt-4">
               <button
                 onClick={markAllAsRead}
-                className="flex items-center justify-center w-full px-3 py-2 text-sm text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors"
+                className="flex items-center justify-center w-full px-3 py-2 text-sm text-primary hover:text-primary-800 hover:bg-primary-50 rounded-lg transition-colors"
               >
                 <FaCheckCircle className="mr-2" />
                 Mark All as Read
@@ -366,7 +366,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                   placeholder="Search notifications..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="pl-10 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
@@ -385,7 +385,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                     value={newReminder.message}
                     onChange={handleInputChange}
                     rows={4}
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 resize-none"
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary resize-none"
                     required
                     placeholder="Enter your reminder message here..."
                   ></textarea>
@@ -400,7 +400,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                     timeFormat="HH:mm"
                     timeIntervals={15}
                     dateFormat="MMMM d, yyyy h:mm aa"
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary"
                     minDate={new Date()}
                   />
                 </div>
@@ -417,7 +417,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                           type="checkbox"
                           checked={newReminder.external_delivery.slack}
                           onChange={handleExternalDeliveryChange}
-                          className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                          className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
                         />
                       </div>
                       <div className="ml-3">
@@ -429,7 +429,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                             value={newReminder.external_delivery.slack_channel}
                             onChange={handleExternalDeliveryChange}
                             placeholder="Enter Slack channel (e.g. #general)"
-                            className="mt-1 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-primary"
                           />
                         )}
                       </div>
@@ -443,7 +443,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                           type="checkbox"
                           checked={newReminder.external_delivery.email}
                           onChange={handleExternalDeliveryChange}
-                          className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                          className="h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
                         />
                       </div>
                       <div className="ml-3">
@@ -455,7 +455,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                             value={newReminder.external_delivery.email_address}
                             onChange={handleExternalDeliveryChange}
                             placeholder="Enter email address"
-                            className="mt-1 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-primary"
                           />
                         )}
                       </div>
@@ -486,7 +486,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                   <button 
                     type="submit"
                     disabled={isLoading}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
                       <>
@@ -507,7 +507,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                 <div className="overflow-y-auto flex-1">
                   {isLoading ? (
                     <div className="flex justify-center items-center h-40">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                   ) : filteredNotifications.length > 0 ? (
                     <ul className="divide-y">
@@ -515,21 +515,21 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                         <li 
                           key={notification.id} 
                           className={`p-4 hover:bg-gray-50 transition-colors ${
-                            !notification.is_read ? 'bg-blue-50' : ''
+                            !notification.is_read ? 'bg-accent-blue/5' : ''
                           }`}
                         >
                           <div className="flex items-start">
                             {/* Icon based on notification type */}
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
                               notification.is_reminder 
-                                ? 'bg-orange-100 text-orange-600' 
+                                ? 'bg-accent-orange/20 text-accent-orange' 
                                 : notification.type === 'application' 
-                                  ? 'bg-green-100 text-green-600'
+                                  ? 'bg-accent-green/20 text-accent-green'
                                   : notification.type === 'meeting'
-                                    ? 'bg-blue-100 text-blue-600'
+                                    ? 'bg-accent-blue/20 text-accent-blue'
                                     : notification.type === 'review'
-                                      ? 'bg-purple-100 text-purple-600'
-                                      : 'bg-indigo-100 text-indigo-600'
+                                      ? 'bg-secondary-lavender/20 text-secondary-lavender'
+                                      : 'bg-primary-100 text-primary'
                             }`}>
                               {notification.is_reminder ? (
                                 <FaClock />
@@ -546,14 +546,14 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                             
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start">
-                                <span className={`text-sm font-medium ${!notification.is_read ? 'text-indigo-800 font-semibold' : ''}`}>
+                                <span className={`text-sm font-medium ${!notification.is_read ? 'text-primary-800 font-semibold' : ''}`}>
                                   {notification.is_reminder ? 'Reminder' : notification.type.charAt(0).toUpperCase() + notification.type.slice(1)}
                                 </span>
                                 <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
                                   {new Date(notification.created_at).toLocaleDateString()}
                                 </span>
                               </div>
-                              <p className={`text-sm mt-1 ${!notification.is_read ? 'text-indigo-800' : 'text-gray-700'}`}>
+                              <p className={`text-sm mt-1 ${!notification.is_read ? 'text-primary-800' : 'text-gray-700'}`}>
                                 {notification.message}
                               </p>
                               
@@ -571,13 +571,13 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                               {notification.external_delivery && (
                                 <div className="flex items-center mt-2 space-x-2">
                                   {notification.external_delivery.slack && (
-                                    <span className="inline-flex items-center text-xs px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">
+                                    <span className="inline-flex items-center text-xs px-2 py-0.5 rounded-full bg-secondary-lavender/20 text-secondary-lavender">
                                       <FaSlack className="mr-1" size={10} />
                                       Slack
                                     </span>
                                   )}
                                   {notification.external_delivery.email && (
-                                    <span className="inline-flex items-center text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                                    <span className="inline-flex items-center text-xs px-2 py-0.5 rounded-full bg-accent-blue/20 text-accent-blue">
                                       <FaEnvelope className="mr-1" size={10} />
                                       Email
                                     </span>
@@ -588,7 +588,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                               {/* Tags for notification status */}
                               {!notification.is_read && (
                                 <div className="mt-2">
-                                  <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
+                                  <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-primary-100 text-primary-800">
                                     new
                                   </span>
                                 </div>
@@ -599,7 +599,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                               {notification.is_read ? (
                                 <button 
                                   onClick={() => markAsUnread(notification.id)}
-                                  className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+                                  className="p-2 text-gray-400 hover:text-primary hover:bg-primary-50 rounded-full transition-colors"
                                   title="Mark as unread"
                                 >
                                   <FaRegCircle size={14} />
@@ -607,7 +607,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                               ) : (
                                 <button 
                                   onClick={() => markAsRead(notification.id)}
-                                  className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-colors"
+                                  className="p-2 text-accent-blue hover:text-accent-blue/80 hover:bg-accent-blue/10 rounded-full transition-colors"
                                   title="Mark as read"
                                 >
                                   <FaCheckCircle size={14} />
@@ -615,7 +615,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                               )}
                               <button 
                                 onClick={() => deleteNotification(notification.id)}
-                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                className="p-2 text-gray-400 hover:text-error hover:bg-error/10 rounded-full transition-colors"
                                 title="Delete"
                               >
                                 <FaTrash size={14} />
@@ -635,7 +635,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
                       {activeFilter !== 'all' && (
                         <button
                           onClick={() => setActiveFilter('all')}
-                          className="mt-4 text-indigo-600 hover:text-indigo-800"
+                          className="mt-4 text-primary hover:text-primary-800"
                         >
                           View all notifications
                         </button>

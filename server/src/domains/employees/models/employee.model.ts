@@ -154,6 +154,52 @@ export class EmployeeModel {
     try {
       await client.query('BEGIN');
 
+      // Update user table if name or email changes
+      if (data.first_name || data.last_name || data.email) {
+        await client.query(`
+          UPDATE users
+          SET 
+            first_name = COALESCE($1, first_name),
+            last_name = COALESCE($2, last_name),
+            email = COALESCE($3, email),
+            updated_at = NOW()
+          WHERE id = $4
+        `, [
+          data.first_name,
+          data.last_name,
+          data.email,
+          id
+        ]);
+      }
+
+      // Handle department name to ID conversion
+      let departmentId = data.department_id;
+      if (data.department_name && !departmentId) {
+        const deptResult = await client.query(`
+          SELECT id FROM departments WHERE name = $1
+        `, [data.department_name]);
+        departmentId = deptResult.rows[0]?.id || null;
+      }
+
+      // Handle team name to ID conversion
+      let teamId = data.team_id;
+      if (data.team_name && !teamId) {
+        const teamResult = await client.query(`
+          SELECT id FROM teams WHERE name = $1
+        `, [data.team_name]);
+        teamId = teamResult.rows[0]?.id || null;
+      }
+
+      // Handle manager name to ID conversion
+      let managerId = data.manager_id;
+      if (data.manager_name && !managerId) {
+        const managerResult = await client.query(`
+          SELECT u.id FROM users u 
+          WHERE CONCAT(u.first_name, ' ', u.last_name) = $1
+        `, [data.manager_name]);
+        managerId = managerResult.rows[0]?.id || null;
+      }
+
       // Update employee record
       const result = await client.query(`
         UPDATE employees
@@ -173,17 +219,26 @@ export class EmployeeModel {
           marital_status = COALESCE($13, marital_status),
           address = COALESCE($14, address),
           emergency_contact_name = COALESCE($15, emergency_contact_name),
-          emergency_contact_phone = COALESCE($16, emergency_contact_phone)
-        WHERE id = $17
+          emergency_contact_phone = COALESCE($16, emergency_contact_phone),
+          work_permit_status = COALESCE($17, work_permit_status),
+          work_permit_expiry = COALESCE($18, work_permit_expiry),
+          health_insurance_provider = COALESCE($19, health_insurance_provider),
+          tax_id = COALESCE($20, tax_id),
+          probation_end_date = COALESCE($21, probation_end_date),
+          contract_end_date = COALESCE($22, contract_end_date),
+          last_promotion_date = COALESCE($23, last_promotion_date),
+          leave_balance = COALESCE($24, leave_balance),
+          updated_at = NOW()
+        WHERE id = $25
         RETURNING *
       `, [
-        data.department_id,
-        data.team_id,
+        departmentId,
+        teamId,
         data.job_title,
         data.salary,
         data.employment_status,
         data.employment_type,
-        data.manager_id,
+        managerId,
         data.mobile_number,
         data.job_level,
         data.personal_email,
@@ -193,13 +248,31 @@ export class EmployeeModel {
         data.address,
         data.emergency_contact_name,
         data.emergency_contact_phone,
+        data.work_permit_status,
+        data.work_permit_expiry,
+        data.health_insurance_provider,
+        data.tax_id,
+        data.probation_end_date,
+        data.contract_end_date,
+        data.last_promotion_date,
+        data.leave_balance,
         id
       ]);
 
+      if (result.rows.length === 0) {
+        throw new ValidationError('Employee not found');
+      }
+
       await client.query('COMMIT');
-      return result.rows[0];
+      
+      // Return the updated employee with joined data
+      return this.findById(id);
     } catch (error) {
       await client.query('ROLLBACK');
+      if (error instanceof ValidationError) {
+        throw error;
+      }
+      console.error('Employee update error:', error);
       throw new DatabaseError('Error updating employee');
     } finally {
       client.release();

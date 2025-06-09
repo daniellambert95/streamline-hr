@@ -12,7 +12,7 @@ export const employeeService = {
     api.post<Employee>('/api/v1/employees/hr/create-employee', data),
     
   update: (id: number, data: Partial<Employee>) => 
-    api.put<Employee>(`/api/v1/employees/admin/${id}`, data),
+    api.put<Employee>(`/api/v1/employees/${id}`, data),
     
   delete: (id: number) => 
     api.delete<void>(`/api/v1/employees/admin/${id}`),

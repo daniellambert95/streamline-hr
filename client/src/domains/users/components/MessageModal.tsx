@@ -60,25 +60,25 @@ const MessageModal: React.FC<MessageModalProps> = ({
     {
       id: 'inbox',
       name: 'Inbox',
-      icon: <FaInbox className="text-indigo-600" />,
+      icon: <FaInbox className="text-primary" />,
       filter: () => true // All messages
     },
     {
       id: 'unread',
       name: 'Unread',
-      icon: <FaEnvelope className="text-blue-600" />,
+      icon: <FaEnvelope className="text-accent-blue" />,
       filter: (message) => !message.is_read
     },
     {
       id: 'read',
       name: 'Read',
-      icon: <FaEnvelopeOpen className="text-green-600" />,
+      icon: <FaEnvelopeOpen className="text-accent-green" />,
       filter: (message) => message.is_read
     },
     {
       id: 'important',
       name: 'Important',
-      icon: <FaExclamationCircle className="text-orange-500" />,
+      icon: <FaExclamationCircle className="text-accent-orange" />,
       filter: (message) => message.is_important === true
     }
   ];
@@ -442,10 +442,10 @@ const MessageModal: React.FC<MessageModalProps> = ({
         onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center">
-            <FaComments className="text-indigo-600 mr-2 text-xl" />
+            <FaComments className="text-primary mr-2 text-xl" />
             <h2 className="text-xl font-semibold">Messages</h2>
             {unreadCount > 0 && (
-              <span className="ml-2 bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+              <span className="ml-2 bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                 {unreadCount} unread
               </span>
             )}
@@ -465,7 +465,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                   setIsComposing(true);
                   setViewingMessage(null);
                 }}
-                className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+                className="w-full flex items-center justify-center gap-2 bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-600 transition-colors"
               >
                 <FaPlus size={12} /> New Message
               </button>
@@ -487,7 +487,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                         }}
                         className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm ${
                           activeFolder === folder.id 
-                            ? 'bg-indigo-100 text-indigo-700' 
+                            ? 'bg-primary-100 text-primary-700' 
                             : 'hover:bg-gray-100 text-gray-700'
                         }`}
                       >
@@ -497,7 +497,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                         </div>
                         {count > 0 && (
                           <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            folder.id === 'unread' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                            folder.id === 'unread' ? 'bg-accent-blue/20 text-accent-blue' : 'bg-gray-100 text-gray-800'
                           }`}>
                             {count}
                           </span>
@@ -520,7 +520,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                   placeholder="Search messages..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className="pl-10 w-full p-2 text-sm border rounded-lg focus:ring-2 focus:ring-primary"
                 />
               </div>
             </div>
@@ -529,7 +529,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
             <div className="px-2 mt-4">
               <button
                 onClick={markAllAsRead}
-                className="flex items-center justify-center w-full px-3 py-2 text-sm text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-lg transition-colors"
+                className="flex items-center justify-center w-full px-3 py-2 text-sm text-primary hover:text-primary-800 hover:bg-primary-50 rounded-lg transition-colors"
               >
                 <FaEnvelopeOpen className="mr-2" />
                 Mark All as Read
@@ -549,13 +549,13 @@ const MessageModal: React.FC<MessageModalProps> = ({
                     {selectedEmployees.map(employee => (
                       <div 
                         key={employee.id}
-                        className="flex items-center bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-sm"
+                        className="flex items-center bg-primary-100 text-primary-800 px-2 py-1 rounded-full text-sm"
                       >
                         <span>{employee.first_name} {employee.last_name}</span>
                         <button 
                           type="button"
                           onClick={() => handleRemoveEmployee(employee.id)}
-                          className="ml-1 text-indigo-500 hover:text-indigo-700"
+                          className="ml-1 text-primary-500 hover:text-primary-700"
                         >
                           <FaTimes size={12} />
                         </button>
@@ -573,7 +573,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                       value={searchTerm}
                       onChange={handleSearchChange}
                       onFocus={() => setShowSuggestions(searchTerm.length > 0)}
-                      className="pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      className="pl-10 w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary"
                     />
                     
                     {/* Employee suggestions */}
@@ -607,7 +607,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                     name="subject"
                     value={newMessage.subject}
                     onChange={handleInputChange}
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
@@ -619,7 +619,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                     value={newMessage.content}
                     onChange={handleInputChange}
                     rows={12}
-                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 resize-none"
+                    className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary resize-none"
                     required
                   ></textarea>
                 </div>
@@ -644,7 +644,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                   <button 
                     type="submit"
                     disabled={isLoading}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-600 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isLoading ? (
                       <>
@@ -665,7 +665,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                 <div className="p-4 border-b bg-gray-50 flex items-center">
                   <button 
                     onClick={() => setViewingMessage(null)}
-                    className="mr-3 text-gray-500 hover:text-indigo-600"
+                    className="mr-3 text-gray-500 hover:text-primary"
                   >
                     <FaArrowLeft />
                   </button>
@@ -680,7 +680,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                   <div className="flex space-x-2">
                     <button 
                       onClick={() => replyToMessage(viewingMessage)}
-                      className="p-2 text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 rounded-full transition-colors"
+                      className="p-2 text-primary hover:text-primary-800 hover:bg-primary-50 rounded-full transition-colors"
                       title="Reply"
                     >
                       <FaReply />
@@ -689,8 +689,8 @@ const MessageModal: React.FC<MessageModalProps> = ({
                       onClick={() => viewingMessage.is_read ? markAsUnread(viewingMessage.id) : markAsRead(viewingMessage.id)}
                       className={`p-2 rounded-full transition-colors ${
                         viewingMessage.is_read 
-                          ? 'text-gray-400 hover:text-indigo-600 hover:bg-indigo-50' 
-                          : 'text-blue-600 hover:text-blue-800 hover:bg-blue-50'
+                          ? 'text-gray-400 hover:text-primary hover:bg-primary-50' 
+                          : 'text-accent-blue hover:text-accent-blue/80 hover:bg-accent-blue/10'
                       }`}
                       title={viewingMessage.is_read ? "Mark as unread" : "Mark as read"}
                     >
@@ -698,7 +698,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                     </button>
                     <button 
                       onClick={() => deleteMessage(viewingMessage.id)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                      className="p-2 text-gray-400 hover:text-error hover:bg-error/10 rounded-full transition-colors"
                       title="Delete"
                     >
                       <FaTrash />
@@ -710,8 +710,8 @@ const MessageModal: React.FC<MessageModalProps> = ({
                       }}
                       className={`p-2 rounded-full transition-colors ${
                         viewingMessage.is_important 
-                          ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50' 
-                          : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'
+                          ? 'text-accent-orange hover:text-accent-orange/80 hover:bg-accent-orange/10' 
+                          : 'text-gray-400 hover:text-accent-orange hover:bg-accent-orange/10'
                       }`}
                       title={viewingMessage.is_important ? "Remove importance" : "Mark as important"}
                     >
@@ -733,7 +733,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                 <div className="overflow-y-auto flex-1">
                   {isLoading ? (
                     <div className="flex justify-center items-center h-40">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                   ) : filteredMessages.length > 0 ? (
                     <ul className="divide-y">
@@ -748,24 +748,24 @@ const MessageModal: React.FC<MessageModalProps> = ({
                             }
                           }}
                           className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
-                            message.id === initialMessageId ? 'bg-indigo-50' : 
-                            !message.is_read ? 'bg-blue-50' : ''
+                            message.id === initialMessageId ? 'bg-primary-50' : 
+                            !message.is_read ? 'bg-accent-blue/5' : ''
                           }`}
                         >
                           <div className="flex items-start">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 bg-indigo-100 text-indigo-600`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 bg-primary-100 text-primary`}>
                               {message.sender_first_name?.charAt(0)}{message.sender_last_name?.charAt(0)}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-start">
-                                <span className={`text-sm font-medium truncate ${!message.is_read ? 'text-indigo-800 font-semibold' : ''}`}>
+                                <span className={`text-sm font-medium truncate ${!message.is_read ? 'text-primary-800 font-semibold' : ''}`}>
                                   {message.sender_first_name} {message.sender_last_name}
                                 </span>
                                 <span className="text-xs text-gray-500 ml-2 whitespace-nowrap">
                                   {new Date(message.sent_at).toLocaleDateString()}
                                 </span>
                               </div>
-                              <p className={`text-sm font-medium truncate ${!message.is_read ? 'text-indigo-800' : ''}`}>
+                              <p className={`text-sm font-medium truncate ${!message.is_read ? 'text-primary-800' : ''}`}>
                                 {message.subject}
                               </p>
                               <p className="text-xs text-gray-500 mt-1 truncate">
@@ -775,7 +775,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                               {/* Tags for message status */}
                               {!message.is_read && (
                                 <div className="mt-2">
-                                  <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
+                                  <span className="inline-block text-xs px-2 py-0.5 rounded-full bg-primary-100 text-primary-800">
                                     new
                                   </span>
                                 </div>
@@ -788,7 +788,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                                     e.stopPropagation();
                                     markAsUnread(message.id);
                                   }}
-                                  className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
+                                  className="p-2 text-gray-400 hover:text-primary hover:bg-primary-50 rounded-full transition-colors"
                                   title="Mark as unread"
                                 >
                                   <FaEnvelope size={14} />
@@ -799,7 +799,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                                     e.stopPropagation();
                                     markAsRead(message.id);
                                   }}
-                                  className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full transition-colors"
+                                  className="p-2 text-accent-blue hover:text-accent-blue/80 hover:bg-accent-blue/10 rounded-full transition-colors"
                                   title="Mark as read"
                                 >
                                   <FaEnvelopeOpen size={14} />
@@ -810,7 +810,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                                   e.stopPropagation();
                                   deleteMessage(message.id);
                                 }}
-                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"
+                                className="p-2 text-gray-400 hover:text-error hover:bg-error/10 rounded-full transition-colors"
                                 title="Delete"
                               >
                                 <FaTrash size={14} />
@@ -822,8 +822,8 @@ const MessageModal: React.FC<MessageModalProps> = ({
                                 }}
                                 className={`p-2 rounded-full transition-colors ${
                                   message.is_important 
-                                    ? 'text-yellow-500 hover:text-yellow-600 hover:bg-yellow-50' 
-                                    : 'text-gray-400 hover:text-yellow-500 hover:bg-yellow-50'
+                                    ? 'text-accent-orange hover:text-accent-orange/80 hover:bg-accent-orange/10' 
+                                    : 'text-gray-400 hover:text-accent-orange hover:bg-accent-orange/10'
                                 }`}
                                 title={message.is_important ? "Remove importance" : "Mark as important"}
                               >
@@ -844,7 +844,7 @@ const MessageModal: React.FC<MessageModalProps> = ({
                       {activeFolder !== 'inbox' && (
                         <button
                           onClick={() => setActiveFolder('inbox')}
-                          className="mt-4 text-indigo-600 hover:text-indigo-800"
+                          className="mt-4 text-primary hover:text-primary-800"
                         >
                           View all messages
                         </button>

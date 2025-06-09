@@ -20,7 +20,9 @@ import Reviews from './pages/public/Reviews';
 import Features from './pages/public/Features';
 import Docs from './pages/public/Docs';
 import NotFound from './pages/public/NotFound';
-import EmployeeManagement from './pages/private/EmployeeManagement';
+import EmployeeManagement from './pages/private/employee-management/EmployeeManagement';
+import EmployeeProfile from './pages/private/employee-profile/EmployeeProfile';
+import EditEmployee from './pages/private/employee-edit/EditEmployee';
 import { Toaster } from 'react-hot-toast';
 import PayrollManagement from './pages/private/Payroll';
 import PerformanceReviews from './pages/private/Performance';
@@ -33,7 +35,7 @@ const AppContent = () => {
   const location = useLocation();
   
   // Define private/protected routes (routes that should show sidebar instead of navbar)
-  const privateRoutes = ['/dashboard', '/profile', '/recruitment', '/job-management', '/talent-pool', '/talent-insights', '/applicants', '/employee-management', '/payroll', '/performance'];
+  const privateRoutes = ['/dashboard', '/profile', '/recruitment', '/job-management', '/talent-pool', '/talent-insights', '/applicants', '/employee-management', '/employee-profile', '/payroll', '/performance'];
   const isPrivateRoute = isAuthenticated && privateRoutes.some(route => location.pathname.startsWith(route));
   const showNavbar = !isPrivateRoute;
 
@@ -116,6 +118,18 @@ const AppContent = () => {
             <Route path="/employee-management" element={
               <ProtectedRoute>
                 <EmployeeManagement />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/employee-profile/:id" element={
+              <ProtectedRoute>
+                <EmployeeProfile />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/employee-management/edit/:id" element={
+              <ProtectedRoute>
+                <EditEmployee />
               </ProtectedRoute>
             } />
 

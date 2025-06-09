@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlus, FaTimes, FaCheck, FaTrash, FaCalendar, FaFlag, FaEdit, FaSave, FaTasks, FaSpinner, FaSort } from 'react-icons/fa';
+import { FaPlus, FaTimes, FaCheck, FaTrash, FaCalendar, FaFlag, FaEdit, FaSave, FaTasks, FaClock, FaSort } from 'react-icons/fa';
 import { Task, TaskList as TaskListType } from '../../users/types/task.types';
 import { taskService } from '../../users/services/tasks';
 import { toast } from 'react-hot-toast';
@@ -62,11 +62,11 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
           const element = document.getElementById(`task-${selectedTaskId}`);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            element.classList.add('border-indigo-500', 'border-2'); // Only add border, no background change
+            element.classList.add('border-primary', 'border-2'); // Use primary brand color
             
             // Remove highlight after a few seconds
             setTimeout(() => {
-              element.classList.remove('border-indigo-500', 'border-2');
+              element.classList.remove('border-primary', 'border-2');
             }, 3000);
           }
         }, 100);
@@ -161,12 +161,12 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
   // Add missing functions
   const getPriorityColor = (priority: number) => {
     switch (priority) {
-      case 1: return 'text-red-500'; // Urgent
-      case 2: return 'text-orange-500'; // High
-      case 3: return 'text-blue-500'; // Medium
-      case 4: return 'text-green-500'; // Normal
+      case 1: return 'text-error'; // Urgent
+      case 2: return 'text-accent-orange'; // High
+      case 3: return 'text-accent-blue'; // Medium
+      case 4: return 'text-accent-green'; // Normal
       case 5: return 'text-gray-500'; // Low
-      default: return 'text-blue-500';
+      default: return 'text-accent-blue';
     }
   };
 
@@ -333,7 +333,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
       case 'pending':
         return null;
       case 'in_progress':
-        return <FaSpinner className="text-blue-500 text-xs" />;
+        return <FaClock className="text-accent-blue text-xs" />;
       case 'completed':
         return <FaCheck className="text-white text-xs" />;
       default:
@@ -347,9 +347,9 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
       case 'pending':
         return 'border-gray-300';
       case 'in_progress':
-        return 'bg-blue-100 border-blue-500';
+        return 'bg-accent-blue/20 border-accent-blue';
       case 'completed':
-        return 'bg-indigo-500 border-indigo-500';
+        return 'bg-primary border-primary';
       default:
         return 'border-gray-300';
     }
@@ -395,10 +395,10 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
         onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center">
-            <FaTasks className="text-indigo-600 mr-2 text-xl" />
+            <FaTasks className="text-primary mr-2 text-xl" />
             <h2 className="text-xl font-semibold">Task Manager</h2>
             {pendingTasksCount > 0 && (
-              <span className="ml-2 bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+              <span className="ml-2 bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
                 {pendingTasksCount} pending
               </span>
             )}
@@ -418,7 +418,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
               <h3 className="font-medium">My Lists</h3>
               <button
                 onClick={() => setIsCreatingList(!isCreatingList)}
-                className="text-indigo-600 hover:text-indigo-800"
+                className="text-primary hover:text-primary-800"
               >
                 {isCreatingList ? 'Cancel' : <FaPlus />}
               </button>
@@ -437,13 +437,13 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                   value={newListName}
                   onChange={(e) => setNewListName(e.target.value)}
                   placeholder="List name..."
-                  className="w-full p-2 border rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-2 border rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-primary"
                   autoFocus
                 />
                 <div className="flex justify-end">
                   <button
                     type="submit"
-                    className="px-3 py-1 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600"
+                    className="px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary-600"
                     disabled={!newListName.trim()}
                   >
                     Create
@@ -458,14 +458,14 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                   <button
                     onClick={() => setActiveTaskList(list.id)}
                     className={`text-left py-2 px-3 rounded-lg flex-grow text-sm ${
-                      activeTaskList === list.id ? 'bg-indigo-100 text-indigo-700' : 'hover:bg-gray-100'
+                      activeTaskList === list.id ? 'bg-primary-100 text-primary-700' : 'hover:bg-gray-100'
                     }`}
                   >
                     {list.name}
                   </button>
                   <button
                     onClick={() => deleteTaskList(list.id)}
-                    className="p-1 text-gray-400 hover:text-red-600"
+                    className="p-1 text-gray-400 hover:text-error"
                     title="Delete List"
                   >
                     <FaTrash size={12} />
@@ -483,7 +483,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                 <button
                   onClick={() => setTaskViewFilter('all')}
                   className={`px-3 py-1 text-sm rounded-lg ${
-                    taskViewFilter === 'all' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+                    taskViewFilter === 'all' ? 'bg-primary-100 text-primary-700' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   All
@@ -491,7 +491,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                 <button
                   onClick={() => setTaskViewFilter('pending')}
                   className={`px-3 py-1 text-sm rounded-lg ${
-                    taskViewFilter === 'pending' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+                    taskViewFilter === 'pending' ? 'bg-primary-100 text-primary-700' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   Pending
@@ -499,7 +499,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                 <button
                   onClick={() => setTaskViewFilter('in_progress')}
                   className={`px-3 py-1 text-sm rounded-lg ${
-                    taskViewFilter === 'in_progress' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+                    taskViewFilter === 'in_progress' ? 'bg-primary-100 text-primary-700' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   In Progress
@@ -507,7 +507,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                 <button
                   onClick={() => setTaskViewFilter('completed')}
                   className={`px-3 py-1 text-sm rounded-lg ${
-                    taskViewFilter === 'completed' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+                    taskViewFilter === 'completed' ? 'bg-primary-100 text-primary-700' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   Completed
@@ -515,7 +515,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                 <button
                   onClick={() => setTaskViewFilter('overdue')}
                   className={`px-3 py-1 text-sm rounded-lg ${
-                    taskViewFilter === 'overdue' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+                    taskViewFilter === 'overdue' ? 'bg-primary-100 text-primary-700' : 'text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   Overdue
@@ -527,7 +527,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                   <select
                     value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
-                    className="appearance-none bg-white border rounded-lg px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="appearance-none bg-white border rounded-lg px-3 py-1 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="default">Default Order</option>
                     <option value="due-date-asc">Due Date (Earliest)</option>
@@ -555,7 +555,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                     value={newTask}
                     onChange={(e) => setNewTask(e.target.value)}
                     placeholder="Add new task..."
-                    className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="flex-grow px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     disabled={!activeTaskList}
                   />
                 </div>
@@ -606,7 +606,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                     className={`ml-auto px-4 py-2 rounded-lg ${
                       !activeTaskList
                         ? 'bg-gray-300 cursor-not-allowed' 
-                        : 'bg-indigo-500 text-white hover:bg-indigo-600'
+                        : 'bg-primary text-white hover:bg-primary-600'
                     }`}
                     disabled={!activeTaskList}
                   >
@@ -619,7 +619,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
             {/* Tasks list */}
             {isLoading ? (
               <div className="flex justify-center items-center flex-grow">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
               </div>
             ) : (
               <div className="space-y-2 overflow-y-auto flex-grow">
@@ -638,7 +638,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                       id={`task-${task.id}`}
                       className={`flex items-start p-4 rounded-lg border ${
                         task.status === 'completed' ? 'bg-gray-50' : 
-                        task.status === 'in_progress' ? 'bg-blue-50' : 'bg-white'
+                        task.status === 'in_progress' ? 'bg-accent-blue/5' : 'bg-white'
                       } hover:shadow-md transition-shadow`}
                     >
                       <button
@@ -663,7 +663,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                             />
                             <button
                               onClick={() => saveTaskEdit(task.id)}
-                              className="bg-indigo-500 text-white rounded-lg px-3 hover:bg-indigo-600"
+                              className="bg-primary text-white rounded-lg px-3 hover:bg-primary-600"
                             >
                               <FaSave />
                             </button>
@@ -676,12 +676,12 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                         
                         <div className="flex items-center text-xs text-gray-500 space-x-4">
                           <div className="flex items-center space-x-1">
-                            <FaCalendar size={12} className={isPastDue(task.due_date as string | null) ? 'text-red-500' : ''} />
+                            <FaCalendar size={12} className={isPastDue(task.due_date as string | null) ? 'text-error' : ''} />
                             <DatePicker
                               selected={task.due_date ? new Date(task.due_date) : null}
                               onChange={(date) => updateTaskDueDate(task.id, date)}
                               dateFormat="MMM d, yyyy"
-                              className={`bg-transparent w-24 cursor-pointer ${isPastDue(task.due_date as string | null) ? 'text-red-500' : ''}`}
+                              className={`bg-transparent w-24 cursor-pointer ${isPastDue(task.due_date as string | null) ? 'text-error' : ''}`}
                               placeholderText="Set date"
                             />
                           </div>
@@ -723,7 +723,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                         {editingTask !== task.id && (
                           <button
                             onClick={() => startEditingTask(task)}
-                            className="p-1 text-gray-400 hover:text-indigo-600"
+                            className="p-1 text-gray-400 hover:text-primary"
                             title="Edit Task"
                           >
                             <FaEdit size={14} />
@@ -731,7 +731,7 @@ const TaskListModal: React.FC<TaskListModalProps> = ({ isOpen, onClose, selected
                         )}
                         <button
                           onClick={() => deleteTask(task.id)}
-                          className="p-1 text-gray-400 hover:text-red-600"
+                          className="p-1 text-gray-400 hover:text-error"
                           title="Delete Task"
                         >
                           <FaTrash size={14} />

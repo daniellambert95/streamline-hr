@@ -46,12 +46,22 @@ export class EmployeeController {
 
   updateEmployee = async (req: Request, res: Response): Promise<void> => {
     try {
+      console.log('Employee update request:', {
+        employeeId: req.params.id,
+        userId: req.user?.id,
+        userRole: req.user?.role,
+        updateData: req.body
+      });
+
       const updatedEmployee = await this.employeeService.updateEmployeeProfile(
         parseInt(req.params.id),
         req.body
       );
+      
+      console.log('Employee updated successfully:', updatedEmployee);
       res.json(updatedEmployee);
     } catch (error) {
+      console.error('Employee update error:', error);
       if (error instanceof ValidationError) {
         res.status(400).json({ error: error.message });
       } else {
