@@ -10,19 +10,19 @@
     --color-primary: #5729FF;
     --color-primary-light: #BFA8FF;
     --color-primary-dark: #3D1FCC;
-    
+
     /* Neutrals */
     --color-neutral-light: #F5F7FA;
     --color-neutral-medium: #D1D5DB;
     --color-neutral-dark: #2E2E2E;
     --color-neutral-white: #FFFFFF;
-    
+
     /* Accent Colors */
     --color-accent-blue: #3A8DFF;
     --color-accent-green: #4ADE80;
     --color-accent-orange: #FB923C;
     --color-accent-red: #EF4444;
-    
+
     /* Secondary */
     --color-secondary-lavender: #BFA8FF;
     --color-secondary-navy: #1E1B4B;
@@ -43,51 +43,51 @@
   .btn-primary {
     @apply bg-primary hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
-  
+
   .btn-secondary {
     @apply bg-accent-blue hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:ring-offset-2;
   }
-  
+
   .btn-outline {
     @apply border-2 border-primary text-primary hover:bg-primary hover:text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
-  
+
   .card {
     @apply bg-neutral-white shadow-lg rounded-lg border border-neutral-medium/20;
   }
-  
+
   .input-field {
     @apply block w-full px-3 py-2 border border-neutral-medium rounded-lg shadow-sm bg-neutral-white text-neutral-dark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200;
   }
-  
+
   .text-success {
     @apply text-accent-green;
   }
-  
+
   .text-warning {
     @apply text-accent-orange;
   }
-  
+
   .text-error {
     @apply text-accent-red;
   }
-  
+
   .text-info {
     @apply text-accent-blue;
   }
-  
+
   .bg-success {
     @apply bg-accent-green;
   }
-  
+
   .bg-warning {
     @apply bg-accent-orange;
   }
-  
+
   .bg-error {
     @apply bg-accent-red;
   }
-  
+
   .bg-info {
     @apply bg-accent-blue;
   }
@@ -109,8 +109,31 @@
   }
 }
 
+@keyframes aurora {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes border-beam {
+  0% {
+    offset-distance: 0%;
+  }
+  100% {
+    offset-distance: 100%;
+  }
+}
+
 .animate-blob {
   animation: blob 7s infinite;
+}
+
+.animate-aurora {
+  animation: aurora 8s ease-in-out infinite;
+  background-size: 200% auto;
 }
 
 .animation-delay-2000 {

@@ -1,4 +1,6 @@
 import { HiPlay } from 'react-icons/hi2';
+import { AuroraText } from "@/components/magicui/aurora-text";
+import { BorderBeam } from "@/components/magicui/border-beam";
 
 interface HeroSectionProps {
   onCtaClick: () => void;
@@ -26,8 +28,8 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
         
         {/* Main Headline with brand colors */}
         <h1 className="text-4xl md:text-7xl xl:text-8xl font-bold font-header text-neutral-dark mb-3 sm:mb-4 leading-tight">
-          Hire <span className="text-primary font-header">Smarter</span>,<br />
-          Manage <span className="text-primary font-header">Better</span>
+          Hire <AuroraText>Smarter</AuroraText>,<br />
+          Manage <AuroraText>Better</AuroraText>
         </h1>
         
         {/* Description */}
@@ -118,12 +120,20 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                 </div>
               </div>
             </div>
+            
+            {/* Animated Border Beam */}
+            <BorderBeam 
+              size={500}
+              duration={7} 
+              colorFrom="#5729FF" 
+              colorTo="#BFA8FF"
+            />
           </div>
 
           {/* Enhanced Floating Cards - Desktop Only (XL and above) */}
           <div className="hidden xl:block">
             {/* ATS Card - Bottom Right */}
-            <div className="absolute -bottom-8 -right-10 card p-6 w-80 animate-float">
+            <div className="absolute border-1 border-primary -bottom-8 -right-10 card p-6 w-80 animate-float">
               <div className="flex items-center mb-4">
                 <div className="w-10 h-10 bg-gradient-to-r from-primary to-purple-800 rounded-xl flex items-center justify-center mr-3 shadow-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,7 +167,7 @@ const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
             </div>
 
             {/* Employee Management Card - Bottom Left */}
-            <div className="absolute -bottom-8 -left-10 card p-6 w-72 animate-float-delayed">
+            <div className="absolute border-1 border-primary -bottom-8 -left-10 card p-6 w-72 animate-float-delayed">
               <div className="flex items-center mb-4">
                 <div className="w-10 h-10 bg-gradient-to-r from-primary to-purple-800 rounded-xl flex items-center justify-center mr-3 shadow-lg">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
