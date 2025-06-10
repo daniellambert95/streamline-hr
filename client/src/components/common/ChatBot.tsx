@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { NewsletterService } from '../../services/newsletterService';
+import { toast } from 'react-hot-toast';
 
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +15,7 @@ const ChatBot = () => {
   const [inputText, setInputText] = useState('');
   const [emailSignup, setEmailSignup] = useState('');
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -44,21 +47,44 @@ const ChatBot = () => {
     }
   };
 
-  const handleEmailSubmit = () => {
+  const handleEmailSubmit = async () => {
     if (emailSignup.trim() && emailSignup.includes('@')) {
-      // Here you would typically send the email to your backend
-      console.log('Email submitted:', emailSignup);
+      setIsSubmittingEmail(true);
       
-      const confirmationMessage = {
-        id: messages.length + 1,
-        text: `Thank you! We've added ${emailSignup} to our launch notification list. You'll be among the first to know when StreamlineHR is ready!`,
-        isBot: true,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, confirmationMessage]);
-      setEmailSignup('');
-      setShowEmailForm(false);
+      try {
+        const result = await NewsletterService.subscribe(emailSignup, 'chatbot');
+        
+        const confirmationMessage = {
+          id: messages.length + 1,
+          text: result.success 
+            ? `Thank you! We've added ${emailSignup} to our launch notification list. You'll be among the first to know when StreamlineHR is ready!`
+            : result.message,
+          isBot: true,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, confirmationMessage]);
+        
+        if (result.success) {
+          toast.success(result.message);
+          setEmailSignup('');
+          setShowEmailForm(false);
+        } else {
+          toast.error(result.message);
+        }
+      } catch (error) {
+        console.error('Error submitting email:', error);
+        const errorMessage = {
+          id: messages.length + 1,
+          text: "Sorry, there was an error subscribing you to our newsletter. Please try again later.",
+          isBot: true,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+        toast.error('Error subscribing to newsletter');
+      } finally {
+        setIsSubmittingEmail(false);
+      }
     }
   };
 
@@ -69,7 +95,7 @@ const ChatBot = () => {
   };
 
   const handleEmailKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !isSubmittingEmail) {
       handleEmailSubmit();
     }
   };
@@ -145,13 +171,19 @@ const ChatBot = () => {
                       onChange={(e) => setEmailSignup(e.target.value)}
                       onKeyPress={handleEmailKeyPress}
                       placeholder="your@email.com"
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm"
+                      disabled={isSubmittingEmail}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm disabled:opacity-50"
                     />
                     <button
                       onClick={handleEmailSubmit}
-                      className="bg-neutral-white border-2 border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary/5 transition-all duration-300 transform hover:scale-[1.02] text-sm font-medium"
+                      disabled={isSubmittingEmail || !emailSignup.trim()}
+                      className="bg-neutral-white border-2 border-primary text-primary px-4 py-2 rounded-lg hover:bg-primary/5 transition-all duration-300 transform hover:scale-[1.02] text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Notify Me
+                      {isSubmittingEmail ? (
+                        <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+                      ) : (
+                        'Notify Me'
+                      )}
                     </button>
                   </div>
                 </div>

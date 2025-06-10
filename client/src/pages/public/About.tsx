@@ -291,7 +291,7 @@ const About = () => {
       }} />
 
       <Footer onCtaClick={handleCtaClick} />
-      <EmailSignupPopup isOpen={isPopupOpen} onClose={closePopup} />
+      <EmailSignupPopup isOpen={isPopupOpen} onClose={closePopup} source="about" />
     </div>
   );
 };

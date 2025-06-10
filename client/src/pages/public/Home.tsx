@@ -35,7 +35,7 @@ const Home = () => {
       <Footer onCtaClick={handleCtaClick} />
       <CookiesConsent />
       <ChatBot />
-      <EmailSignupPopup isOpen={isPopupOpen} onClose={closePopup} />
+      <EmailSignupPopup isOpen={isPopupOpen} onClose={closePopup} source="homepage" />
     </div>
   );
 };

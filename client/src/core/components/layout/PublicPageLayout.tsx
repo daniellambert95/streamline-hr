@@ -7,6 +7,7 @@ interface PublicPageLayoutProps {
   children: ReactNode;
   showNavbar?: boolean;
   showFooter?: boolean;
+  source?: string;
 }
 
 interface CTAContextType {
@@ -17,8 +18,8 @@ const CTAContext = createContext<CTAContextType | undefined>(undefined);
 
 export const useCTA = () => {
   const context = useContext(CTAContext);
-  if (!context) {
-    throw new Error('useCTA must be used within PublicPageLayout');
+  if (context === undefined) {
+    throw new Error('useCTA must be used within a PublicPageLayout');
   }
   return context;
 };
@@ -26,7 +27,8 @@ export const useCTA = () => {
 const PublicPageLayout = ({ 
   children, 
   showNavbar = true, 
-  showFooter = true 
+  showFooter = true,
+  source = 'layout'
 }: PublicPageLayoutProps) => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
@@ -44,7 +46,7 @@ const PublicPageLayout = ({
         {showNavbar && <Navbar onCtaClick={handleCtaClick} />}
         {children}
         {showFooter && <Footer onCtaClick={handleCtaClick} />}
-        <EmailSignupPopup isOpen={isPopupOpen} onClose={closePopup} />
+        <EmailSignupPopup isOpen={isPopupOpen} onClose={closePopup} source={source} />
       </div>
     </CTAContext.Provider>
   );

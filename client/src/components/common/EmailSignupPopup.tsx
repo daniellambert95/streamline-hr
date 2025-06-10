@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { HiX, HiMail } from 'react-icons/hi';
+import { NewsletterService } from '../../services/newsletterService';
+import { toast } from 'react-hot-toast';
 
 interface EmailSignupPopupProps {
   isOpen: boolean;
   onClose: () => void;
+  source?: string; // Add source tracking
 }
 
-const EmailSignupPopup = ({ isOpen, onClose }: EmailSignupPopupProps) => {
+const EmailSignupPopup = ({ isOpen, onClose, source = 'popup' }: EmailSignupPopupProps) => {
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -17,20 +20,35 @@ const EmailSignupPopup = ({ isOpen, onClose }: EmailSignupPopupProps) => {
 
     setIsSubmitting(true);
     
-    // Simulate API call - replace with actual email collection logic
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setIsSubmitted(true);
-      setTimeout(() => {
-        onClose();
-        setIsSubmitted(false);
-        setEmail('');
-      }, 2000);
+      const result = await NewsletterService.subscribe(email, source);
+      
+      if (result.success) {
+        setIsSubmitted(true);
+        toast.success(result.message);
+        setTimeout(() => {
+          onClose();
+          setIsSubmitted(false);
+          setEmail('');
+        }, 2000);
+      } else {
+        toast.error(result.message);
+      }
     } catch (error) {
       console.error('Error submitting email:', error);
+      toast.error('Sorry, there was an error. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Reset state when modal closes
+  const handleClose = () => {
+    onClose();
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setEmail('');
+    }, 300);
   };
 
   if (!isOpen) return null;
@@ -40,14 +58,14 @@ const EmailSignupPopup = ({ isOpen, onClose }: EmailSignupPopupProps) => {
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleClose}
       />
       
       {/* Modal */}
       <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6 sm:p-8 transform transition-all duration-300">
         {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
         >
           <HiX className="w-6 h-6" />
