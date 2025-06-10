@@ -10,7 +10,6 @@ import {
   HiCalendar,
   HiUser,
   HiOfficeBuilding,
-  HiUserGroup,
   HiIdentification
 } from 'react-icons/hi';
 import { Employee } from '../../../domains/employees/types/employee';

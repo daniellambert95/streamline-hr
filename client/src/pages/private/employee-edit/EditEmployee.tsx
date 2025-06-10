@@ -7,10 +7,7 @@ import {
   HiX,
   HiUser,
   HiOfficeBuilding,
-  HiMail,
   HiPhone,
-  HiLocationMarker,
-  HiCalendar,
   HiIdentification
 } from 'react-icons/hi';
 import { Employee } from '../../../domains/employees/types/employee';
