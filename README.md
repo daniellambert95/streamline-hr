@@ -26,6 +26,10 @@ Streamline HR is a comprehensive Human Resource Management System (HRMS) built w
 - Containerization: Docker
 - Testing: Jest + React Testing Library
 
+## Database Schema
+
+View the complete database schema and relationships: [**Streamline HR Database Documentation**](https://dbdocs.io/danjlambert95/streamlinehr-v1?view=relationships)
+
 ## Prerequisites
 
 - Docker and Docker Compose
